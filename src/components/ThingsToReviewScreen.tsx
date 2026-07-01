@@ -1,22 +1,21 @@
-import { quoteCheckContent } from '../data/quoteCheckContent';
+import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type ThingsToReviewScreenProps = {
+  content: QuoteCheckContent['review'];
   onNext: () => void;
 };
 
-export function ThingsToReviewScreen({ onNext }: ThingsToReviewScreenProps) {
-  const { review } = quoteCheckContent;
-
+export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenProps) {
   return (
     <div className="screen-content">
-      <h1>{review.title}</h1>
+      <h1>{content.title}</h1>
       <ol className="review-list">
-        {review.items.map((item) => (
+        {content.items.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ol>
       <button className="primary-button" onClick={onNext}>
-        {review.cta}
+        {content.cta}
       </button>
     </div>
   );
