@@ -13,6 +13,7 @@ export const quoteCheckContent = {
     brand: 'RenoPilot',
     shell: {
       ariaLabel: 'Prototipo RenoPilot',
+      backLabel: 'Volver',
       languageLabel: 'Idioma',
     },
     landing: {
@@ -94,6 +95,7 @@ export const quoteCheckContent = {
     brand: 'RenoPilot',
     shell: {
       ariaLabel: 'RenoPilot prototype',
+      backLabel: 'Back',
       languageLabel: 'Language',
     },
     landing: {
@@ -174,6 +176,7 @@ export const quoteCheckContent = {
     brand: 'RenoPilot',
     shell: {
       ariaLabel: 'Prototyp RenoPilot',
+      backLabel: 'Wróć',
       languageLabel: 'Język',
     },
     landing: {
