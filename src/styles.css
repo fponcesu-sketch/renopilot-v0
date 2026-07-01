@@ -66,18 +66,28 @@ button {
   margin-left: auto;
 }
 
+.back-button,
 .brand-mark {
   align-items: center;
   background: #2f5f58;
   border-radius: 12px;
   color: white;
   display: inline-flex;
-  font-size: 0.8rem;
   font-weight: 800;
   height: 34px;
   justify-content: center;
-  letter-spacing: -0.04em;
   width: 34px;
+}
+
+.back-button {
+  border: 0;
+  font-size: 1.1rem;
+  padding: 0;
+}
+
+.brand-mark {
+  font-size: 0.8rem;
+  letter-spacing: -0.04em;
 }
 
 .brand-name {
@@ -192,7 +202,8 @@ h1 {
 }
 
 .primary-button:hover,
-.secondary-button:hover {
+.secondary-button:hover,
+.back-button:hover {
   transform: translateY(-1px);
 }
 
