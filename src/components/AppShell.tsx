@@ -6,6 +6,7 @@ type AppShellProps = {
   children: ReactNode;
   currentStep: number;
   language: Language;
+  onBack?: () => void;
   onLanguageChange: (language: Language) => void;
   shell: QuoteCheckContent['shell'];
   totalSteps: number;
@@ -16,6 +17,7 @@ export function AppShell({
   children,
   currentStep,
   language,
+  onBack,
   onLanguageChange,
   shell,
   totalSteps,
@@ -25,7 +27,13 @@ export function AppShell({
       <section className="phone-frame" aria-label={shell.ariaLabel}>
         <header className="app-header">
           <div className="brand-cluster">
-            <span className="brand-mark">RP</span>
+            {onBack ? (
+              <button className="back-button" onClick={onBack} type="button" aria-label={shell.backLabel}>
+                ←
+              </button>
+            ) : (
+              <span className="brand-mark">RP</span>
+            )}
             <span className="brand-name">{brand}</span>
           </div>
           <div className="header-actions">
