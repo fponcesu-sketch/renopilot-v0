@@ -1,13 +1,12 @@
 import type { FormEvent } from 'react';
-import { quoteCheckContent } from '../data/quoteCheckContent';
+import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type StartCheckScreenProps = {
+  content: QuoteCheckContent['startCheck'];
   onNext: () => void;
 };
 
-export function StartCheckScreen({ onNext }: StartCheckScreenProps) {
-  const { startCheck } = quoteCheckContent;
-
+export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
   return (
     <form
       className="screen-content form-screen"
@@ -16,25 +15,25 @@ export function StartCheckScreen({ onNext }: StartCheckScreenProps) {
         onNext();
       }}
     >
-      <h1>{startCheck.title}</h1>
+      <h1>{content.title}</h1>
       <label className="field-group">
-        <span>{startCheck.decisionLabel}</span>
-        <textarea rows={4} placeholder={startCheck.decisionPlaceholder} />
+        <span>{content.decisionLabel}</span>
+        <textarea rows={4} placeholder={content.decisionPlaceholder} />
       </label>
       <div className="upload-placeholder" role="button" tabIndex={0}>
-        <strong>{startCheck.uploadLabel}</strong>
-        <small>{startCheck.uploadHint}</small>
+        <strong>{content.uploadLabel}</strong>
+        <small>{content.uploadHint}</small>
       </div>
       <label className="field-group">
-        <span>{startCheck.pasteLabel}</span>
-        <textarea rows={6} placeholder={startCheck.pastePlaceholder} />
+        <span>{content.pasteLabel}</span>
+        <textarea rows={6} placeholder={content.pastePlaceholder} />
       </label>
       <label className="field-group">
-        <span>{startCheck.emailLabel}</span>
-        <input type="email" placeholder={startCheck.emailPlaceholder} />
+        <span>{content.emailLabel}</span>
+        <input type="email" placeholder={content.emailPlaceholder} />
       </label>
       <button className="primary-button" type="submit">
-        {startCheck.cta}
+        {content.cta}
       </button>
     </form>
   );

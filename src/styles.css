@@ -54,18 +54,40 @@ button {
   padding: 18px 20px 8px;
 }
 
+.brand-cluster,
+.header-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.header-actions {
+  gap: 8px;
+  margin-left: auto;
+}
+
+.back-button,
 .brand-mark {
   align-items: center;
   background: #2f5f58;
   border-radius: 12px;
   color: white;
   display: inline-flex;
-  font-size: 0.8rem;
   font-weight: 800;
   height: 34px;
   justify-content: center;
-  letter-spacing: -0.04em;
   width: 34px;
+}
+
+.back-button {
+  border: 0;
+  font-size: 1.1rem;
+  padding: 0;
+}
+
+.brand-mark {
+  font-size: 0.8rem;
+  letter-spacing: -0.04em;
 }
 
 .brand-name {
@@ -74,13 +96,37 @@ button {
   letter-spacing: -0.03em;
 }
 
+.language-switcher {
+  background: #eee7db;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+}
+
+.language-option {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: #6c6257;
+  font-size: 0.72rem;
+  font-weight: 900;
+  min-width: 31px;
+  padding: 5px 6px;
+}
+
+.language-option.active {
+  background: #fbfaf7;
+  color: #2f5f58;
+  box-shadow: 0 1px 4px rgba(74, 58, 42, 0.12);
+}
+
 .step-pill {
   background: #eee7db;
   border-radius: 999px;
   color: #6c6257;
   font-size: 0.78rem;
   font-weight: 700;
-  margin-left: auto;
   padding: 6px 10px;
 }
 
@@ -156,7 +202,8 @@ h1 {
 }
 
 .primary-button:hover,
-.secondary-button:hover {
+.secondary-button:hover,
+.back-button:hover {
   transform: translateY(-1px);
 }
 
@@ -320,6 +367,16 @@ textarea:focus {
   overflow: auto;
   padding: 18px;
   white-space: pre-wrap;
+}
+
+@media (max-width: 380px) {
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .brand-name {
+    display: none;
+  }
 }
 
 @media (min-width: 720px) {

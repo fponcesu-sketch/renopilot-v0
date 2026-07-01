@@ -1,15 +1,17 @@
-import { quoteCheckContent } from '../data/quoteCheckContent';
+import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
-export function UpdatedRecommendationScreen() {
-  const { updatedRecommendation } = quoteCheckContent;
+type UpdatedRecommendationScreenProps = {
+  content: QuoteCheckContent['updatedRecommendation'];
+};
 
+export function UpdatedRecommendationScreen({ content }: UpdatedRecommendationScreenProps) {
   return (
     <div className="screen-content final-screen">
-      <p className="status-card">{updatedRecommendation.status}</p>
-      <p className="body-copy">{updatedRecommendation.explanation}</p>
+      <p className="status-card">{content.status}</p>
+      <p className="body-copy">{content.explanation}</p>
       <section className="insight-card soft">
-        <span>{updatedRecommendation.nextActionTitle}</span>
-        <p>{updatedRecommendation.nextAction}</p>
+        <span>{content.nextActionTitle}</span>
+        <p>{content.nextAction}</p>
       </section>
     </div>
   );
