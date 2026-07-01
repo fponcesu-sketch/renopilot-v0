@@ -20,6 +20,17 @@ type Screen =
   | 'reply'
   | 'updated';
 
+const screenOrder: Screen[] = [
+  'landing',
+  'start',
+  'checking',
+  'result',
+  'review',
+  'questions',
+  'reply',
+  'updated',
+];
+
 const screenStep: Record<Screen, number> = {
   landing: 1,
   start: 2,
@@ -36,11 +47,20 @@ export default function App() {
   const [language, setLanguage] = useState<Language>(defaultLanguage);
   const content = quoteCheckContent[language];
 
+  const goBack = () => {
+    const currentIndex = screenOrder.indexOf(screen);
+
+    if (currentIndex > 0) {
+      setScreen(screenOrder[currentIndex - 1]);
+    }
+  };
+
   return (
     <AppShell
       brand={content.brand}
       currentStep={screenStep[screen]}
       language={language}
+      onBack={screen === 'landing' ? undefined : goBack}
       onLanguageChange={setLanguage}
       shell={content.shell}
       totalSteps={8}
