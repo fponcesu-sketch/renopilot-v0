@@ -1,13 +1,12 @@
 import type { FormEvent } from 'react';
-import { quoteCheckContent } from '../data/quoteCheckContent';
+import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type VendorReplyScreenProps = {
+  content: QuoteCheckContent['vendorReply'];
   onNext: () => void;
 };
 
-export function VendorReplyScreen({ onNext }: VendorReplyScreenProps) {
-  const { vendorReply } = quoteCheckContent;
-
+export function VendorReplyScreen({ content, onNext }: VendorReplyScreenProps) {
   return (
     <form
       className="screen-content form-screen"
@@ -16,13 +15,13 @@ export function VendorReplyScreen({ onNext }: VendorReplyScreenProps) {
         onNext();
       }}
     >
-      <h1>{vendorReply.title}</h1>
+      <h1>{content.title}</h1>
       <label className="field-group">
-        <span>{vendorReply.label}</span>
-        <textarea rows={8} placeholder={vendorReply.placeholder} />
+        <span>{content.label}</span>
+        <textarea rows={8} placeholder={content.placeholder} />
       </label>
       <button className="primary-button" type="submit">
-        {vendorReply.cta}
+        {content.cta}
       </button>
     </form>
   );
