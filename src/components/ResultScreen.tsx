@@ -1,26 +1,25 @@
-import { quoteCheckContent } from '../data/quoteCheckContent';
+import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type ResultScreenProps = {
+  content: QuoteCheckContent['result'];
   onNext: () => void;
 };
 
-export function ResultScreen({ onNext }: ResultScreenProps) {
-  const { result } = quoteCheckContent;
-
+export function ResultScreen({ content, onNext }: ResultScreenProps) {
   return (
     <div className="screen-content">
-      <p className="status-card">{result.status}</p>
-      <p className="body-copy">{result.explanation}</p>
+      <p className="status-card">{content.status}</p>
+      <p className="body-copy">{content.explanation}</p>
       <section className="insight-card">
-        <span>{result.biggestRiskTitle}</span>
-        <p>{result.biggestRisk}</p>
+        <span>{content.biggestRiskTitle}</span>
+        <p>{content.biggestRisk}</p>
       </section>
       <section className="insight-card soft">
-        <span>{result.nextActionTitle}</span>
-        <p>{result.nextAction}</p>
+        <span>{content.nextActionTitle}</span>
+        <p>{content.nextAction}</p>
       </section>
       <button className="primary-button" onClick={onNext}>
-        {result.cta}
+        {content.cta}
       </button>
     </div>
   );
