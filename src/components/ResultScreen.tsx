@@ -2,11 +2,6 @@ type ResultContent = {
   title: string;
   status: string;
   explanation: string;
-  costExposure: string;
-  biggestRiskTitle: string;
-  biggestRisk: string;
-  nextActionTitle: string;
-  nextAction: string;
   cta: string;
 };
 
@@ -17,19 +12,10 @@ type ResultScreenProps = {
 
 export function ResultScreen({ content, onNext }: ResultScreenProps) {
   return (
-    <div className="screen-content result-screen">
-      <h1>{content.title}</h1>
-      <p className="status-card">{content.status}</p>
-      <p className="body-copy">{content.explanation}</p>
-      <p className="cost-exposure">{content.costExposure}</p>
-      <section className="insight-card risk">
-        <span>{content.biggestRiskTitle}</span>
-        <p>{content.biggestRisk}</p>
-      </section>
-      <section className="insight-card soft">
-        <span>{content.nextActionTitle}</span>
-        <p>{content.nextAction}</p>
-      </section>
+    <div className="screen-content result-screen simple-verdict-screen">
+      <p className="verdict-label">{content.title}</p>
+      <p className="status-card verdict-card">{content.status}</p>
+      <p className="body-copy verdict-summary">{content.explanation}</p>
       <button className="primary-button" onClick={onNext}>
         {content.cta}
       </button>
