@@ -81,8 +81,6 @@ const schema = {
     },
     thingsToReview: {
       type: 'array',
-      minItems: 3,
-      maxItems: 6,
       items: { type: 'string' },
     },
     vendorQuestions: {
@@ -94,8 +92,6 @@ const schema = {
         messageToSend: { type: 'string' },
         questions: {
           type: 'array',
-          minItems: 3,
-          maxItems: 6,
           items: { type: 'string' },
         },
       },
@@ -112,7 +108,6 @@ const schema = {
     confidence: { type: 'string', enum: ['low', 'medium', 'high'] },
     assumptions: {
       type: 'array',
-      maxItems: 4,
       items: { type: 'string' },
     },
   },
@@ -171,7 +166,7 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              'You are RenoPilot, a homeowner quote decision assistant. Return practical, short, non-legal, non-technical guidance. Do not summarize only; help the user decide what to ask before accepting. Respond in the requested language. Do not invent prices. If information is missing, say it is not calculable yet.',
+              'You are RenoPilot, a homeowner quote decision assistant. Return practical, short, non-legal, non-technical guidance. Do not summarize only; help the user decide what to ask before accepting. Respond in the requested language. Do not invent prices. If information is missing, say it is not calculable yet. Keep arrays concise: 3 to 6 items maximum.',
           },
           {
             role: 'user',
@@ -194,6 +189,8 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('OpenAI quote analysis error', response.status, errorBody);
       throw new Error(`OpenAI request failed: ${response.status}`);
     }
 
@@ -203,6 +200,7 @@ export default async function handler(req, res) {
 
     return sendJson(res, 200, { source: 'llm', analysis });
   } catch (error) {
+    console.error('Quote analysis fallback', error);
     return sendJson(res, 200, {
       source: 'mock',
       analysis: fallbackAnalysis,
