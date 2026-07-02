@@ -2,21 +2,19 @@ export type VerdictLevel = 'green' | 'yellow' | 'red';
 export type ConfidenceLevel = 'low' | 'medium' | 'high';
 export type AnalysisSource = 'llm' | 'mock';
 
+export type QuoteInfoCategories = {
+  confirmed: string[];
+  needsClarification: string[];
+  risks: string[];
+};
+
 export type QuoteAnalysis = {
   verdict: {
     level: VerdictLevel;
     title: string;
     summary: string;
   };
-  costExposure: {
-    summary: string;
-    calculable: boolean;
-  };
-  biggestRisk: {
-    title: string;
-    summary: string;
-  };
-  thingsToReview: string[];
+  infoCategories: QuoteInfoCategories;
   vendorQuestions: {
     title: string;
     messageToSend: string;
