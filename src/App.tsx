@@ -48,6 +48,10 @@ const screenPhase: Record<Screen, number | null> = {
 const prototypeNote =
   'Este prototipo no guarda todavía tu revisión. Mantén esta página abierta si quieres pegar la respuesta del proveedor.';
 
+function getCostExposureLabel(fallbackText: string) {
+  return fallbackText.includes(':') ? fallbackText.split(':')[0] : 'Posible coste extra';
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing');
   const [language, setLanguage] = useState<Language>(defaultLanguage);
@@ -67,12 +71,13 @@ export default function App() {
   const fallbackQuoteAnalysis = useMemo(() => buildFallbackQuoteAnalysis(content), [content]);
   const activeAnalysis = analysis ?? fallbackQuoteAnalysis;
   const activeUpdatedAnalysis = updatedAnalysis ?? buildFallbackUpdatedRecommendation(content);
+  const costExposureLabel = getCostExposureLabel(content.result.costExposure);
 
   const resultContent = {
     ...content.result,
     status: `${levelIcon(activeAnalysis.verdict.level)} ${activeAnalysis.verdict.title}`,
     explanation: activeAnalysis.verdict.summary,
-    costExposure: `Posible coste extra: ${activeAnalysis.costExposure.summary}`,
+    costExposure: `${costExposureLabel}: ${activeAnalysis.costExposure.summary}`,
     biggestRiskTitle: activeAnalysis.biggestRisk.title,
     biggestRisk: activeAnalysis.biggestRisk.summary,
     nextActionTitle: activeAnalysis.nextAction.title,
