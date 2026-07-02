@@ -6,17 +6,17 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
     verdict: {
       level: 'yellow',
       title: content.result.status.replace(/^[🟢🟡🔴]\s*/, ''),
-      summary: content.result.explanation,
+      summary: 'Parece viable, pero hay que aclarar puntos clave antes de aceptar.',
     },
-    costExposure: {
-      summary: content.result.costExposure.replace(/^Posible coste extra:\s*/i, ''),
-      calculable: false,
+    infoCategories: {
+      confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
+      needsClarification: [
+        'Precio final con IVA incluido.',
+        'Qué está incluido exactamente en el alcance.',
+        'Plazo estimado y forma de pago.',
+      ],
+      risks: ['Aceptar o pagar señal sin confirmación escrita de los puntos abiertos.'],
     },
-    biggestRisk: {
-      title: content.result.biggestRiskTitle,
-      summary: content.result.biggestRisk,
-    },
-    thingsToReview: content.review.items,
     vendorQuestions: {
       title: content.questions.title,
       messageToSend: content.questions.message,
@@ -26,8 +26,8 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
         .map((line) => line.replace(/^\d+\.\s*/, '').trim()),
     },
     nextAction: {
-      title: content.result.nextActionTitle,
-      summary: content.result.nextAction,
+      title: 'Nuestra recomendación',
+      summary: 'No aceptes todavía. Pide confirmación por escrito y decide después.',
     },
     confidence: 'medium',
     assumptions: ['Revisión de ejemplo usada como fallback del prototipo.'],
