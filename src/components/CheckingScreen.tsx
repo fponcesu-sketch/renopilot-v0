@@ -3,12 +3,15 @@ import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type CheckingScreenProps = {
   content: QuoteCheckContent['checking'];
+  error?: string;
+  isReady: boolean;
   onNext: () => void;
 };
 
-export function CheckingScreen({ content, onNext }: CheckingScreenProps) {
+export function CheckingScreen({ content, error, isReady, onNext }: CheckingScreenProps) {
   const [progressIndex, setProgressIndex] = useState(0);
-  const isComplete = progressIndex >= content.items.length;
+  const animationComplete = progressIndex >= content.items.length;
+  const canContinue = animationComplete && isReady;
 
   useEffect(() => {
     setProgressIndex(0);
@@ -43,7 +46,8 @@ export function CheckingScreen({ content, onNext }: CheckingScreenProps) {
           );
         })}
       </ul>
-      <button className="primary-button" disabled={!isComplete} onClick={onNext}>
+      {error && <p className="inline-warning">{error}</p>}
+      <button className="primary-button" disabled={!canContinue} onClick={onNext}>
         {content.cta}
       </button>
     </div>
