@@ -16,24 +16,24 @@ export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
       }}
     >
       <h1>{content.title}</h1>
-      <label className="field-group">
+      <label className="field-group decision-field">
         <span>{content.decisionLabel}</span>
         <textarea rows={2} placeholder={content.decisionPlaceholder} />
       </label>
       <section className="quote-input-card">
-        <div>
+        <div className="quote-card-header">
           <h2>{content.quoteInputLabel}</h2>
-          <p>{content.quoteInputHint}</p>
+          <button className="upload-button" type="button">
+            {content.uploadCta}
+          </button>
         </div>
-        <button className="upload-button" type="button">
-          {content.uploadCta}
-        </button>
-        <textarea rows={4} placeholder={content.quotePlaceholder} />
+        <p>{content.quoteInputHint}</p>
+        <textarea rows={3} placeholder={content.quotePlaceholder} />
       </section>
       <label className="field-group compact-field">
         <span>{content.emailLabel}</span>
-        <small>{content.emailHelper}</small>
         <input type="email" placeholder={content.emailPlaceholder} />
+        <small>{content.emailHelper}</small>
       </label>
       <button className="primary-button" type="submit">
         {content.cta}
