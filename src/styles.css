@@ -8,6 +8,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  scroll-behavior: auto;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -33,6 +37,7 @@ button {
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  min-height: 100svh;
   padding: 18px;
 }
 
@@ -41,8 +46,11 @@ button {
   border: 1px solid rgba(31, 41, 51, 0.08);
   border-radius: 32px;
   box-shadow: 0 24px 70px rgba(74, 58, 42, 0.18);
+  display: flex;
+  flex-direction: column;
   max-width: 430px;
   min-height: calc(100vh - 36px);
+  min-height: calc(100svh - 36px);
   overflow: hidden;
   width: 100%;
 }
@@ -50,6 +58,7 @@ button {
 .app-header {
   align-items: center;
   display: flex;
+  flex: 0 0 auto;
   gap: 10px;
   padding: 18px 20px 8px;
 }
@@ -122,6 +131,7 @@ button {
 }
 
 .phase-progress {
+  flex: 0 0 auto;
   padding: 6px 20px 4px;
 }
 
@@ -168,21 +178,23 @@ button {
 }
 
 .screen-card {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 12px 20px 24px;
 }
 
 .screen-content {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 18px;
-  min-height: calc(100vh - 132px);
+  min-height: 0;
   padding: 20px 0 8px;
+  width: 100%;
 }
 
-.hero-screen {
-  justify-content: center;
-}
-
+.hero-screen,
 .final-screen {
   justify-content: center;
 }
@@ -266,10 +278,7 @@ h1 {
   transform: translateY(-1px);
 }
 
-.form-screen {
-  gap: 16px;
-}
-
+.form-screen,
 .start-check-screen {
   gap: 14px;
 }
@@ -555,31 +564,155 @@ textarea:focus {
   white-space: pre-wrap;
 }
 
-@media (max-width: 380px) {
-  .app-header {
-    align-items: flex-start;
+@media (max-width: 600px) {
+  body {
+    background: #fbfaf7;
   }
 
-  .brand-name {
-    display: none;
+  .app-shell {
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 0;
+  }
+
+  .phone-frame {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  .app-header {
+    padding: 13px 16px 6px;
+  }
+
+  .phase-progress {
+    padding: 4px 16px 2px;
   }
 
   .phase-labels {
     gap: 4px;
+    margin-bottom: 6px;
   }
 
   .phase-labels span {
     font-size: 0.58rem;
     padding: 6px 2px;
   }
+
+  .screen-card {
+    padding: 8px 16px 14px;
+  }
+
+  .screen-content {
+    gap: 13px;
+    padding: 14px 0 4px;
+  }
+
+  .hero-screen {
+    justify-content: center;
+    padding-bottom: 10px;
+  }
+
+  h1 {
+    font-size: clamp(1.85rem, 10vw, 2.65rem);
+  }
+
+  .result-screen h1,
+  .start-check-screen h1 {
+    font-size: clamp(1.65rem, 8.5vw, 2.25rem);
+  }
+
+  .lead,
+  .body-copy {
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .primary-button,
+  .secondary-button {
+    min-height: 52px;
+    padding: 14px 16px;
+  }
+
+  .quote-input-card,
+  .insight-card,
+  .status-card,
+  .message-box {
+    border-radius: 18px;
+    padding: 14px;
+  }
+
+  .quote-input-card {
+    gap: 10px;
+  }
+
+  .quote-input-card h2 {
+    font-size: 0.98rem;
+  }
+
+  input,
+  textarea {
+    border-radius: 16px;
+    padding: 12px 13px;
+  }
+
+  .compact-field {
+    gap: 6px;
+    padding: 10px 12px;
+  }
+
+  .field-group small,
+  .quote-input-card p {
+    font-size: 0.78rem;
+    line-height: 1.32;
+  }
+
+  .checking-orb {
+    height: 64px;
+    margin: 10px 0 0;
+    width: 64px;
+  }
+
+  .check-list,
+  .review-list {
+    gap: 8px;
+  }
+
+  .check-list li,
+  .review-list li {
+    border-radius: 16px;
+    padding: 11px 12px;
+  }
+
+  .cost-exposure {
+    border-radius: 16px;
+    font-size: 0.9rem;
+    padding: 12px 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand-name {
+    display: none;
+  }
+
+  .language-option {
+    min-width: 29px;
+    padding-inline: 5px;
+  }
+
+  .phase-labels span {
+    font-size: 0.54rem;
+  }
 }
 
 @media (min-width: 720px) {
   .phone-frame {
     min-height: 780px;
-  }
-
-  .screen-content {
-    min-height: 660px;
   }
 }
