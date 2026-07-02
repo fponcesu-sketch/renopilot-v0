@@ -9,6 +9,13 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
       summary: 'Parece viable, pero hay que aclarar puntos clave antes de aceptar.',
     },
     mode: 'single_quote',
+    comparison: {
+      recommendedQuote: 'Proveedor recomendado',
+      oneLineReason: 'Parece la opción más clara, pero faltan confirmaciones importantes.',
+      whyThisOne: ['Alcance más fácil de entender.'],
+      stillUnclear: ['Precio final con IVA.', 'Plazo y forma de pago.'],
+      beCareful: ['No pagar señal sin confirmación escrita.'],
+    },
     infoCategories: {
       confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
       needsClarification: [
