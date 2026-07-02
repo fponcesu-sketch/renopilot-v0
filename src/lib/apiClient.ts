@@ -1,6 +1,7 @@
 import type {
   QuoteAnalysis,
   QuoteAnalysisApiResponse,
+  QuoteDocument,
   UpdatedRecommendationAnalysis,
   VendorReplyApiResponse,
 } from '../types/analysis';
@@ -24,6 +25,7 @@ async function postJson<TResponse>(path: string, body: unknown): Promise<TRespon
 export async function analyzeQuote(input: {
   decisionContext: string;
   quoteText: string;
+  quoteDocuments: QuoteDocument[];
   language: string;
 }): Promise<{ analysis: QuoteAnalysis; source: QuoteAnalysisApiResponse['source']; error?: string }> {
   const data = await postJson<QuoteAnalysisApiResponse>('/api/analyze-quote', input);
