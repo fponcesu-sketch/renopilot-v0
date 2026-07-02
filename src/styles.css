@@ -125,25 +125,32 @@ button {
   padding: 6px 20px 4px;
 }
 
-.phase-label {
+.phase-labels {
   align-items: center;
-  color: #9a9084;
-  display: flex;
-  font-size: 0.72rem;
-  font-weight: 800;
+  display: grid;
   gap: 6px;
-  justify-content: space-between;
-  letter-spacing: 0.02em;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-bottom: 7px;
 }
 
-.phase-label span {
-  text-transform: uppercase;
+.phase-labels span {
+  background: #f2eadf;
+  border-radius: 999px;
+  color: #8a8176;
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 900;
+  line-height: 1;
+  overflow: hidden;
+  padding: 6px 4px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.phase-label strong {
+.phase-labels span.active {
+  background: #e3f0eb;
   color: #2f5f58;
-  font-size: 0.82rem;
 }
 
 .progress-track {
@@ -476,6 +483,15 @@ textarea:focus {
 
   .brand-name {
     display: none;
+  }
+
+  .phase-labels {
+    gap: 4px;
+  }
+
+  .phase-labels span {
+    font-size: 0.58rem;
+    padding: 6px 2px;
   }
 }
 
