@@ -31,3 +31,19 @@
   border: 1px solid #ead38d;
   color: #6a531b;
 }
+
+.file-input-hidden {
+  display: none;
+}
+
+.file-status {
+  background: #eef6f2;
+  border: 1px solid #d3e5de;
+  border-radius: 14px;
+  color: #2f5f58;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.32;
+  margin: 0;
+  padding: 8px 10px;
+}
