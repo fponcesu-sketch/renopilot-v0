@@ -1,0 +1,33 @@
+.prototype-note {
+  background: #f6f1e9;
+  border: 1px solid #ebe2d5;
+  border-radius: 16px;
+  color: #6f655b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.inline-error,
+.inline-warning {
+  border-radius: 14px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.inline-error {
+  background: #fff1e8;
+  border: 1px solid #efc1a2;
+  color: #7a351e;
+}
+
+.inline-warning {
+  background: #fff8e3;
+  border: 1px solid #ead38d;
+  color: #6a531b;
+}
