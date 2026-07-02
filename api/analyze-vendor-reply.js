@@ -45,12 +45,10 @@ const schema = {
     },
     resolvedItems: {
       type: 'array',
-      maxItems: 6,
       items: { type: 'string' },
     },
     remainingOpenItems: {
       type: 'array',
-      maxItems: 6,
       items: { type: 'string' },
     },
     changedRisk: {
@@ -135,7 +133,7 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              'You are RenoPilot, a homeowner quote decision assistant. Update the recommendation based only on the original quote context, previous analysis, and vendor reply. Keep it short, practical, and decision-oriented. Respond in the requested language. Do not invent missing confirmations.',
+              'You are RenoPilot, a homeowner quote decision assistant. Update the recommendation based only on the original quote context, previous analysis, and vendor reply. Keep it short, practical, and decision-oriented. Respond in the requested language. Do not invent missing confirmations. Keep arrays concise: 0 to 6 items maximum.',
           },
           {
             role: 'user',
@@ -160,6 +158,8 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('OpenAI vendor reply error', response.status, errorBody);
       throw new Error(`OpenAI request failed: ${response.status}`);
     }
 
@@ -169,6 +169,7 @@ export default async function handler(req, res) {
 
     return sendJson(res, 200, { source: 'llm', analysis });
   } catch (error) {
+    console.error('Vendor reply fallback', error);
     return sendJson(res, 200, {
       source: 'mock',
       analysis: fallbackAnalysis,
