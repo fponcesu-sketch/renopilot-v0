@@ -3,6 +3,7 @@ type UpdatedRecommendationContent = {
   explanation: string;
   nextActionTitle: string;
   nextAction: string;
+  disclaimer: string;
 };
 
 type UpdatedRecommendationScreenProps = {
@@ -18,6 +19,7 @@ export function UpdatedRecommendationScreen({ content }: UpdatedRecommendationSc
         <span>{content.nextActionTitle}</span>
         <p>{content.nextAction}</p>
       </section>
+      <p className="disclaimer-note">{content.disclaimer}</p>
     </div>
   );
 }
