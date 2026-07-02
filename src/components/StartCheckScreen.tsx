@@ -18,7 +18,7 @@ export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
       <h1>{content.title}</h1>
       <label className="field-group">
         <span>{content.decisionLabel}</span>
-        <textarea rows={3} placeholder={content.decisionPlaceholder} />
+        <textarea rows={2} placeholder={content.decisionPlaceholder} />
       </label>
       <section className="quote-input-card">
         <div>
@@ -28,7 +28,7 @@ export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
         <button className="upload-button" type="button">
           {content.uploadCta}
         </button>
-        <textarea rows={5} placeholder={content.quotePlaceholder} />
+        <textarea rows={4} placeholder={content.quotePlaceholder} />
       </section>
       <label className="field-group compact-field">
         <span>{content.emailLabel}</span>
