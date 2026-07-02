@@ -93,6 +93,12 @@ const schema = {
   },
 };
 
+const languageNames = {
+  es: 'Spanish',
+  en: 'English',
+  pl: 'Polish',
+};
+
 function sendJson(res, statusCode, body) {
   res.statusCode = statusCode;
   res.setHeader('Content-Type', 'application/json');
@@ -120,6 +126,7 @@ export default async function handler(req, res) {
   }
 
   const { decisionContext = '', quoteText = '', language = 'es' } = req.body || {};
+  const responseLanguage = languageNames[language] || 'Spanish';
 
   if (!String(quoteText).trim()) {
     return sendJson(res, 400, { error: 'Missing quote text' });
@@ -146,12 +153,12 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              'You are RenoPilot, a homeowner quote decision assistant. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. Classify information into confirmed, needsClarification, and risks. Keep each category short: 0 to 3 items. Generate a ready-to-send vendor message that the homeowner can copy immediately. Respond in the requested language. Do not invent prices. If information is missing, say it needs clarification.',
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. Classify information into confirmed, needsClarification, and risks. Keep each category short: 0 to 3 items. Generate a ready-to-send vendor message that the homeowner can copy immediately. Do not invent prices. If information is missing, say it needs clarification.`,
           },
           {
             role: 'user',
             content: JSON.stringify({
-              language,
+              responseLanguage,
               decisionContext,
               quoteText,
             }),
