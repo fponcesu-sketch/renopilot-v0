@@ -10,11 +10,11 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
     },
     mode: 'single_quote',
     comparison: {
-      recommendedQuote: 'Proveedor recomendado',
-      oneLineReason: 'Parece la opción más clara, pero faltan confirmaciones importantes.',
+      recommendedQuote: 'Oferta del proveedor',
+      oneLineReason: 'Parece la opción más clara, pero faltan confirmaciones importantes antes de aceptar.',
       whyThisOne: ['Alcance más fácil de entender.'],
       stillUnclear: ['Precio final con IVA.', 'Plazo y forma de pago.'],
-      beCareful: ['No pagar señal sin confirmación escrita.'],
+      beCareful: ['No decidir solo por precio si otra oferta está más detallada.'],
     },
     infoCategories: {
       confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
@@ -23,7 +23,7 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
         'Qué está incluido exactamente en el alcance.',
         'Plazo estimado y forma de pago.',
       ],
-      risks: ['Aceptar o pagar señal sin confirmación escrita de los puntos abiertos.'],
+      risks: ['Aceptar sin confirmación escrita de los puntos abiertos.'],
     },
     vendorQuestions: {
       title: content.questions.title,
@@ -40,8 +40,8 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
         .map((line) => line.replace(/^\d+\.\s*/, '').trim()),
     },
     nextAction: {
-      title: 'Nuestra recomendación',
-      summary: 'No aceptes todavía. Pide confirmación por escrito y decide después.',
+      title: 'Siguiente paso',
+      summary: 'Pide confirmación por escrito y decide después.',
     },
     confidence: 'medium',
     assumptions: ['Revisión de ejemplo usada como fallback del prototipo.'],
