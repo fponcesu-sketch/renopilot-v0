@@ -1,8 +1,15 @@
 import { useState } from 'react';
-import type { QuoteCheckContent } from '../data/quoteCheckContent';
+
+type ContractorQuestionsContent = {
+  title: string;
+  message: string;
+  copyCta: string;
+  copiedLabel: string;
+  cta: string;
+};
 
 type ContractorQuestionsScreenProps = {
-  content: QuoteCheckContent['questions'];
+  content: ContractorQuestionsContent;
   onNext: () => void;
 };
 
