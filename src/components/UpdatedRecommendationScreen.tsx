@@ -1,7 +1,12 @@
-import type { QuoteCheckContent } from '../data/quoteCheckContent';
+type UpdatedRecommendationContent = {
+  status: string;
+  explanation: string;
+  nextActionTitle: string;
+  nextAction: string;
+};
 
 type UpdatedRecommendationScreenProps = {
-  content: QuoteCheckContent['updatedRecommendation'];
+  content: UpdatedRecommendationContent;
 };
 
 export function UpdatedRecommendationScreen({ content }: UpdatedRecommendationScreenProps) {
