@@ -48,9 +48,12 @@ const screenPhase: Record<Screen, number | null> = {
 const prototypeNote =
   'Este prototipo no guarda todavía tu revisión. Mantén esta página abierta si quieres pegar la respuesta del proveedor.';
 
-function getCostExposureLabel(fallbackText: string) {
-  return fallbackText.includes(':') ? fallbackText.split(':')[0] : 'Posible coste extra';
-}
+const flowCopy = {
+  resultCta: 'Ver qué aclarar',
+  reviewTitle: 'Antes de decidir',
+  reviewCta: 'Ver preguntas',
+  questionsCta: 'Pegar respuesta',
+};
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing');
@@ -71,28 +74,25 @@ export default function App() {
   const fallbackQuoteAnalysis = useMemo(() => buildFallbackQuoteAnalysis(content), [content]);
   const activeAnalysis = analysis ?? fallbackQuoteAnalysis;
   const activeUpdatedAnalysis = updatedAnalysis ?? buildFallbackUpdatedRecommendation(content);
-  const costExposureLabel = getCostExposureLabel(content.result.costExposure);
 
   const resultContent = {
-    ...content.result,
+    title: content.result.title,
     status: `${levelIcon(activeAnalysis.verdict.level)} ${activeAnalysis.verdict.title}`,
     explanation: activeAnalysis.verdict.summary,
-    costExposure: `${costExposureLabel}: ${activeAnalysis.costExposure.summary}`,
-    biggestRiskTitle: activeAnalysis.biggestRisk.title,
-    biggestRisk: activeAnalysis.biggestRisk.summary,
-    nextActionTitle: activeAnalysis.nextAction.title,
-    nextAction: activeAnalysis.nextAction.summary,
+    cta: flowCopy.resultCta,
   };
 
   const reviewContent = {
-    ...content.review,
-    items: activeAnalysis.thingsToReview,
+    title: flowCopy.reviewTitle,
+    categories: activeAnalysis.infoCategories,
+    cta: flowCopy.reviewCta,
   };
 
   const questionsContent = {
     ...content.questions,
     title: activeAnalysis.vendorQuestions.title || content.questions.title,
     message: activeAnalysis.vendorQuestions.messageToSend,
+    cta: flowCopy.questionsCta,
   };
 
   const updatedContent = {
