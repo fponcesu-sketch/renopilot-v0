@@ -26,17 +26,31 @@
   gap: 14px;
 }
 
-.category-list {
+.category-list,
+.vendor-message-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.decision-category {
+.decision-category,
+.vendor-message-card {
   background: #ffffff;
   border: 1px solid #ebe2d5;
   border-radius: 18px;
   padding: 13px 14px;
+}
+
+.vendor-message-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vendor-message-card h2 {
+  color: #2f3c36;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
 .decision-category.confirmed {
@@ -95,7 +109,8 @@
     font-size: 0.98rem;
   }
 
-  .decision-category {
+  .decision-category,
+  .vendor-message-card {
     border-radius: 16px;
     padding: 11px 12px;
   }
