@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { CheckingScreen } from './components/CheckingScreen';
 import { ContractorQuestionsScreen } from './components/ContractorQuestionsScreen';
@@ -31,21 +31,26 @@ const screenOrder: Screen[] = [
   'updated',
 ];
 
-const screenStep: Record<Screen, number> = {
-  landing: 1,
-  start: 2,
-  checking: 3,
-  result: 4,
-  review: 5,
-  questions: 6,
-  reply: 7,
-  updated: 8,
+const screenPhase: Record<Screen, number | null> = {
+  landing: null,
+  start: 0,
+  checking: 1,
+  result: 1,
+  review: 1,
+  questions: 2,
+  reply: 3,
+  updated: 3,
 };
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing');
   const [language, setLanguage] = useState<Language>(defaultLanguage);
   const content = quoteCheckContent[language];
+  const currentPhase = screenPhase[screen];
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [screen]);
 
   const goBack = () => {
     const currentIndex = screenOrder.indexOf(screen);
@@ -58,12 +63,11 @@ export default function App() {
   return (
     <AppShell
       brand={content.brand}
-      currentStep={screenStep[screen]}
+      currentPhase={currentPhase}
       language={language}
       onBack={screen === 'landing' ? undefined : goBack}
       onLanguageChange={setLanguage}
       shell={content.shell}
-      totalSteps={8}
     >
       {screen === 'landing' && (
         <LandingScreen content={content.landing} onNext={() => setScreen('start')} />
