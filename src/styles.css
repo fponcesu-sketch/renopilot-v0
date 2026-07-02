@@ -375,6 +375,85 @@ textarea:focus {
   margin-right: 10px;
 }
 
+.animated-check-list li {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, opacity 180ms ease;
+}
+
+.animated-check-list li::before {
+  content: none;
+  margin: 0;
+}
+
+.animated-check-list li.pending {
+  color: #9a9084;
+  opacity: 0.72;
+}
+
+.animated-check-list li.active {
+  background: #eef6f2;
+  border-color: #b9d8cd;
+  color: #243c36;
+  font-weight: 900;
+}
+
+.animated-check-list li.done {
+  background: #ffffff;
+  border-color: #d9e9e3;
+  color: #2f5f58;
+}
+
+.check-state {
+  align-items: center;
+  background: #eee7db;
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 0 22px;
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+.animated-check-list li.active .check-state {
+  background: #2f5f58;
+  box-shadow: 0 0 0 5px rgba(47, 95, 88, 0.12);
+}
+
+.animated-check-list li.active .check-state::after {
+  animation: pulse-dot 780ms ease-in-out infinite;
+  background: #ffffff;
+  border-radius: 999px;
+  content: '';
+  height: 7px;
+  width: 7px;
+}
+
+.animated-check-list li.done .check-state {
+  background: #2f5f58;
+  color: #ffffff;
+}
+
+.animated-check-list li.done .check-state::after {
+  content: '✓';
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.75);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .review-list {
   counter-reset: review-item;
 }
