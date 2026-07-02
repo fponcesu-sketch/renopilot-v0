@@ -153,24 +153,31 @@ button {
   padding: 6px 4px;
   text-align: center;
   text-overflow: ellipsis;
-  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
   white-space: nowrap;
 }
 
 .phase-labels span.pending {
   background: #f2eadf;
-  color: #8a8176;
+  color: #9b9186;
+  opacity: 0.78;
 }
 
 .phase-labels span.done {
-  background: #edf6f2;
+  background: #e5f3ed;
+  box-shadow: inset 0 0 0 1px #c7dfd5;
   color: #2f5f58;
+}
+
+.phase-labels span.done::before {
+  content: '✓ ';
 }
 
 .phase-labels span.active {
   background: #2f5f58;
   box-shadow: 0 5px 12px rgba(47, 95, 88, 0.16);
   color: #ffffff;
+  opacity: 1;
 }
 
 .progress-track {
@@ -232,6 +239,10 @@ h1 {
   letter-spacing: -0.06em;
 }
 
+.result-screen {
+  gap: 15px;
+}
+
 .lead,
 .body-copy {
   color: #5d675f;
@@ -268,9 +279,13 @@ h1 {
 }
 
 .secondary-button.success {
-  background: #2f5f58;
-  color: #ffffff;
-  box-shadow: 0 10px 22px rgba(47, 95, 88, 0.2);
+  background: #e3f0eb;
+  color: #245149;
+  box-shadow: inset 0 0 0 1px #b9d8cd;
+}
+
+.secondary-button.success::before {
+  content: '✓ ';
 }
 
 .upload-button {
@@ -498,42 +513,42 @@ textarea:focus {
 }
 
 .status-card {
-  background: #fff5d8;
-  border: 1px solid #efd38e;
-  border-radius: 22px;
+  background: #fff8e3;
+  border: 1px solid #ead38d;
+  border-radius: 20px;
   color: #463914;
-  font-size: 1.2rem;
+  font-size: 1.08rem;
   font-weight: 900;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   line-height: 1.25;
   margin: 0;
-  padding: 18px;
+  padding: 15px 16px;
 }
 
 .cost-exposure {
-  background: #fff5d8;
-  border: 1px solid #e1b957;
-  border-left: 6px solid #c9972e;
-  border-radius: 18px;
-  color: #463914;
-  font-size: 0.98rem;
-  font-weight: 900;
-  line-height: 1.42;
+  background: #fbfaf7;
+  border: 1px solid #e8ded0;
+  border-left: 4px solid #c9972e;
+  border-radius: 16px;
+  color: #3f4a44;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.38;
   margin: 0;
-  padding: 14px 15px;
+  padding: 12px 13px;
 }
 
 .insight-card {
   background: #ffffff;
   border: 1px solid #e8ded0;
-  border-radius: 22px;
-  padding: 17px;
+  border-radius: 18px;
+  padding: 14px;
 }
 
 .insight-card.risk {
-  background: #fffaf0;
-  border-color: #e5c879;
-  box-shadow: inset 0 0 0 1px rgba(201, 151, 46, 0.12);
+  background: #ffffff;
+  border-color: #e8ded0;
+  box-shadow: none;
 }
 
 .insight-card.soft {
@@ -544,20 +559,20 @@ textarea:focus {
 .insight-card span {
   color: #7a6135;
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 900;
   letter-spacing: 0.08em;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
   text-transform: uppercase;
 }
 
 .insight-card.risk span {
-  color: #5a4216;
+  color: #7a6135;
 }
 
 .insight-card p {
   color: #2f3c36;
-  line-height: 1.5;
+  line-height: 1.45;
   margin: 0;
 }
 
@@ -623,6 +638,10 @@ textarea:focus {
     padding: 14px 0 4px;
   }
 
+  .result-screen {
+    gap: 12px;
+  }
+
   .hero-screen {
     justify-content: center;
     padding-bottom: 10px;
@@ -650,8 +669,6 @@ textarea:focus {
   }
 
   .quote-input-card,
-  .insight-card,
-  .status-card,
   .message-box {
     border-radius: 18px;
     padding: 14px;
@@ -699,10 +716,20 @@ textarea:focus {
     padding: 11px 12px;
   }
 
+  .status-card {
+    border-radius: 18px;
+    padding: 14px;
+  }
+
   .cost-exposure {
+    border-radius: 15px;
+    font-size: 0.88rem;
+    padding: 11px 12px;
+  }
+
+  .insight-card {
     border-radius: 16px;
-    font-size: 0.9rem;
-    padding: 12px 13px;
+    padding: 13px;
   }
 }
 
