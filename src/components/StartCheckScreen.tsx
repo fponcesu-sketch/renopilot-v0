@@ -1,19 +1,58 @@
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import type { QuoteCheckContent } from '../data/quoteCheckContent';
+import type { QuoteCheckContent, Language } from '../data/quoteCheckContent';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 type StartCheckScreenProps = {
   content: QuoteCheckContent['startCheck'];
   error?: string;
+  language: Language;
   note: string;
   onSubmit: (input: { decisionContext: string; quoteText: string }) => void;
 };
 
 type PdfTextItem = {
   str?: string;
+};
+
+const uploadCopy: Record<Language, {
+  reading: string;
+  readingPdf: string;
+  onlyPdf: string;
+  unreadable: string;
+  scanned: string;
+  read: string;
+  missingInput: string;
+}> = {
+  es: {
+    reading: 'Leyendo…',
+    readingPdf: 'Leyendo PDF…',
+    onlyPdf: 'Ahora mismo solo podemos leer PDFs. Las capturas todavía no se analizan automáticamente.',
+    unreadable: 'No hemos podido leer este PDF. Puedes copiar el texto manualmente.',
+    scanned: 'No hemos podido leer texto de este PDF. Puede ser un escaneo o una imagen.',
+    read: 'PDF leído',
+    missingInput: 'Sube un PDF o pega el presupuesto para poder revisarlo.',
+  },
+  en: {
+    reading: 'Reading…',
+    readingPdf: 'Reading PDF…',
+    onlyPdf: 'Right now we can only read PDFs. Screenshots are not analyzed automatically yet.',
+    unreadable: 'We could not read this PDF. You can paste the text manually.',
+    scanned: 'We could not read text from this PDF. It may be a scan or image.',
+    read: 'PDF read',
+    missingInput: 'Upload a PDF or paste the quote so we can review it.',
+  },
+  pl: {
+    reading: 'Czytanie…',
+    readingPdf: 'Czytanie PDF…',
+    onlyPdf: 'Na razie możemy czytać tylko PDF-y. Zrzuty ekranu nie są jeszcze analizowane automatycznie.',
+    unreadable: 'Nie udało się odczytać tego PDF-a. Możesz wkleić tekst ręcznie.',
+    scanned: 'Nie udało się odczytać tekstu z tego PDF-a. To może być skan albo obraz.',
+    read: 'PDF odczytany',
+    missingInput: 'Wgraj PDF albo wklej wycenę, aby ją sprawdzić.',
+  },
 };
 
 async function extractPdfText(file: File) {
@@ -38,13 +77,14 @@ async function extractPdfText(file: File) {
   return pageTexts.join('\n\n');
 }
 
-export function StartCheckScreen({ content, error, note, onSubmit }: StartCheckScreenProps) {
+export function StartCheckScreen({ content, error, language, note, onSubmit }: StartCheckScreenProps) {
   const [decisionContext, setDecisionContext] = useState('');
   const [quoteText, setQuoteText] = useState('');
   const [localError, setLocalError] = useState('');
   const [fileStatus, setFileStatus] = useState('');
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileCopy = uploadCopy[language];
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -52,27 +92,27 @@ export function StartCheckScreen({ content, error, note, onSubmit }: StartCheckS
     if (!file) return;
 
     if (file.type !== 'application/pdf') {
-      setLocalError('Ahora mismo solo podemos leer PDFs. Las capturas todavía no se analizan automáticamente.');
+      setLocalError(fileCopy.onlyPdf);
       event.target.value = '';
       return;
     }
 
     setLocalError('');
-    setFileStatus('Leyendo PDF…');
+    setFileStatus(fileCopy.readingPdf);
     setIsReadingFile(true);
 
     try {
       const extractedText = await extractPdfText(file);
 
       if (!extractedText.trim()) {
-        setFileStatus('No hemos podido leer texto de este PDF. Puede ser un escaneo o una imagen.');
+        setFileStatus(fileCopy.scanned);
         return;
       }
 
       setQuoteText(extractedText);
-      setFileStatus(`PDF leído: ${file.name}`);
+      setFileStatus(`${fileCopy.read}: ${file.name}`);
     } catch (fileError) {
-      setFileStatus('No hemos podido leer este PDF. Puedes copiar el texto manualmente.');
+      setFileStatus(fileCopy.unreadable);
     } finally {
       setIsReadingFile(false);
       event.target.value = '';
@@ -86,7 +126,7 @@ export function StartCheckScreen({ content, error, note, onSubmit }: StartCheckS
         event.preventDefault();
 
         if (!quoteText.trim()) {
-          setLocalError('Sube un PDF o pega el presupuesto para poder revisarlo.');
+          setLocalError(fileCopy.missingInput);
           return;
         }
 
@@ -114,7 +154,7 @@ export function StartCheckScreen({ content, error, note, onSubmit }: StartCheckS
             onClick={() => fileInputRef.current?.click()}
             type="button"
           >
-            {isReadingFile ? 'Leyendo…' : content.uploadCta}
+            {isReadingFile ? fileCopy.reading : content.uploadCta}
           </button>
           <input
             accept="application/pdf,.pdf"
@@ -140,7 +180,7 @@ export function StartCheckScreen({ content, error, note, onSubmit }: StartCheckS
         <small>{content.emailHelper}</small>
       </label>
       <button className="primary-button" disabled={isReadingFile} type="submit">
-        {isReadingFile ? 'Leyendo PDF…' : content.cta}
+        {isReadingFile ? fileCopy.readingPdf : content.cta}
       </button>
     </form>
   );
