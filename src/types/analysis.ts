@@ -13,6 +13,14 @@ export type QuoteInfoCategories = {
   risks: string[];
 };
 
+export type ComparisonSummary = {
+  recommendedQuote: string;
+  oneLineReason: string;
+  whyThisOne: string[];
+  stillUnclear: string[];
+  beCareful: string[];
+};
+
 export type VendorMessage = {
   vendorName: string;
   messageToSend: string;
@@ -26,6 +34,7 @@ export type QuoteAnalysis = {
   };
   mode: 'single_quote' | 'quote_comparison';
   recommendedVendor?: string;
+  comparison?: ComparisonSummary;
   infoCategories: QuoteInfoCategories;
   vendorQuestions: {
     title: string;
