@@ -175,7 +175,7 @@ function normalizeDocuments(quoteDocuments, quoteText) {
       .filter((document) => String(document?.text || '').trim())
       .map((document, index) => ({
         id: `quote_${index + 1}`,
-        name: String(document.name || `Quote ${index + 1}`),
+        fileName: String(document.name || `Quote ${index + 1}`),
         text: String(document.text || ''),
       }));
   }
@@ -183,7 +183,7 @@ function normalizeDocuments(quoteDocuments, quoteText) {
   return [
     {
       id: 'quote_1',
-      name: 'Pasted quote',
+      fileName: 'Pasted quote',
       text: String(quoteText || ''),
     },
   ];
@@ -225,7 +225,7 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. If one quote is provided, give a single quote decision check. If more than one quote document is provided, set mode to quote_comparison and give a very simple recommendation: recommendedQuote, oneLineReason, whyThisOne, stillUnclear, beCareful. Do not create a scoring table. Do not claim a quote is definitively best; recommend the best one to continue with. Keep all arrays to 0-3 short items. Do not create one combined message for all vendors. For multiple vendors, generate a separate ready-to-send message for each vendor in messagesByVendor. For one vendor, generate one message. Do not invent prices. If information is missing, say it needs clarification.`,
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. If one quote is provided, give a single quote decision check. If more than one quote document is provided, set mode to quote_comparison and give a very simple recommendation: recommendedQuote, oneLineReason, whyThisOne, stillUnclear, beCareful. Do not create a scoring table. Do not claim a quote is definitively best; recommend the best one to continue with. Keep all arrays to 0-3 short items. IMPORTANT: extract vendor/company names from the document text. Never use PDF filenames, file extensions, document IDs, or strings like "Oferta190.pdf" as vendor names or recommendedQuote. If the company name is unclear, use a neutral label like "Proveedor 1" / "Vendor 1" / "Wykonawca 1" in the selected language. For multiple vendors, generate a separate ready-to-send message for each vendor in messagesByVendor. The messagesByVendor.vendorName values must also be extracted company names or neutral vendor labels, never filenames. For one vendor, generate one message. Do not invent prices. If information is missing, say it needs clarification.`,
           },
           {
             role: 'user',
