@@ -2,3 +2,18 @@
   letter-spacing: 0.06em;
   text-transform: none;
 }
+
+.comparison-hero-card {
+  background: #fffaf0;
+  border-color: #e6c96f;
+  border-left: 5px solid #d7a723;
+}
+
+.comparison-hero-card h1 {
+  font-size: clamp(1.75rem, 7vw, 2.35rem);
+}
+
+.comparison-hero-card span {
+  color: #7f6427;
+  letter-spacing: 0.05em;
+}
