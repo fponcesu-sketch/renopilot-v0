@@ -74,6 +74,12 @@ const schema = {
   },
 };
 
+const languageNames = {
+  es: 'Spanish',
+  en: 'English',
+  pl: 'Polish',
+};
+
 function sendJson(res, statusCode, body) {
   res.statusCode = statusCode;
   res.setHeader('Content-Type', 'application/json');
@@ -107,6 +113,7 @@ export default async function handler(req, res) {
     vendorReply = '',
     language = 'es',
   } = req.body || {};
+  const responseLanguage = languageNames[language] || 'Spanish';
 
   if (!String(vendorReply).trim()) {
     return sendJson(res, 400, { error: 'Missing vendor reply' });
@@ -133,12 +140,12 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              'You are RenoPilot, a homeowner quote decision assistant. Update the recommendation based only on the original quote context, previous analysis, and vendor reply. Keep it short, practical, and decision-oriented. Respond in the requested language. Do not invent missing confirmations. Keep arrays concise: 0 to 6 items maximum.',
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Update the recommendation based only on the original quote context, previous analysis, and vendor replies. The vendorReply field may contain one reply or several replies separated and labelled by vendor name. If there are multiple labelled replies, compare what changed per vendor and update the recommendation accordingly. Keep it short, practical, and decision-oriented. Do not invent missing confirmations. Keep arrays concise: 0 to 6 items maximum.`,
           },
           {
             role: 'user',
             content: JSON.stringify({
-              language,
+              responseLanguage,
               decisionContext,
               quoteText,
               originalAnalysis,
