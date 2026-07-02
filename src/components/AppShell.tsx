@@ -21,6 +21,7 @@ export function AppShell({
   shell,
 }: AppShellProps) {
   const progressPercent = currentPhase === null ? 0 : ((currentPhase + 1) / shell.phases.length) * 100;
+  const currentPhaseLabel = currentPhase === null ? '' : shell.phases[currentPhase];
 
   return (
     <main className="app-shell">
@@ -54,12 +55,9 @@ export function AppShell({
         </header>
         {currentPhase !== null && (
           <div className="phase-progress" aria-label={shell.phaseLabel}>
-            <div className="phase-labels">
-              {shell.phases.map((phase, index) => (
-                <span className={index === currentPhase ? 'active' : ''} key={phase}>
-                  {phase}
-                </span>
-              ))}
+            <div className="phase-label">
+              <span>{shell.phaseLabel}</span>
+              <strong>{currentPhaseLabel}</strong>
             </div>
             <div className="progress-track" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
