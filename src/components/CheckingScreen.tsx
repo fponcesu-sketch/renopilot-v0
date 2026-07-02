@@ -7,13 +7,21 @@ type CheckingScreenProps = {
 };
 
 export function CheckingScreen({ content, onNext }: CheckingScreenProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [progressIndex, setProgressIndex] = useState(0);
+  const isComplete = progressIndex >= content.items.length;
 
   useEffect(() => {
+    setProgressIndex(0);
+
     const interval = window.setInterval(() => {
-      setActiveIndex((currentIndex) =>
-        currentIndex >= content.items.length - 1 ? currentIndex : currentIndex + 1,
-      );
+      setProgressIndex((currentIndex) => {
+        if (currentIndex >= content.items.length) {
+          window.clearInterval(interval);
+          return currentIndex;
+        }
+
+        return currentIndex + 1;
+      });
     }, 850);
 
     return () => window.clearInterval(interval);
@@ -25,7 +33,7 @@ export function CheckingScreen({ content, onNext }: CheckingScreenProps) {
       <h1>{content.title}</h1>
       <ul className="check-list animated-check-list">
         {content.items.map((item, index) => {
-          const itemState = index < activeIndex ? 'done' : index === activeIndex ? 'active' : 'pending';
+          const itemState = index < progressIndex ? 'done' : index === progressIndex ? 'active' : 'pending';
 
           return (
             <li className={itemState} key={item}>
@@ -35,7 +43,7 @@ export function CheckingScreen({ content, onNext }: CheckingScreenProps) {
           );
         })}
       </ul>
-      <button className="primary-button" onClick={onNext}>
+      <button className="primary-button" disabled={!isComplete} onClick={onNext}>
         {content.cta}
       </button>
     </div>
