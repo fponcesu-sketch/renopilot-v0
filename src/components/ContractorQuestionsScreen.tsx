@@ -18,7 +18,11 @@ export function ContractorQuestionsScreen({ content, onNext }: ContractorQuestio
     <div className="screen-content">
       <h1>{content.title}</h1>
       <pre className="message-box">{content.message}</pre>
-      <button className="secondary-button" onClick={copyMessage}>
+      <button
+        className={`secondary-button${copied ? ' success' : ''}`}
+        onClick={copyMessage}
+        type="button"
+      >
         {copied ? content.copiedLabel : content.copyCta}
       </button>
       <button className="primary-button" onClick={onNext}>
