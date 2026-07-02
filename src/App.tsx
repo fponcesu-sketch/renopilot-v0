@@ -51,6 +51,11 @@ const localizedCopy: Record<Language, {
   reviewTitle: string;
   reviewCta: string;
   questionsCta: string;
+  categoryLabels: {
+    confirmed: string;
+    needsClarification: string;
+    risks: string;
+  };
   fallbackWarning: string;
   analysisError: string;
   vendorFallback: string;
@@ -63,6 +68,11 @@ const localizedCopy: Record<Language, {
     reviewTitle: 'Antes de decidir',
     reviewCta: 'Ver preguntas',
     questionsCta: 'Pegar respuesta',
+    categoryLabels: {
+      confirmed: '🟢 Confirmado',
+      needsClarification: '🟡 A aclarar',
+      risks: '🔴 Riesgos',
+    },
     fallbackWarning: 'Mostramos una revisión de ejemplo porque el LLM no está disponible.',
     analysisError: 'No hemos podido generar una revisión real ahora. Mostramos un ejemplo para que puedas seguir probando.',
     vendorFallback: 'Esta revisión está en modo fallback/mock.',
@@ -75,6 +85,11 @@ const localizedCopy: Record<Language, {
     reviewTitle: 'Before you decide',
     reviewCta: 'See questions',
     questionsCta: 'Paste reply',
+    categoryLabels: {
+      confirmed: '🟢 Confirmed',
+      needsClarification: '🟡 Needs clarification',
+      risks: '🔴 Risks',
+    },
     fallbackWarning: 'Showing an example review because the LLM is not available.',
     analysisError: 'We could not generate a real review right now. Showing an example so you can keep testing.',
     vendorFallback: 'This review is in fallback/mock mode.',
@@ -87,6 +102,11 @@ const localizedCopy: Record<Language, {
     reviewTitle: 'Przed decyzją',
     reviewCta: 'Zobacz pytania',
     questionsCta: 'Wklej odpowiedź',
+    categoryLabels: {
+      confirmed: '🟢 Potwierdzone',
+      needsClarification: '🟡 Do wyjaśnienia',
+      risks: '🔴 Ryzyka',
+    },
     fallbackWarning: 'Pokazujemy przykładową analizę, ponieważ LLM nie jest dostępny.',
     analysisError: 'Nie udało się teraz wygenerować prawdziwej analizy. Pokazujemy przykład, aby można było kontynuować test.',
     vendorFallback: 'Ta analiza działa w trybie fallback/mock.',
@@ -125,6 +145,7 @@ export default function App() {
   const reviewContent = {
     title: copy.reviewTitle,
     categories: activeAnalysis.infoCategories,
+    categoryLabels: copy.categoryLabels,
     cta: copy.reviewCta,
   };
 
