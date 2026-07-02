@@ -15,25 +15,28 @@ export const quoteCheckContent = {
       ariaLabel: 'Prototipo RenoPilot',
       backLabel: 'Volver',
       languageLabel: 'Idioma',
+      phaseLabel: 'Fase',
+      phases: ['Subir', 'Revisar', 'Preguntar', 'Confirmar'],
     },
     landing: {
       eyebrow: 'Revisión rápida de presupuestos',
       headline: 'Revisa un presupuesto de obra antes de decir que sí.',
       subcopy:
-        'Sube o pega un presupuesto, mensaje del contratista, captura o factura. RenoPilot te muestra qué falta, qué podría costar extra y qué preguntar antes de aceptar.',
+        'Sube o copia aquí un presupuesto, mensaje de quien te pasó la oferta, captura o factura. RenoPilot te muestra qué falta, qué podría costar extra y qué preguntar antes de aceptar.',
       cta: 'Empezar revisión',
     },
     startCheck: {
       title: 'Empecemos con lo que te han enviado',
-      decisionLabel: '¿Qué estás intentando decidir?',
+      decisionLabel: '¿Qué quieres decidir?',
       decisionPlaceholder:
-        'Ejemplo: Quiero saber si este presupuesto para reformar el baño es claro antes de pagar la señal.',
-      uploadLabel: 'Subir presupuesto, mensaje o captura',
-      uploadHint: 'Placeholder visual: todavía no analizamos archivos reales.',
-      pasteLabel: 'O pega aquí el presupuesto o mensaje',
-      pastePlaceholder:
-        'Pega el texto del presupuesto, WhatsApp, email o factura que quieres revisar.',
-      emailLabel: 'Email opcional',
+        'Ejemplo: Quiero saber si este presupuesto para reformar el baño está claro antes de pagar la señal.',
+      quoteInputLabel: 'Presupuesto, mensaje o captura',
+      quoteInputHint: 'Sube un archivo o copia el texto aquí. En este prototipo todavía no analizamos archivos reales.',
+      uploadCta: 'Subir archivo o captura',
+      quotePlaceholder:
+        'Copia aquí el texto del presupuesto, WhatsApp, email o factura que quieres revisar.',
+      emailLabel: 'Email',
+      emailHelper: 'Opcional, solo si quieres recibir el resultado o seguir más tarde.',
       emailPlaceholder: 'tu@email.com',
       cta: 'Revisar presupuesto',
     },
@@ -43,15 +46,18 @@ export const quoteCheckContent = {
         'detalles que faltan',
         'posibles costes extra',
         'condiciones de pago poco claras',
-        'supuestos arriesgados',
+        'puntos poco claros',
         'preguntas que hacer antes de aceptar',
       ],
       cta: 'Ver resultado',
     },
     result: {
+      title: 'Veredicto RenoPilot',
       status: '🟡 Buena pinta, pero pregunta antes de firmar',
       explanation:
-        'Este presupuesto no presenta señales importantes de alarma, pero hemos encontrado 4 puntos que merece la pena revisar antes de firmar.',
+        'No vemos señales fuertes de alarma, pero hay 4 puntos que conviene cerrar antes de firmar.',
+      costExposure:
+        'Posible coste extra: no calculable todavía. Falta confirmar IVA y electricidad.',
       biggestRiskTitle: 'Mayor riesgo',
       biggestRisk:
         'El IVA no está incluido y parte de la instalación eléctrica está pendiente de estudio.',
@@ -67,7 +73,7 @@ export const quoteCheckContent = {
         'Parte de la instalación eléctrica está pendiente de estudio.',
         'El pago del 45% “a mitad de obra” no está definido.',
       ],
-      cta: 'Ver preguntas para el contratista',
+      cta: 'Ver preguntas para la empresa',
     },
     questions: {
       title: 'Mensaje para copiar y enviar',
@@ -77,10 +83,10 @@ export const quoteCheckContent = {
       cta: 'Ya lo he enviado / tengo respuesta',
     },
     vendorReply: {
-      title: 'Añade la respuesta del contratista',
-      label: 'Pega aquí la respuesta del contratista',
+      title: 'Añade la respuesta',
+      label: 'Pega o adjunta aquí la respuesta',
       placeholder:
-        'Pega la respuesta que te han enviado para actualizar la recomendación.',
+        'Copia aquí la respuesta que te han enviado para actualizar la recomendación.',
       cta: 'Actualizar recomendación',
     },
     updatedRecommendation: {
@@ -97,25 +103,28 @@ export const quoteCheckContent = {
       ariaLabel: 'RenoPilot prototype',
       backLabel: 'Back',
       languageLabel: 'Language',
+      phaseLabel: 'Phase',
+      phases: ['Upload', 'Review', 'Ask', 'Confirm'],
     },
     landing: {
       eyebrow: 'Quick quote review',
       headline: 'Review a renovation quote before you say yes.',
       subcopy:
-        'Upload or paste a contractor quote, message, screenshot or invoice. RenoPilot shows what is missing, what could cost extra and what to ask before accepting.',
+        'Upload or copy in a quote, message from the person who sent it, screenshot or invoice. RenoPilot shows what is missing, what could cost extra and what to ask before accepting.',
       cta: 'Start review',
     },
     startCheck: {
       title: "Let's start with what they sent you",
-      decisionLabel: 'What are you trying to decide?',
+      decisionLabel: 'What do you want to decide?',
       decisionPlaceholder:
         'Example: I want to know if this bathroom renovation quote is clear before I pay the deposit.',
-      uploadLabel: 'Upload quote, message or screenshot',
-      uploadHint: 'Visual placeholder: we do not analyze real files yet.',
-      pasteLabel: 'Or paste the quote or message here',
-      pastePlaceholder:
-        'Paste the quote, WhatsApp, email or invoice text you want to review.',
-      emailLabel: 'Optional email',
+      quoteInputLabel: 'Quote, message or screenshot',
+      quoteInputHint: 'Upload a file or copy the text here. This prototype does not analyze real files yet.',
+      uploadCta: 'Upload file or screenshot',
+      quotePlaceholder:
+        'Copy the quote, WhatsApp, email or invoice text you want to review here.',
+      emailLabel: 'Email',
+      emailHelper: 'Optional, only if you want to receive the result or continue later.',
       emailPlaceholder: 'you@email.com',
       cta: 'Review quote',
     },
@@ -125,15 +134,18 @@ export const quoteCheckContent = {
         'missing details',
         'possible extra costs',
         'unclear payment conditions',
-        'risky assumptions',
+        'unclear points',
         'questions to ask before accepting',
       ],
       cta: 'See result',
     },
     result: {
+      title: 'RenoPilot verdict',
       status: '🟡 Looks OK, but ask before signing',
       explanation:
-        'This quote does not show major red flags, but we found 4 points worth checking before you sign.',
+        'We do not see strong red flags, but there are 4 points worth closing before you sign.',
+      costExposure:
+        'Possible extra cost: not calculable yet. VAT and electrical work still need confirmation.',
       biggestRiskTitle: 'Biggest risk',
       biggestRisk:
         'VAT is not included and part of the electrical installation is still pending review.',
@@ -149,7 +161,7 @@ export const quoteCheckContent = {
         'Part of the electrical installation is still pending review.',
         'The 45% payment “halfway through the work” is not defined.',
       ],
-      cta: 'See contractor questions',
+      cta: 'See questions to send',
     },
     questions: {
       title: 'Message to copy and send',
@@ -159,9 +171,9 @@ export const quoteCheckContent = {
       cta: 'I sent it / I have a reply',
     },
     vendorReply: {
-      title: 'Add the contractor reply',
-      label: 'Paste the contractor reply here',
-      placeholder: 'Paste the reply they sent you to update the recommendation.',
+      title: 'Add the reply',
+      label: 'Paste or attach the reply here',
+      placeholder: 'Copy the reply they sent you here to update the recommendation.',
       cta: 'Update recommendation',
     },
     updatedRecommendation: {
@@ -178,25 +190,28 @@ export const quoteCheckContent = {
       ariaLabel: 'Prototyp RenoPilot',
       backLabel: 'Wróć',
       languageLabel: 'Język',
+      phaseLabel: 'Etap',
+      phases: ['Wgraj', 'Sprawdź', 'Zapytaj', 'Potwierdź'],
     },
     landing: {
       eyebrow: 'Szybka weryfikacja wycen',
       headline: 'Sprawdź wycenę remontu, zanim powiesz tak.',
       subcopy:
-        'Wgraj albo wklej wycenę, wiadomość od wykonawcy, zrzut ekranu lub fakturę. RenoPilot pokaże, czego brakuje, co może kosztować dodatkowo i o co zapytać przed akceptacją.',
+        'Wgraj albo wklej wycenę, wiadomość od osoby lub firmy, która ją wysłała, zrzut ekranu albo fakturę. RenoPilot pokaże, czego brakuje, co może kosztować dodatkowo i o co zapytać przed akceptacją.',
       cta: 'Rozpocznij sprawdzanie',
     },
     startCheck: {
       title: 'Zacznijmy od tego, co dostałeś',
-      decisionLabel: 'Jaką decyzję próbujesz podjąć?',
+      decisionLabel: 'Jaką decyzję chcesz podjąć?',
       decisionPlaceholder:
         'Przykład: Chcę wiedzieć, czy ta wycena remontu łazienki jest jasna, zanim zapłacę zaliczkę.',
-      uploadLabel: 'Wgraj wycenę, wiadomość lub zrzut ekranu',
-      uploadHint: 'Placeholder wizualny: na razie nie analizujemy prawdziwych plików.',
-      pasteLabel: 'Albo wklej tutaj wycenę lub wiadomość',
-      pastePlaceholder:
-        'Wklej tekst wyceny, WhatsAppa, e-maila lub faktury, którą chcesz sprawdzić.',
-      emailLabel: 'Email opcjonalny',
+      quoteInputLabel: 'Wycena, wiadomość lub zrzut ekranu',
+      quoteInputHint: 'Wgraj plik albo wklej tekst tutaj. Ten prototyp nie analizuje jeszcze prawdziwych plików.',
+      uploadCta: 'Wgraj plik lub zrzut ekranu',
+      quotePlaceholder:
+        'Wklej tutaj tekst wyceny, WhatsAppa, e-maila albo faktury, którą chcesz sprawdzić.',
+      emailLabel: 'Email',
+      emailHelper: 'Opcjonalnie, tylko jeśli chcesz otrzymać wynik lub wrócić później.',
       emailPlaceholder: 'twoj@email.com',
       cta: 'Sprawdź wycenę',
     },
@@ -206,15 +221,18 @@ export const quoteCheckContent = {
         'brakujące szczegóły',
         'możliwe dodatkowe koszty',
         'niejasne warunki płatności',
-        'ryzykowne założenia',
+        'niejasne punkty',
         'pytania, które warto zadać przed akceptacją',
       ],
       cta: 'Zobacz wynik',
     },
     result: {
+      title: 'Werdykt RenoPilot',
       status: '🟡 Wygląda dobrze, ale zapytaj przed podpisaniem',
       explanation:
-        'Ta wycena nie ma dużych sygnałów alarmowych, ale znaleźliśmy 4 punkty, które warto sprawdzić przed podpisaniem.',
+        'Nie widzimy dużych sygnałów alarmowych, ale są 4 punkty, które warto zamknąć przed podpisaniem.',
+      costExposure:
+        'Możliwy dodatkowy koszt: nie da się jeszcze policzyć. Trzeba potwierdzić VAT i elektrykę.',
       biggestRiskTitle: 'Największe ryzyko',
       biggestRisk:
         'VAT nie jest wliczony, a część instalacji elektrycznej wymaga jeszcze sprawdzenia.',
@@ -230,7 +248,7 @@ export const quoteCheckContent = {
         'Część instalacji elektrycznej wymaga jeszcze sprawdzenia.',
         'Płatność 45% „w połowie prac” nie jest dokładnie zdefiniowana.',
       ],
-      cta: 'Zobacz pytania do wykonawcy',
+      cta: 'Zobacz pytania do wysłania',
     },
     questions: {
       title: 'Wiadomość do skopiowania i wysłania',
@@ -240,9 +258,9 @@ export const quoteCheckContent = {
       cta: 'Wysłane / mam odpowiedź',
     },
     vendorReply: {
-      title: 'Dodaj odpowiedź wykonawcy',
-      label: 'Wklej tutaj odpowiedź wykonawcy',
-      placeholder: 'Wklej odpowiedź, którą dostałeś, aby zaktualizować rekomendację.',
+      title: 'Dodaj odpowiedź',
+      label: 'Wklej lub załącz tutaj odpowiedź',
+      placeholder: 'Wklej tutaj odpowiedź, którą dostałeś, aby zaktualizować rekomendację.',
       cta: 'Zaktualizuj rekomendację',
     },
     updatedRecommendation: {
