@@ -1,7 +1,17 @@
-import type { QuoteCheckContent } from '../data/quoteCheckContent';
+type ResultContent = {
+  title: string;
+  status: string;
+  explanation: string;
+  costExposure: string;
+  biggestRiskTitle: string;
+  biggestRisk: string;
+  nextActionTitle: string;
+  nextAction: string;
+  cta: string;
+};
 
 type ResultScreenProps = {
-  content: QuoteCheckContent['result'];
+  content: ResultContent;
   onNext: () => void;
 };
 
