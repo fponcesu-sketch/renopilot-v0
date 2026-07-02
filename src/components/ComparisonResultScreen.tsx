@@ -5,6 +5,7 @@ type ComparisonResultContent = {
   recommendationLabel: string;
   summary: ComparisonSummary;
   cta: string;
+  disclaimer: string;
 };
 
 type ComparisonResultScreenProps = {
@@ -24,6 +25,7 @@ export function ComparisonResultScreen({ content, onNext }: ComparisonResultScre
       <button className="primary-button" onClick={onNext}>
         {content.cta}
       </button>
+      <p className="disclaimer-note">{content.disclaimer}</p>
     </div>
   );
 }
