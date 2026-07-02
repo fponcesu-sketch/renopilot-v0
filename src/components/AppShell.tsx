@@ -4,24 +4,24 @@ import { languageOptions, type Language, type QuoteCheckContent } from '../data/
 type AppShellProps = {
   brand: string;
   children: ReactNode;
-  currentStep: number;
+  currentPhase: number | null;
   language: Language;
   onBack?: () => void;
   onLanguageChange: (language: Language) => void;
   shell: QuoteCheckContent['shell'];
-  totalSteps: number;
 };
 
 export function AppShell({
   brand,
   children,
-  currentStep,
+  currentPhase,
   language,
   onBack,
   onLanguageChange,
   shell,
-  totalSteps,
 }: AppShellProps) {
+  const progressPercent = currentPhase === null ? 0 : ((currentPhase + 1) / shell.phases.length) * 100;
+
   return (
     <main className="app-shell">
       <section className="phone-frame" aria-label={shell.ariaLabel}>
@@ -50,11 +50,22 @@ export function AppShell({
                 </button>
               ))}
             </div>
-            <span className="step-pill">
-              {currentStep}/{totalSteps}
-            </span>
           </div>
         </header>
+        {currentPhase !== null && (
+          <div className="phase-progress" aria-label={shell.phaseLabel}>
+            <div className="phase-labels">
+              {shell.phases.map((phase, index) => (
+                <span className={index === currentPhase ? 'active' : ''} key={phase}>
+                  {phase}
+                </span>
+              ))}
+            </div>
+            <div className="progress-track" aria-hidden="true">
+              <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
+            </div>
+          </div>
+        )}
         <div className="screen-card">{children}</div>
       </section>
     </main>
