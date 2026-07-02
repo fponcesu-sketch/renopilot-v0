@@ -1,27 +1,45 @@
-import type { FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type VendorReplyScreenProps = {
   content: QuoteCheckContent['vendorReply'];
-  onNext: () => void;
+  error?: string;
+  isLoading?: boolean;
+  onSubmit: (vendorReply: string) => void;
 };
 
-export function VendorReplyScreen({ content, onNext }: VendorReplyScreenProps) {
+export function VendorReplyScreen({ content, error, isLoading = false, onSubmit }: VendorReplyScreenProps) {
+  const [vendorReply, setVendorReply] = useState('');
+  const [localError, setLocalError] = useState('');
+
   return (
     <form
       className="screen-content form-screen"
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        onNext();
+
+        if (!vendorReply.trim()) {
+          setLocalError('Pega la respuesta para poder actualizar la recomendación.');
+          return;
+        }
+
+        setLocalError('');
+        onSubmit(vendorReply);
       }}
     >
       <h1>{content.title}</h1>
       <label className="field-group">
         <span>{content.label}</span>
-        <textarea rows={8} placeholder={content.placeholder} />
+        <textarea
+          onChange={(event) => setVendorReply(event.target.value)}
+          placeholder={content.placeholder}
+          rows={8}
+          value={vendorReply}
+        />
       </label>
-      <button className="primary-button" type="submit">
-        {content.cta}
+      {(localError || error) && <p className="inline-error">{localError || error}</p>}
+      <button className="primary-button" disabled={isLoading} type="submit">
+        {isLoading ? 'Actualizando…' : content.cta}
       </button>
     </form>
   );
