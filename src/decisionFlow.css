@@ -59,14 +59,16 @@
 }
 
 .category-list,
-.vendor-message-list {
+.vendor-message-list,
+.vendor-reply-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .decision-category,
-.vendor-message-card {
+.vendor-message-card,
+.vendor-reply-card {
   background: #ffffff;
   border: 1px solid #ebe2d5;
   border-radius: 18px;
@@ -83,6 +85,22 @@
   color: #2f3c36;
   font-size: 0.95rem;
   margin: 0;
+}
+
+.reply-helper {
+  color: #6a746f;
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.vendor-reply-card {
+  gap: 8px;
+}
+
+.vendor-reply-card textarea {
+  min-height: 120px;
 }
 
 .decision-category.confirmed {
@@ -152,9 +170,14 @@
   }
 
   .decision-category,
-  .vendor-message-card {
+  .vendor-message-card,
+  .vendor-reply-card {
     border-radius: 16px;
     padding: 11px 12px;
+  }
+
+  .vendor-reply-card textarea {
+    min-height: 96px;
   }
 
   .decision-category h2 {
