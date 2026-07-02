@@ -1,6 +1,8 @@
 import { useLayoutEffect, useMemo, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { CheckingScreen } from './components/CheckingScreen';
+import { ComparisonDetailsScreen } from './components/ComparisonDetailsScreen';
+import { ComparisonResultScreen } from './components/ComparisonResultScreen';
 import { ContractorQuestionsScreen } from './components/ContractorQuestionsScreen';
 import { LandingScreen } from './components/LandingScreen';
 import { ResultScreen } from './components/ResultScreen';
@@ -56,6 +58,14 @@ const localizedCopy: Record<Language, {
     needsClarification: string;
     risks: string;
   };
+  comparison: {
+    title: string;
+    recommendationLabel: string;
+    detailsTitle: string;
+    whyThisOne: string;
+    stillUnclear: string;
+    beCareful: string;
+  };
   fallbackWarning: string;
   analysisError: string;
   vendorFallback: string;
@@ -72,6 +82,14 @@ const localizedCopy: Record<Language, {
       confirmed: '🟢 Confirmado',
       needsClarification: '🟡 A aclarar',
       risks: '🔴 Riesgos',
+    },
+    comparison: {
+      title: 'Recomendación RenoPilot',
+      recommendationLabel: 'Mejor opción para seguir',
+      detailsTitle: 'Por qué esta opción',
+      whyThisOne: '🟢 Por qué esta',
+      stillUnclear: '🟡 Aún por aclarar',
+      beCareful: '🔴 Cuidado con',
     },
     fallbackWarning: 'Mostramos una revisión de ejemplo porque el LLM no está disponible.',
     analysisError: 'No hemos podido generar una revisión real ahora. Mostramos un ejemplo para que puedas seguir probando.',
@@ -90,6 +108,14 @@ const localizedCopy: Record<Language, {
       needsClarification: '🟡 Needs clarification',
       risks: '🔴 Risks',
     },
+    comparison: {
+      title: 'RenoPilot recommendation',
+      recommendationLabel: 'Best option to continue with',
+      detailsTitle: 'Why this option',
+      whyThisOne: '🟢 Why this one',
+      stillUnclear: '🟡 Still unclear',
+      beCareful: '🔴 Be careful with',
+    },
     fallbackWarning: 'Showing an example review because the LLM is not available.',
     analysisError: 'We could not generate a real review right now. Showing an example so you can keep testing.',
     vendorFallback: 'This review is in fallback/mock mode.',
@@ -106,6 +132,14 @@ const localizedCopy: Record<Language, {
       confirmed: '🟢 Potwierdzone',
       needsClarification: '🟡 Do wyjaśnienia',
       risks: '🔴 Ryzyka',
+    },
+    comparison: {
+      title: 'Rekomendacja RenoPilot',
+      recommendationLabel: 'Najlepsza opcja do dalszej rozmowy',
+      detailsTitle: 'Dlaczego ta opcja',
+      whyThisOne: '🟢 Dlaczego ta',
+      stillUnclear: '🟡 Nadal niejasne',
+      beCareful: '🔴 Uważaj na',
     },
     fallbackWarning: 'Pokazujemy przykładową analizę, ponieważ LLM nie jest dostępny.',
     analysisError: 'Nie udało się teraz wygenerować prawdziwej analizy. Pokazujemy przykład, aby można było kontynuować test.',
@@ -135,6 +169,14 @@ export default function App() {
   const fallbackQuoteAnalysis = useMemo(() => buildFallbackQuoteAnalysis(content), [content]);
   const activeAnalysis = analysis ?? fallbackQuoteAnalysis;
   const activeUpdatedAnalysis = updatedAnalysis ?? buildFallbackUpdatedRecommendation(content);
+  const isComparison = activeAnalysis.mode === 'quote_comparison';
+  const comparisonSummary = activeAnalysis.comparison ?? {
+    recommendedQuote: activeAnalysis.recommendedVendor || activeAnalysis.verdict.title,
+    oneLineReason: activeAnalysis.verdict.summary,
+    whyThisOne: activeAnalysis.infoCategories.confirmed,
+    stillUnclear: activeAnalysis.infoCategories.needsClarification,
+    beCareful: activeAnalysis.infoCategories.risks,
+  };
 
   const resultContent = {
     title: content.result.title,
@@ -143,10 +185,28 @@ export default function App() {
     cta: copy.resultCta,
   };
 
+  const comparisonResultContent = {
+    title: copy.comparison.title,
+    recommendationLabel: copy.comparison.recommendationLabel,
+    summary: comparisonSummary,
+    cta: copy.resultCta,
+  };
+
   const reviewContent = {
     title: copy.reviewTitle,
     categories: activeAnalysis.infoCategories,
     categoryLabels: copy.categoryLabels,
+    cta: copy.reviewCta,
+  };
+
+  const comparisonDetailsContent = {
+    title: copy.comparison.detailsTitle,
+    labels: {
+      whyThisOne: copy.comparison.whyThisOne,
+      stillUnclear: copy.comparison.stillUnclear,
+      beCareful: copy.comparison.beCareful,
+    },
+    summary: comparisonSummary,
     cta: copy.reviewCta,
   };
 
@@ -280,10 +340,18 @@ export default function App() {
         />
       )}
       {screen === 'result' && (
-        <ResultScreen content={resultContent} onNext={() => setScreen('review')} />
+        isComparison ? (
+          <ComparisonResultScreen content={comparisonResultContent} onNext={() => setScreen('review')} />
+        ) : (
+          <ResultScreen content={resultContent} onNext={() => setScreen('review')} />
+        )
       )}
       {screen === 'review' && (
-        <ThingsToReviewScreen content={reviewContent} onNext={() => setScreen('questions')} />
+        isComparison ? (
+          <ComparisonDetailsScreen content={comparisonDetailsContent} onNext={() => setScreen('questions')} />
+        ) : (
+          <ThingsToReviewScreen content={reviewContent} onNext={() => setScreen('questions')} />
+        )
       )}
       {screen === 'questions' && (
         <ContractorQuestionsScreen content={questionsContent} onNext={() => setScreen('reply')} />
