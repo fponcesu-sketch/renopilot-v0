@@ -4,6 +4,8 @@ const fallbackAnalysis = {
     title: 'Buena pinta, pero pregunta antes de firmar',
     summary: 'Parece viable, pero hay que aclarar puntos clave antes de aceptar.',
   },
+  mode: 'single_quote',
+  recommendedVendor: '',
   infoCategories: {
     confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
     needsClarification: [
@@ -17,6 +19,13 @@ const fallbackAnalysis = {
     title: 'Mensaje para copiar y enviar',
     messageToSend:
       'Hola, gracias por el presupuesto. Antes de aceptar, ¿podéis confirmarme estos puntos por escrito?\n\n1. ¿Cuál será el precio final con IVA incluido?\n2. ¿Qué está incluido exactamente y qué podría costar extra?\n3. ¿Cuánto durará la obra o servicio?\n4. ¿Cuáles son las condiciones de pago y cuándo se paga cada parte?\n\nGracias.',
+    messagesByVendor: [
+      {
+        vendorName: 'Proveedor',
+        messageToSend:
+          'Hola, gracias por el presupuesto. Antes de aceptar, ¿podéis confirmarme estos puntos por escrito?\n\n1. ¿Cuál será el precio final con IVA incluido?\n2. ¿Qué está incluido exactamente y qué podría costar extra?\n3. ¿Cuánto durará la obra o servicio?\n4. ¿Cuáles son las condiciones de pago y cuándo se paga cada parte?\n\nGracias.',
+      },
+    ],
     questions: [
       '¿Cuál será el precio final con IVA incluido?',
       '¿Qué está incluido exactamente y qué podría costar extra?',
@@ -37,11 +46,26 @@ const listSchema = {
   items: { type: 'string' },
 };
 
+const vendorMessageSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['vendorName', 'messageToSend'],
+    properties: {
+      vendorName: { type: 'string' },
+      messageToSend: { type: 'string' },
+    },
+  },
+};
+
 const schema = {
   type: 'object',
   additionalProperties: false,
   required: [
     'verdict',
+    'mode',
+    'recommendedVendor',
     'infoCategories',
     'vendorQuestions',
     'nextAction',
@@ -59,6 +83,8 @@ const schema = {
         summary: { type: 'string' },
       },
     },
+    mode: { type: 'string', enum: ['single_quote', 'quote_comparison'] },
+    recommendedVendor: { type: 'string' },
     infoCategories: {
       type: 'object',
       additionalProperties: false,
@@ -72,10 +98,11 @@ const schema = {
     vendorQuestions: {
       type: 'object',
       additionalProperties: false,
-      required: ['title', 'messageToSend', 'questions'],
+      required: ['title', 'messageToSend', 'messagesByVendor', 'questions'],
       properties: {
         title: { type: 'string' },
         messageToSend: { type: 'string' },
+        messagesByVendor: vendorMessageSchema,
         questions: listSchema,
       },
     },
@@ -120,15 +147,38 @@ function extractOutputText(data) {
   return texts.join('');
 }
 
+function normalizeDocuments(quoteDocuments, quoteText) {
+  if (Array.isArray(quoteDocuments) && quoteDocuments.length) {
+    return quoteDocuments
+      .filter((document) => String(document?.text || '').trim())
+      .map((document, index) => ({
+        id: `quote_${index + 1}`,
+        name: String(document.name || `Quote ${index + 1}`),
+        text: String(document.text || ''),
+      }));
+  }
+
+  return [
+    {
+      id: 'quote_1',
+      name: 'Pasted quote',
+      text: String(quoteText || ''),
+    },
+  ];
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return sendJson(res, 405, { error: 'Method not allowed' });
   }
 
-  const { decisionContext = '', quoteText = '', language = 'es' } = req.body || {};
+  const { decisionContext = '', quoteText = '', quoteDocuments = [], language = 'es' } = req.body || {};
   const responseLanguage = languageNames[language] || 'Spanish';
+  const documents = normalizeDocuments(quoteDocuments, quoteText);
+  const hasInput = documents.some((document) => document.text.trim());
+  const analysisModeHint = documents.length > 1 ? 'quote_comparison' : 'single_quote';
 
-  if (!String(quoteText).trim()) {
+  if (!hasInput) {
     return sendJson(res, 400, { error: 'Missing quote text' });
   }
 
@@ -153,14 +203,15 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. Classify information into confirmed, needsClarification, and risks. Keep each category short: 0 to 3 items. Generate a ready-to-send vendor message that the homeowner can copy immediately. Do not invent prices. If information is missing, say it needs clarification.`,
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. Classify information into confirmed, needsClarification, and risks. Keep each category short: 0 to 3 items. If more than one quote document is provided, compare them and recommend which vendor/quote is the best one to continue with, not necessarily to accept immediately. Do not create one combined message for all vendors. For multiple vendors, generate a separate ready-to-send message for each vendor in messagesByVendor. For one vendor, generate one message. Do not invent prices. If information is missing, say it needs clarification.`,
           },
           {
             role: 'user',
             content: JSON.stringify({
               responseLanguage,
+              analysisModeHint,
               decisionContext,
-              quoteText,
+              documents,
             }),
           },
         ],
