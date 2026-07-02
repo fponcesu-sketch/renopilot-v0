@@ -144,9 +144,7 @@ button {
 }
 
 .phase-labels span {
-  background: #f2eadf;
   border-radius: 999px;
-  color: #8a8176;
   display: block;
   font-size: 0.64rem;
   font-weight: 900;
@@ -155,12 +153,24 @@ button {
   padding: 6px 4px;
   text-align: center;
   text-overflow: ellipsis;
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
   white-space: nowrap;
 }
 
-.phase-labels span.active {
-  background: #e3f0eb;
+.phase-labels span.pending {
+  background: #f2eadf;
+  color: #8a8176;
+}
+
+.phase-labels span.done {
+  background: #edf6f2;
   color: #2f5f58;
+}
+
+.phase-labels span.active {
+  background: #2f5f58;
+  box-shadow: 0 5px 12px rgba(47, 95, 88, 0.16);
+  color: #ffffff;
 }
 
 .progress-track {
