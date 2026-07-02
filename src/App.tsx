@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { CheckingScreen } from './components/CheckingScreen';
 import { ContractorQuestionsScreen } from './components/ContractorQuestionsScreen';
@@ -48,8 +48,19 @@ export default function App() {
   const content = quoteCheckContent[language];
   const currentPhase = screenPhase[screen];
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  useLayoutEffect(() => {
+    const resetScroll = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      document.querySelector('.app-shell')?.scrollTo({ top: 0 });
+      document.querySelector('.phone-frame')?.scrollTo({ top: 0 });
+      document.querySelector('.screen-card')?.scrollTo({ top: 0 });
+    };
+
+    resetScroll();
+    window.requestAnimationFrame(resetScroll);
+    window.setTimeout(resetScroll, 0);
   }, [screen]);
 
   const goBack = () => {
