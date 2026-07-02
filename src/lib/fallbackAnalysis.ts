@@ -8,6 +8,7 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
       title: content.result.status.replace(/^[🟢🟡🔴]\s*/, ''),
       summary: 'Parece viable, pero hay que aclarar puntos clave antes de aceptar.',
     },
+    mode: 'single_quote',
     infoCategories: {
       confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
       needsClarification: [
@@ -20,6 +21,12 @@ export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAna
     vendorQuestions: {
       title: content.questions.title,
       messageToSend: content.questions.message,
+      messagesByVendor: [
+        {
+          vendorName: 'Proveedor',
+          messageToSend: content.questions.message,
+        },
+      ],
       questions: content.questions.message
         .split('\n')
         .filter((line) => /^\d+\./.test(line.trim()))
