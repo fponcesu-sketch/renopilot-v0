@@ -4,6 +4,7 @@ import App from './App';
 import './styles.css';
 import './prototype.css';
 import './decisionFlow.css';
+import './uiOverrides.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
