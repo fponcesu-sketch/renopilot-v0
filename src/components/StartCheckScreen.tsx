@@ -9,7 +9,7 @@ type StartCheckScreenProps = {
 export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
   return (
     <form
-      className="screen-content form-screen"
+      className="screen-content form-screen start-check-screen"
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         onNext();
@@ -18,18 +18,21 @@ export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
       <h1>{content.title}</h1>
       <label className="field-group">
         <span>{content.decisionLabel}</span>
-        <textarea rows={4} placeholder={content.decisionPlaceholder} />
+        <textarea rows={3} placeholder={content.decisionPlaceholder} />
       </label>
-      <div className="upload-placeholder" role="button" tabIndex={0}>
-        <strong>{content.uploadLabel}</strong>
-        <small>{content.uploadHint}</small>
-      </div>
-      <label className="field-group">
-        <span>{content.pasteLabel}</span>
-        <textarea rows={6} placeholder={content.pastePlaceholder} />
-      </label>
-      <label className="field-group">
+      <section className="quote-input-card">
+        <div>
+          <h2>{content.quoteInputLabel}</h2>
+          <p>{content.quoteInputHint}</p>
+        </div>
+        <button className="upload-button" type="button">
+          {content.uploadCta}
+        </button>
+        <textarea rows={5} placeholder={content.quotePlaceholder} />
+      </section>
+      <label className="field-group compact-field">
         <span>{content.emailLabel}</span>
+        <small>{content.emailHelper}</small>
         <input type="email" placeholder={content.emailPlaceholder} />
       </label>
       <button className="primary-button" type="submit">
