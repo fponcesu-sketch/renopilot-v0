@@ -11,7 +11,7 @@ import { VendorReplyScreen } from './components/VendorReplyScreen';
 import { analyzeQuote, analyzeVendorReply } from './lib/apiClient';
 import { buildFallbackQuoteAnalysis, buildFallbackUpdatedRecommendation, levelIcon } from './lib/fallbackAnalysis';
 import { defaultLanguage, quoteCheckContent, type Language } from './data/quoteCheckContent';
-import type { AnalysisSource, QuoteAnalysis, UpdatedRecommendationAnalysis } from './types/analysis';
+import type { AnalysisSource, QuoteAnalysis, QuoteDocument, UpdatedRecommendationAnalysis } from './types/analysis';
 
 type Screen =
   | 'landing'
@@ -119,6 +119,7 @@ export default function App() {
   const [language, setLanguage] = useState<Language>(defaultLanguage);
   const [decisionContext, setDecisionContext] = useState('');
   const [quoteText, setQuoteText] = useState('');
+  const [quoteDocuments, setQuoteDocuments] = useState<QuoteDocument[]>([]);
   const [analysis, setAnalysis] = useState<QuoteAnalysis | null>(null);
   const [updatedAnalysis, setUpdatedAnalysis] = useState<UpdatedRecommendationAnalysis | null>(null);
   const [analysisSource, setAnalysisSource] = useState<AnalysisSource>('mock');
@@ -153,6 +154,7 @@ export default function App() {
     ...content.questions,
     title: activeAnalysis.vendorQuestions.title || content.questions.title,
     message: activeAnalysis.vendorQuestions.messageToSend,
+    messagesByVendor: activeAnalysis.vendorQuestions.messagesByVendor,
     cta: copy.questionsCta,
   };
 
@@ -187,9 +189,14 @@ export default function App() {
     }
   };
 
-  const handleStartCheck = async (input: { decisionContext: string; quoteText: string }) => {
+  const handleStartCheck = async (input: {
+    decisionContext: string;
+    quoteText: string;
+    quoteDocuments: QuoteDocument[];
+  }) => {
     setDecisionContext(input.decisionContext);
     setQuoteText(input.quoteText);
+    setQuoteDocuments(input.quoteDocuments);
     setAnalysis(null);
     setUpdatedAnalysis(null);
     setAnalysisWarning('');
@@ -201,6 +208,7 @@ export default function App() {
       const response = await analyzeQuote({
         decisionContext: input.decisionContext,
         quoteText: input.quoteText,
+        quoteDocuments: input.quoteDocuments,
         language,
       });
 
