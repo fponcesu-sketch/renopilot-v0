@@ -3,6 +3,7 @@ type ResultContent = {
   status: string;
   explanation: string;
   cta: string;
+  disclaimer: string;
 };
 
 type ResultScreenProps = {
@@ -19,6 +20,7 @@ export function ResultScreen({ content, onNext }: ResultScreenProps) {
       <button className="primary-button" onClick={onNext}>
         {content.cta}
       </button>
+      <p className="disclaimer-note">{content.disclaimer}</p>
     </div>
   );
 }
