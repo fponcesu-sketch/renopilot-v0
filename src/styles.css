@@ -355,6 +355,10 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(47, 95, 88, 0.12);
 }
 
+.decision-field textarea {
+  min-height: 82px;
+}
+
 .quote-input-card {
   background: #ffffff;
   border: 1px solid #e8ded0;
@@ -365,11 +369,18 @@ textarea:focus {
   padding: 15px;
 }
 
+.quote-card-header {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
 .quote-input-card h2 {
   color: #2f3c36;
   font-size: 1rem;
   letter-spacing: -0.02em;
-  margin: 0 0 5px;
+  margin: 0;
 }
 
 .quote-input-card textarea {
@@ -649,6 +660,72 @@ textarea:focus {
     padding: 14px 0 4px;
   }
 
+  .start-check-screen {
+    gap: 10px;
+    padding-top: 12px;
+  }
+
+  .start-check-screen h1 {
+    font-size: clamp(1.85rem, 8.1vw, 2.15rem);
+    letter-spacing: -0.06em;
+    line-height: 1;
+  }
+
+  .decision-field textarea {
+    min-height: 64px;
+  }
+
+  .quote-input-card {
+    border-radius: 18px;
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .quote-card-header {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .quote-input-card h2 {
+    font-size: 0.98rem;
+    line-height: 1.1;
+  }
+
+  .quote-input-card p {
+    display: none;
+  }
+
+  .quote-input-card textarea {
+    min-height: 104px;
+  }
+
+  .upload-button {
+    border-style: solid;
+    border-radius: 999px;
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    min-height: 34px;
+    padding: 8px 10px;
+    width: auto;
+  }
+
+  .compact-field {
+    background: transparent;
+    border: 0;
+    gap: 6px;
+    padding: 0;
+  }
+
+  .compact-field small {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    order: 2;
+  }
+
+  .compact-field input {
+    order: 1;
+  }
+
   .result-screen {
     gap: 12px;
   }
@@ -662,8 +739,7 @@ textarea:focus {
     font-size: clamp(1.85rem, 10vw, 2.65rem);
   }
 
-  .result-screen h1,
-  .start-check-screen h1 {
+  .result-screen h1 {
     font-size: clamp(1.65rem, 8.5vw, 2.25rem);
   }
 
@@ -679,18 +755,9 @@ textarea:focus {
     padding: 14px 16px;
   }
 
-  .quote-input-card,
   .message-box {
     border-radius: 18px;
     padding: 14px;
-  }
-
-  .quote-input-card {
-    gap: 10px;
-  }
-
-  .quote-input-card h2 {
-    font-size: 0.98rem;
   }
 
   input,
@@ -699,9 +766,8 @@ textarea:focus {
     padding: 12px 13px;
   }
 
-  .compact-field {
+  .field-group {
     gap: 6px;
-    padding: 10px 12px;
   }
 
   .field-group small,
