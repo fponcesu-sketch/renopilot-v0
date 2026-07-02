@@ -371,6 +371,8 @@ export default function App() {
           content={content.vendorReply}
           error={vendorReplyError || (analysisSource === 'mock' ? copy.vendorFallback : '')}
           isLoading={isAnalyzingVendorReply}
+          language={language}
+          replyTargets={activeAnalysis.vendorQuestions.messagesByVendor}
           onSubmit={handleVendorReply}
         />
       )}
