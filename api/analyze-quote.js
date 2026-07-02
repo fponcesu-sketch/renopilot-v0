@@ -2,22 +2,17 @@ const fallbackAnalysis = {
   verdict: {
     level: 'yellow',
     title: 'Buena pinta, pero pregunta antes de firmar',
-    summary: 'No vemos señales fuertes de alarma, pero hay puntos que conviene cerrar antes de aceptar.',
+    summary: 'Parece viable, pero hay que aclarar puntos clave antes de aceptar.',
   },
-  costExposure: {
-    summary: 'No calculable todavía. Falta confirmar IVA, alcance exacto y posibles extras.',
-    calculable: false,
+  infoCategories: {
+    confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
+    needsClarification: [
+      'Precio final con IVA incluido.',
+      'Qué está incluido exactamente en el alcance.',
+      'Plazo estimado y forma de pago.',
+    ],
+    risks: ['Aceptar o pagar señal sin confirmación escrita de los puntos abiertos.'],
   },
-  biggestRisk: {
-    title: 'Mayor riesgo',
-    summary: 'El presupuesto no deja claro qué está incluido, qué puede variar y qué debe confirmarse por escrito.',
-  },
-  thingsToReview: [
-    'Confirma el precio final con IVA incluido.',
-    'Pide el plazo estimado de ejecución.',
-    'Aclara qué partidas pueden cambiar de precio.',
-    'Confirma por escrito las condiciones de pago.',
-  ],
   vendorQuestions: {
     title: 'Mensaje para copiar y enviar',
     messageToSend:
@@ -30,11 +25,16 @@ const fallbackAnalysis = {
     ],
   },
   nextAction: {
-    title: 'Siguiente paso',
-    summary: 'Pide confirmación escrita antes de firmar o pagar una señal.',
+    title: 'Nuestra recomendación',
+    summary: 'No aceptes todavía. Pide confirmación por escrito y decide después.',
   },
   confidence: 'medium',
   assumptions: ['Fallback del prototipo: no se ha podido generar una revisión real con el LLM.'],
+};
+
+const listSchema = {
+  type: 'array',
+  items: { type: 'string' },
 };
 
 const schema = {
@@ -42,9 +42,7 @@ const schema = {
   additionalProperties: false,
   required: [
     'verdict',
-    'costExposure',
-    'biggestRisk',
-    'thingsToReview',
+    'infoCategories',
     'vendorQuestions',
     'nextAction',
     'confidence',
@@ -61,27 +59,15 @@ const schema = {
         summary: { type: 'string' },
       },
     },
-    costExposure: {
+    infoCategories: {
       type: 'object',
       additionalProperties: false,
-      required: ['summary', 'calculable'],
+      required: ['confirmed', 'needsClarification', 'risks'],
       properties: {
-        summary: { type: 'string' },
-        calculable: { type: 'boolean' },
+        confirmed: listSchema,
+        needsClarification: listSchema,
+        risks: listSchema,
       },
-    },
-    biggestRisk: {
-      type: 'object',
-      additionalProperties: false,
-      required: ['title', 'summary'],
-      properties: {
-        title: { type: 'string' },
-        summary: { type: 'string' },
-      },
-    },
-    thingsToReview: {
-      type: 'array',
-      items: { type: 'string' },
     },
     vendorQuestions: {
       type: 'object',
@@ -90,10 +76,7 @@ const schema = {
       properties: {
         title: { type: 'string' },
         messageToSend: { type: 'string' },
-        questions: {
-          type: 'array',
-          items: { type: 'string' },
-        },
+        questions: listSchema,
       },
     },
     nextAction: {
@@ -106,10 +89,7 @@ const schema = {
       },
     },
     confidence: { type: 'string', enum: ['low', 'medium', 'high'] },
-    assumptions: {
-      type: 'array',
-      items: { type: 'string' },
-    },
+    assumptions: listSchema,
   },
 };
 
@@ -166,7 +146,7 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              'You are RenoPilot, a homeowner quote decision assistant. Return practical, short, non-legal, non-technical guidance. Do not summarize only; help the user decide what to ask before accepting. Respond in the requested language. Do not invent prices. If information is missing, say it is not calculable yet. Keep arrays concise: 3 to 6 items maximum.',
+              'You are RenoPilot, a homeowner quote decision assistant. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. Classify information into confirmed, needsClarification, and risks. Keep each category short: 0 to 3 items. Generate a ready-to-send vendor message that the homeowner can copy immediately. Respond in the requested language. Do not invent prices. If information is missing, say it needs clarification.',
           },
           {
             role: 'user',
