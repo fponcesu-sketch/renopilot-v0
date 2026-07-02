@@ -12,7 +12,7 @@ export function ResultScreen({ content, onNext }: ResultScreenProps) {
       <p className="status-card">{content.status}</p>
       <p className="body-copy">{content.explanation}</p>
       <p className="cost-exposure">{content.costExposure}</p>
-      <section className="insight-card">
+      <section className="insight-card risk">
         <span>{content.biggestRiskTitle}</span>
         <p>{content.biggestRisk}</p>
       </section>
