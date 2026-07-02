@@ -1,8 +1,15 @@
 import type { QuoteInfoCategories } from '../types/analysis';
 
+type CategoryLabels = {
+  confirmed: string;
+  needsClarification: string;
+  risks: string;
+};
+
 type ThingsToReviewContent = {
   title: string;
   categories: QuoteInfoCategories;
+  categoryLabels: CategoryLabels;
   cta: string;
 };
 
@@ -11,25 +18,21 @@ type ThingsToReviewScreenProps = {
   onNext: () => void;
 };
 
-const categoryRows = [
-  { key: 'confirmed', label: '🟢 Confirmado' },
-  { key: 'needsClarification', label: '🟡 A aclarar' },
-  { key: 'risks', label: '🔴 Riesgos' },
-] as const;
+const categoryKeys = ['confirmed', 'needsClarification', 'risks'] as const;
 
 export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenProps) {
   return (
     <div className="screen-content clarify-screen">
       <h1>{content.title}</h1>
       <div className="category-list">
-        {categoryRows.map((category) => {
-          const items = content.categories[category.key];
+        {categoryKeys.map((key) => {
+          const items = content.categories[key];
 
           if (!items.length) return null;
 
           return (
-            <section className={`decision-category ${category.key}`} key={category.key}>
-              <h2>{category.label}</h2>
+            <section className={`decision-category ${key}`} key={key}>
+              <h2>{content.categoryLabels[key]}</h2>
               <ul>
                 {items.slice(0, 3).map((item) => (
                   <li key={item}>{item}</li>
