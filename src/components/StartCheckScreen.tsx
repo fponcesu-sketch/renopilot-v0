@@ -1,24 +1,43 @@
-import type { FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type StartCheckScreenProps = {
   content: QuoteCheckContent['startCheck'];
-  onNext: () => void;
+  error?: string;
+  note: string;
+  onSubmit: (input: { decisionContext: string; quoteText: string }) => void;
 };
 
-export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
+export function StartCheckScreen({ content, error, note, onSubmit }: StartCheckScreenProps) {
+  const [decisionContext, setDecisionContext] = useState('');
+  const [quoteText, setQuoteText] = useState('');
+  const [localError, setLocalError] = useState('');
+
   return (
     <form
       className="screen-content form-screen start-check-screen"
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        onNext();
+
+        if (!quoteText.trim()) {
+          setLocalError('Pega el presupuesto o mensaje para poder revisarlo.');
+          return;
+        }
+
+        setLocalError('');
+        onSubmit({ decisionContext, quoteText });
       }}
     >
       <h1>{content.title}</h1>
+      <p className="prototype-note">{note}</p>
       <label className="field-group decision-field">
         <span>{content.decisionLabel}</span>
-        <textarea rows={2} placeholder={content.decisionPlaceholder} />
+        <textarea
+          onChange={(event) => setDecisionContext(event.target.value)}
+          placeholder={content.decisionPlaceholder}
+          rows={2}
+          value={decisionContext}
+        />
       </label>
       <section className="quote-input-card">
         <div className="quote-card-header">
@@ -28,8 +47,14 @@ export function StartCheckScreen({ content, onNext }: StartCheckScreenProps) {
           </button>
         </div>
         <p>{content.quoteInputHint}</p>
-        <textarea rows={3} placeholder={content.quotePlaceholder} />
+        <textarea
+          onChange={(event) => setQuoteText(event.target.value)}
+          placeholder={content.quotePlaceholder}
+          rows={3}
+          value={quoteText}
+        />
       </section>
+      {(localError || error) && <p className="inline-error">{localError || error}</p>}
       <label className="field-group compact-field">
         <span>{content.emailLabel}</span>
         <input type="email" placeholder={content.emailPlaceholder} />
