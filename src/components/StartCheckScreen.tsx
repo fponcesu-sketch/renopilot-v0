@@ -134,8 +134,9 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       }
 
       const nextDocuments = [...quoteDocuments, ...extractedDocuments];
+      const manualText = quoteDocuments.length ? '' : quoteText;
       setQuoteDocuments(nextDocuments);
-      setQuoteText(buildQuoteText(nextDocuments, quoteText));
+      setQuoteText(buildQuoteText(nextDocuments, manualText));
       setFileStatus(
         nextDocuments.length === 1
           ? `${fileCopy.read}: ${nextDocuments[0].name}`
@@ -155,15 +156,13 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const finalQuoteText = buildQuoteText(quoteDocuments, quoteText);
-
-        if (!finalQuoteText.trim()) {
+        if (!quoteText.trim()) {
           setLocalError(fileCopy.missingInput);
           return;
         }
 
         setLocalError('');
-        onSubmit({ decisionContext, quoteText: finalQuoteText, quoteDocuments });
+        onSubmit({ decisionContext, quoteText, quoteDocuments });
       }}
     >
       <h1>{content.title}</h1>
