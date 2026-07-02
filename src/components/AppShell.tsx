@@ -22,6 +22,13 @@ export function AppShell({
 }: AppShellProps) {
   const progressPercent = currentPhase === null ? 0 : ((currentPhase + 1) / shell.phases.length) * 100;
 
+  const getPhaseState = (index: number) => {
+    if (currentPhase === null) return 'pending';
+    if (index < currentPhase) return 'done';
+    if (index === currentPhase) return 'active';
+    return 'pending';
+  };
+
   return (
     <main className="app-shell">
       <section className="phone-frame" aria-label={shell.ariaLabel}>
@@ -56,7 +63,7 @@ export function AppShell({
           <div className="phase-progress" aria-label={shell.phaseLabel}>
             <div className="phase-labels">
               {shell.phases.map((phase, index) => (
-                <span className={index === currentPhase ? 'active' : ''} key={phase}>
+                <span className={getPhaseState(index)} key={phase}>
                   {phase}
                 </span>
               ))}
