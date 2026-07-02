@@ -49,6 +49,7 @@ const screenPhase: Record<Screen, number | null> = {
 
 const localizedCopy: Record<Language, {
   prototypeNote: string;
+  disclaimerNote: string;
   resultCta: string;
   reviewTitle: string;
   reviewCta: string;
@@ -73,7 +74,9 @@ const localizedCopy: Record<Language, {
 }> = {
   es: {
     prototypeNote:
-      'Este prototipo no guarda todavía tu revisión. Mantén esta página abierta si quieres pegar la respuesta del proveedor.',
+      'RenoPilot es un prototipo temprano. Te ayuda a detectar puntos poco claros y preparar mejores preguntas antes de aceptar un presupuesto.',
+    disclaimerNote:
+      'No sustituye asesoramiento profesional, legal, arquitectónico o técnico. Confirma siempre los puntos importantes directamente con el profesional antes de firmar o pagar.',
     resultCta: 'Ver qué aclarar',
     reviewTitle: 'Antes de decidir',
     reviewCta: 'Ver preguntas',
@@ -98,7 +101,9 @@ const localizedCopy: Record<Language, {
   },
   en: {
     prototypeNote:
-      'This prototype does not save your review yet. Keep this page open if you want to paste the supplier reply later.',
+      'RenoPilot is an early prototype. It helps you spot unclear points and prepare better questions before accepting a quote.',
+    disclaimerNote:
+      'It does not replace professional, legal, architectural or technical advice. Always confirm important details directly with the contractor or a qualified professional before signing or paying.',
     resultCta: 'See what to clarify',
     reviewTitle: 'Before you decide',
     reviewCta: 'See questions',
@@ -123,7 +128,9 @@ const localizedCopy: Record<Language, {
   },
   pl: {
     prototypeNote:
-      'Ten prototyp nie zapisuje jeszcze Twojej analizy. Zostaw tę stronę otwartą, jeśli chcesz później wkleić odpowiedź wykonawcy.',
+      'RenoPilot to wczesny prototyp. Pomaga wychwycić niejasne punkty i przygotować lepsze pytania przed zaakceptowaniem wyceny.',
+    disclaimerNote:
+      'Nie zastępuje porady profesjonalnej, prawnej, architektonicznej ani technicznej. Przed podpisaniem umowy lub płatnością zawsze potwierdź ważne szczegóły bezpośrednio z wykonawcą albo odpowiednim specjalistą.',
     resultCta: 'Zobacz, co wyjaśnić',
     reviewTitle: 'Przed decyzją',
     reviewCta: 'Zobacz pytania',
@@ -183,6 +190,7 @@ export default function App() {
     status: `${levelIcon(activeAnalysis.verdict.level)} ${activeAnalysis.verdict.title}`,
     explanation: activeAnalysis.verdict.summary,
     cta: copy.resultCta,
+    disclaimer: copy.disclaimerNote,
   };
 
   const comparisonResultContent = {
@@ -190,6 +198,7 @@ export default function App() {
     recommendationLabel: copy.comparison.recommendationLabel,
     summary: comparisonSummary,
     cta: copy.resultCta,
+    disclaimer: copy.disclaimerNote,
   };
 
   const reviewContent = {
@@ -224,6 +233,7 @@ export default function App() {
     explanation: activeUpdatedAnalysis.updatedVerdict.summary,
     nextActionTitle: activeUpdatedAnalysis.nextAction.title,
     nextAction: activeUpdatedAnalysis.nextAction.summary,
+    disclaimer: copy.disclaimerNote,
   };
 
   useLayoutEffect(() => {
