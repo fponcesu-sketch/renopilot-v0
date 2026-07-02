@@ -1,7 +1,11 @@
-import type { QuoteCheckContent } from '../data/quoteCheckContent';
+type ThingsToReviewContent = {
+  title: string;
+  items: string[];
+  cta: string;
+};
 
 type ThingsToReviewScreenProps = {
-  content: QuoteCheckContent['review'];
+  content: ThingsToReviewContent;
   onNext: () => void;
 };
 
