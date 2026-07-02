@@ -6,6 +6,13 @@ const fallbackAnalysis = {
   },
   mode: 'single_quote',
   recommendedVendor: '',
+  comparison: {
+    recommendedQuote: 'Proveedor recomendado',
+    oneLineReason: 'Parece la opción más clara, pero faltan confirmaciones importantes.',
+    whyThisOne: ['Alcance más fácil de entender.'],
+    stillUnclear: ['Precio final con IVA.', 'Plazo y forma de pago.'],
+    beCareful: ['No pagar señal sin confirmación escrita.'],
+  },
   infoCategories: {
     confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
     needsClarification: [
@@ -59,6 +66,19 @@ const vendorMessageSchema = {
   },
 };
 
+const comparisonSchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['recommendedQuote', 'oneLineReason', 'whyThisOne', 'stillUnclear', 'beCareful'],
+  properties: {
+    recommendedQuote: { type: 'string' },
+    oneLineReason: { type: 'string' },
+    whyThisOne: listSchema,
+    stillUnclear: listSchema,
+    beCareful: listSchema,
+  },
+};
+
 const schema = {
   type: 'object',
   additionalProperties: false,
@@ -66,6 +86,7 @@ const schema = {
     'verdict',
     'mode',
     'recommendedVendor',
+    'comparison',
     'infoCategories',
     'vendorQuestions',
     'nextAction',
@@ -85,6 +106,7 @@ const schema = {
     },
     mode: { type: 'string', enum: ['single_quote', 'quote_comparison'] },
     recommendedVendor: { type: 'string' },
+    comparison: comparisonSchema,
     infoCategories: {
       type: 'object',
       additionalProperties: false,
@@ -203,7 +225,7 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. Classify information into confirmed, needsClarification, and risks. Keep each category short: 0 to 3 items. If more than one quote document is provided, compare them and recommend which vendor/quote is the best one to continue with, not necessarily to accept immediately. Do not create one combined message for all vendors. For multiple vendors, generate a separate ready-to-send message for each vendor in messagesByVendor. For one vendor, generate one message. Do not invent prices. If information is missing, say it needs clarification.`,
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. If one quote is provided, give a single quote decision check. If more than one quote document is provided, set mode to quote_comparison and give a very simple recommendation: recommendedQuote, oneLineReason, whyThisOne, stillUnclear, beCareful. Do not create a scoring table. Do not claim a quote is definitively best; recommend the best one to continue with. Keep all arrays to 0-3 short items. Do not create one combined message for all vendors. For multiple vendors, generate a separate ready-to-send message for each vendor in messagesByVendor. For one vendor, generate one message. Do not invent prices. If information is missing, say it needs clarification.`,
           },
           {
             role: 'user',
