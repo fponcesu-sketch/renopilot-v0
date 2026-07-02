@@ -66,6 +66,7 @@ const localizedCopy: Record<Language, {
     whyThisOne: string;
     stillUnclear: string;
     beCareful: string;
+    conditionalSuffix: string;
   };
   fallbackWarning: string;
   analysisError: string;
@@ -93,6 +94,7 @@ const localizedCopy: Record<Language, {
       whyThisOne: 'Por qué parece fuerte',
       stillUnclear: 'Aclara antes de aceptar',
       beCareful: 'Riesgo principal',
+      conditionalSuffix: 'No está listo para aceptar hasta confirmar por escrito los puntos importantes.',
     },
     fallbackWarning: 'Mostramos una revisión de ejemplo porque el LLM no está disponible.',
     analysisError: 'No hemos podido generar una revisión real ahora. Mostramos un ejemplo para que puedas seguir probando.',
@@ -120,6 +122,7 @@ const localizedCopy: Record<Language, {
       whyThisOne: 'Why it looks strong',
       stillUnclear: 'Clarify before accepting',
       beCareful: 'Main risk',
+      conditionalSuffix: 'It is not ready to accept until the important points are confirmed in writing.',
     },
     fallbackWarning: 'Showing an example review because the LLM is not available.',
     analysisError: 'We could not generate a real review right now. Showing an example so you can keep testing.',
@@ -147,6 +150,7 @@ const localizedCopy: Record<Language, {
       whyThisOne: 'Dlaczego wygląda mocno',
       stillUnclear: 'Wyjaśnij przed akceptacją',
       beCareful: 'Główne ryzyko',
+      conditionalSuffix: 'Nie jest jeszcze gotowa do zaakceptowania, dopóki ważne punkty nie zostaną potwierdzone pisemnie.',
     },
     fallbackWarning: 'Pokazujemy przykładową analizę, ponieważ LLM nie jest dostępny.',
     analysisError: 'Nie udało się teraz wygenerować prawdziwej analizy. Pokazujemy przykład, aby można było kontynuować test.',
@@ -154,6 +158,30 @@ const localizedCopy: Record<Language, {
     vendorError: 'Nie udało się zaktualizować analizy z AI. Pokazujemy przykład, aby można było kontynuować test.',
   },
 };
+
+function normalizeProductName(value: string) {
+  return value.replace(/\bRENOPILOT\b|\bRenopilot\b|\brenoPilot\b|\brenopilot\b/g, 'RenoPilot');
+}
+
+function withConditionalSuffix(value: string, suffix: string) {
+  const normalizedValue = normalizeProductName(value).trim();
+  const lowerValue = normalizedValue.toLowerCase();
+  const lowerSuffix = suffix.toLowerCase();
+
+  if (lowerValue.includes('clarify') || lowerValue.includes('confirm') || lowerValue.includes('aclar') || lowerValue.includes('potwier')) {
+    return normalizedValue;
+  }
+
+  if (lowerValue.includes(lowerSuffix)) {
+    return normalizedValue;
+  }
+
+  return `${normalizedValue} ${suffix}`;
+}
+
+function normalizeTextList(items: string[]) {
+  return items.map((item) => normalizeProductName(item));
+}
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing');
@@ -177,18 +205,26 @@ export default function App() {
   const activeAnalysis = analysis ?? fallbackQuoteAnalysis;
   const activeUpdatedAnalysis = updatedAnalysis ?? buildFallbackUpdatedRecommendation(content);
   const isComparison = activeAnalysis.mode === 'quote_comparison';
-  const comparisonSummary = activeAnalysis.comparison ?? {
+  const rawComparisonSummary = activeAnalysis.comparison ?? {
     recommendedQuote: activeAnalysis.recommendedVendor || activeAnalysis.verdict.title,
     oneLineReason: activeAnalysis.verdict.summary,
     whyThisOne: activeAnalysis.infoCategories.confirmed,
     stillUnclear: activeAnalysis.infoCategories.needsClarification,
     beCareful: activeAnalysis.infoCategories.risks,
   };
+  const comparisonSummary = {
+    ...rawComparisonSummary,
+    recommendedQuote: normalizeProductName(rawComparisonSummary.recommendedQuote),
+    oneLineReason: withConditionalSuffix(rawComparisonSummary.oneLineReason, copy.comparison.conditionalSuffix),
+    whyThisOne: normalizeTextList(rawComparisonSummary.whyThisOne),
+    stillUnclear: normalizeTextList(rawComparisonSummary.stillUnclear),
+    beCareful: normalizeTextList(rawComparisonSummary.beCareful),
+  };
 
   const resultContent = {
-    title: content.result.title,
-    status: `${levelIcon(activeAnalysis.verdict.level)} ${activeAnalysis.verdict.title}`,
-    explanation: activeAnalysis.verdict.summary,
+    title: normalizeProductName(content.result.title),
+    status: `${levelIcon(activeAnalysis.verdict.level)} ${normalizeProductName(activeAnalysis.verdict.title)}`,
+    explanation: normalizeProductName(activeAnalysis.verdict.summary),
     cta: copy.resultCta,
     disclaimer: copy.disclaimerNote,
   };
@@ -203,7 +239,11 @@ export default function App() {
 
   const reviewContent = {
     title: copy.reviewTitle,
-    categories: activeAnalysis.infoCategories,
+    categories: {
+      confirmed: normalizeTextList(activeAnalysis.infoCategories.confirmed),
+      needsClarification: normalizeTextList(activeAnalysis.infoCategories.needsClarification),
+      risks: normalizeTextList(activeAnalysis.infoCategories.risks),
+    },
     categoryLabels: copy.categoryLabels,
     cta: copy.reviewCta,
   };
@@ -221,18 +261,21 @@ export default function App() {
 
   const questionsContent = {
     ...content.questions,
-    title: activeAnalysis.vendorQuestions.title || content.questions.title,
-    message: activeAnalysis.vendorQuestions.messageToSend,
-    messagesByVendor: activeAnalysis.vendorQuestions.messagesByVendor,
+    title: normalizeProductName(activeAnalysis.vendorQuestions.title || content.questions.title),
+    message: normalizeProductName(activeAnalysis.vendorQuestions.messageToSend),
+    messagesByVendor: activeAnalysis.vendorQuestions.messagesByVendor.map((message) => ({
+      vendorName: normalizeProductName(message.vendorName),
+      messageToSend: normalizeProductName(message.messageToSend),
+    })),
     cta: copy.questionsCta,
   };
 
   const updatedContent = {
     ...content.updatedRecommendation,
-    status: `${levelIcon(activeUpdatedAnalysis.updatedVerdict.level)} ${activeUpdatedAnalysis.updatedVerdict.title}`,
-    explanation: activeUpdatedAnalysis.updatedVerdict.summary,
-    nextActionTitle: activeUpdatedAnalysis.nextAction.title,
-    nextAction: activeUpdatedAnalysis.nextAction.summary,
+    status: `${levelIcon(activeUpdatedAnalysis.updatedVerdict.level)} ${normalizeProductName(activeUpdatedAnalysis.updatedVerdict.title)}`,
+    explanation: normalizeProductName(activeUpdatedAnalysis.updatedVerdict.summary),
+    nextActionTitle: normalizeProductName(activeUpdatedAnalysis.nextAction.title),
+    nextAction: normalizeProductName(activeUpdatedAnalysis.nextAction.summary),
     disclaimer: copy.disclaimerNote,
   };
 
