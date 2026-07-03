@@ -60,19 +60,69 @@
 
 .category-list,
 .vendor-message-list,
-.vendor-reply-list {
+.vendor-reply-list,
+.clarification-item-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+.clarification-item-list.compact {
+  gap: 8px;
+}
+
 .decision-category,
 .vendor-message-card,
-.vendor-reply-card {
+.vendor-reply-card,
+.clarification-item-card {
   background: #ffffff;
   border: 1px solid #ebe2d5;
   border-radius: 18px;
   padding: 13px 14px;
+}
+
+.clarification-item-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clarification-item-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.clarification-item-header h2,
+.clarification-item-header h3 {
+  color: #1e2b25;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.clarification-item-header span {
+  background: #f6f1e9;
+  border-radius: 999px;
+  color: #7b6a58;
+  flex: 0 0 auto;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}
+
+.clarification-item-card p {
+  color: #4e5b54;
+  font-size: 0.9rem;
+  line-height: 1.36;
+  margin: 0;
+}
+
+.clarification-item-card strong {
+  color: #1f302b;
 }
 
 .vendor-message-card {
@@ -171,9 +221,19 @@
 
   .decision-category,
   .vendor-message-card,
-  .vendor-reply-card {
+  .vendor-reply-card,
+  .clarification-item-card {
     border-radius: 16px;
     padding: 11px 12px;
+  }
+
+  .clarification-item-header h2,
+  .clarification-item-header h3 {
+    font-size: 0.92rem;
+  }
+
+  .clarification-item-card p {
+    font-size: 0.86rem;
   }
 
   .vendor-reply-card textarea {
