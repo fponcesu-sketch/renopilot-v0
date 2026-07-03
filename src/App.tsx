@@ -48,6 +48,21 @@ const screenPhase: Record<Screen, number | null> = {
   updated: 3,
 };
 
+const checkingCopy: Record<Language, { items: string[]; slowMessage: string }> = {
+  es: {
+    items: ['Leyendo el presupuesto', 'Detectando puntos poco claros', 'Preparando preguntas'],
+    slowMessage: 'Está tardando un poco más de lo normal. Estamos preparando una revisión básica.',
+  },
+  en: {
+    items: ['Reading the quote', 'Spotting unclear points', 'Preparing questions'],
+    slowMessage: 'This is taking a little longer than usual. We are preparing a basic review.',
+  },
+  pl: {
+    items: ['Czytanie wyceny', 'Wykrywanie niejasnych punktów', 'Przygotowywanie pytań'],
+    slowMessage: 'To trwa trochę dłużej niż zwykle. Przygotowujemy podstawową analizę.',
+  },
+};
+
 function normalizeProductName(value: string) {
   return value.replace(/\bRENOPILOT\b|\bRenopilot\b|\brenoPilot\b|\brenopilot\b/g, 'RenoPilot');
 }
@@ -108,6 +123,11 @@ export default function App() {
   const content = quoteCheckContent[language];
   const copy = localizedCopy[language];
   const currentPhase = screenPhase[screen];
+  const checkingContent = {
+    ...content.checking,
+    items: checkingCopy[language].items,
+    slowMessage: checkingCopy[language].slowMessage,
+  };
 
   const fallbackQuoteAnalysis = useMemo(() => buildFallbackQuoteAnalysis(content), [content]);
   const activeAnalysis = analysis ?? fallbackQuoteAnalysis;
@@ -306,7 +326,7 @@ export default function App() {
       )}
       {screen === 'checking' && (
         <CheckingScreen
-          content={content.checking}
+          content={checkingContent}
           error={analysisWarning}
           isReady={!isAnalyzing && Boolean(analysis)}
           onNext={() => setScreen('result')}
