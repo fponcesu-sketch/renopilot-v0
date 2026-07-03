@@ -9,6 +9,7 @@ type AppShellProps = {
   onBack?: () => void;
   onLanguageChange: (language: Language) => void;
   shell: QuoteCheckContent['shell'];
+  showLanguageSwitcher?: boolean;
 };
 
 export function AppShell({
@@ -19,6 +20,7 @@ export function AppShell({
   onBack,
   onLanguageChange,
   shell,
+  showLanguageSwitcher = true,
 }: AppShellProps) {
   const progressPercent = currentPhase === null ? 0 : ((currentPhase + 1) / shell.phases.length) * 100;
 
@@ -43,21 +45,23 @@ export function AppShell({
             )}
             <span className="brand-name">{brand}</span>
           </div>
-          <div className="header-actions">
-            <div className="language-switcher" aria-label={shell.languageLabel}>
-              {languageOptions.map((option) => (
-                <button
-                  aria-pressed={option.code === language}
-                  className={`language-option${option.code === language ? ' active' : ''}`}
-                  key={option.code}
-                  onClick={() => onLanguageChange(option.code)}
-                  type="button"
-                >
-                  {option.label}
-                </button>
-              ))}
+          {showLanguageSwitcher && (
+            <div className="header-actions">
+              <div className="language-switcher" aria-label={shell.languageLabel}>
+                {languageOptions.map((option) => (
+                  <button
+                    aria-pressed={option.code === language}
+                    className={`language-option${option.code === language ? ' active' : ''}`}
+                    key={option.code}
+                    onClick={() => onLanguageChange(option.code)}
+                    type="button"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </header>
         {currentPhase !== null && (
           <div className="phase-progress" aria-label={shell.phaseLabel}>
