@@ -123,6 +123,7 @@ export default function App() {
   const content = quoteCheckContent[language];
   const copy = localizedCopy[language];
   const currentPhase = screenPhase[screen];
+  const showLanguageSwitcher = screen === 'landing' || (screen === 'start' && !analysis && !isAnalyzing);
   const checkingContent = {
     ...content.checking,
     items: checkingCopy[language].items,
@@ -311,6 +312,7 @@ export default function App() {
       onBack={screen === 'landing' ? undefined : goBack}
       onLanguageChange={setLanguage}
       shell={content.shell}
+      showLanguageSwitcher={showLanguageSwitcher}
     >
       {screen === 'landing' && (
         <LandingScreen content={content.landing} onNext={() => setScreen('start')} />
