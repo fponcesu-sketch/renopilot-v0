@@ -6,8 +6,6 @@ import type { QuoteDocument } from '../types/analysis';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
-const MAX_PDF_PAYLOAD_BYTES = 2_500_000;
-
 type StartCheckScreenProps = {
   content: QuoteCheckContent['startCheck'];
   error?: string;
@@ -16,19 +14,15 @@ type StartCheckScreenProps = {
   onSubmit: (input: { decisionContext: string; quoteText: string; quoteDocuments: QuoteDocument[] }) => void;
 };
 
-type PdfTextItem = {
-  str?: string;
-};
+type PdfTextItem = { str?: string };
 
 const uploadCopy: Record<Language, {
   reading: string;
   readingPdf: string;
   onlyPdf: string;
   unreadable: string;
-  scanned: string;
-  read: string;
-  readMany: string;
   attachedLabel: string;
+  extraTextPlaceholder: string;
   missingInput: string;
   multiFileNotice: string;
   compareTeaserTitle: string;
@@ -38,16 +32,13 @@ const uploadCopy: Record<Language, {
 }> = {
   es: {
     reading: 'Leyendo…',
-    readingPdf: 'Adjuntando PDF…',
+    readingPdf: 'Leyendo PDF…',
     onlyPdf: 'Ahora mismo solo podemos leer PDFs. Si estás en móvil, prueba a elegirlo desde Archivos / Files.',
-    unreadable: 'PDF adjuntado. Si el análisis sale incompleto, copia también el texto manualmente.',
-    scanned: 'PDF adjuntado. Puede ser un escaneo, así que quizá necesitemos el texto manual si el análisis sale incompleto.',
-    read: 'PDF adjuntado',
-    readMany: 'PDFs adjuntados',
+    unreadable: 'No hemos podido leer el texto del PDF. Prueba de nuevo o copia el texto del presupuesto.',
     attachedLabel: 'Archivo adjuntado',
-    missingInput: 'Sube uno o varios PDFs o pega el presupuesto para poder revisarlo.',
-    multiFileNotice:
-      'RenoPilot revisará estos archivos como un único paquete de presupuesto. La comparación de presupuestos todavía no está disponible en este prototipo.',
+    extraTextPlaceholder: 'Texto adicional opcional',
+    missingInput: 'Sube un PDF legible o pega el presupuesto para poder revisarlo.',
+    multiFileNotice: 'RenoPilot revisará estos archivos como un único paquete de presupuesto. La comparación de presupuestos todavía no está disponible en este prototipo.',
     compareTeaserTitle: '¿Necesitas comparar varios presupuestos?',
     compareTeaserBody: 'La comparación de presupuestos llegará pronto.',
     earlyAccessCta: 'Quiero probarlo cuando esté listo',
@@ -55,16 +46,13 @@ const uploadCopy: Record<Language, {
   },
   en: {
     reading: 'Reading…',
-    readingPdf: 'Attaching PDF…',
+    readingPdf: 'Reading PDF…',
     onlyPdf: 'Right now we can only read PDFs. On mobile, try choosing it from Files.',
-    unreadable: 'PDF attached. If the review is incomplete, paste the text manually too.',
-    scanned: 'PDF attached. It may be a scan, so we may need pasted text if the review is incomplete.',
-    read: 'PDF attached',
-    readMany: 'PDFs attached',
+    unreadable: 'We could not read the PDF text. Try again or paste the quote text.',
     attachedLabel: 'File attached',
-    missingInput: 'Upload one or more PDFs, or paste the quote so we can review it.',
-    multiFileNotice:
-      'RenoPilot will review these files as one quote package. Multi-quote comparison is not available in this prototype yet.',
+    extraTextPlaceholder: 'Optional extra text',
+    missingInput: 'Upload a readable PDF or paste the quote so we can review it.',
+    multiFileNotice: 'RenoPilot will review these files as one quote package. Multi-quote comparison is not available in this prototype yet.',
     compareTeaserTitle: 'Need to compare several quotes?',
     compareTeaserBody: 'Multi-quote comparison is coming soon.',
     earlyAccessCta: 'Join early access',
@@ -72,16 +60,13 @@ const uploadCopy: Record<Language, {
   },
   pl: {
     reading: 'Czytanie…',
-    readingPdf: 'Dodawanie PDF…',
+    readingPdf: 'Czytanie PDF…',
     onlyPdf: 'Na razie możemy czytać tylko PDF-y. Na telefonie spróbuj wybrać plik z aplikacji Pliki / Files.',
-    unreadable: 'PDF dodany. Jeśli analiza będzie niepełna, wklej też tekst ręcznie.',
-    scanned: 'PDF dodany. To może być skan, więc jeśli analiza będzie niepełna, wklej też tekst ręcznie.',
-    read: 'PDF dodany',
-    readMany: 'PDF-y dodane',
+    unreadable: 'Nie udało się odczytać tekstu z PDF-a. Spróbuj ponownie albo wklej tekst wyceny.',
     attachedLabel: 'Plik dodany',
-    missingInput: 'Wgraj jeden lub więcej PDF-ów albo wklej wycenę, aby ją sprawdzić.',
-    multiFileNotice:
-      'RenoPilot sprawdzi te pliki jako jeden pakiet wyceny. Porównywanie wycen nie jest jeszcze dostępne w tym prototypie.',
+    extraTextPlaceholder: 'Opcjonalny dodatkowy tekst',
+    missingInput: 'Wgraj czytelny PDF albo wklej wycenę, aby ją sprawdzić.',
+    multiFileNotice: 'RenoPilot sprawdzi te pliki jako jeden pakiet wyceny. Porównywanie wycen nie jest jeszcze dostępne w tym prototypie.',
     compareTeaserTitle: 'Chcesz porównać kilka wycen?',
     compareTeaserBody: 'Porównywanie wycen pojawi się wkrótce.',
     earlyAccessCta: 'Chcę przetestować, gdy będzie gotowe',
@@ -91,15 +76,6 @@ const uploadCopy: Record<Language, {
 
 function isPdfFile(file: File) {
   return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-}
-
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ''));
-    reader.onerror = () => reject(reader.error || new Error('File read failed'));
-    reader.readAsDataURL(file);
-  });
 }
 
 async function extractPdfText(file: File) {
@@ -116,9 +92,7 @@ async function extractPdfText(file: File) {
       .replace(/\s+/g, ' ')
       .trim();
 
-    if (pageText) {
-      pageTexts.push(pageText);
-    }
+    if (pageText) pageTexts.push(pageText);
   }
 
   return pageTexts.join('\n\n');
@@ -126,7 +100,8 @@ async function extractPdfText(file: File) {
 
 function buildQuoteText(documents: QuoteDocument[], pastedText: string) {
   const documentText = documents
-    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text || '[PDF attached]'}`)
+    .filter((document) => document.text.trim())
+    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text}`)
     .join('\n\n---\n\n');
 
   return [documentText, pastedText.trim()].filter(Boolean).join('\n\n---\n\nPasted text:\n');
@@ -138,7 +113,6 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   const [quoteDocuments, setQuoteDocuments] = useState<QuoteDocument[]>([]);
   const [earlyAccessInterest, setEarlyAccessInterest] = useState(false);
   const [localError, setLocalError] = useState('');
-  const [fileStatus, setFileStatus] = useState('');
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileCopy = uploadCopy[language];
   const hasMultipleFiles = quoteDocuments.length > 1;
@@ -153,11 +127,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
     }
 
     setLocalError('');
-    onSubmit({
-      decisionContext,
-      quoteText: combinedQuoteText,
-      quoteDocuments,
-    });
+    onSubmit({ decisionContext, quoteText: combinedQuoteText, quoteDocuments });
   };
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -173,40 +143,23 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
     }
 
     setLocalError('');
-    setFileStatus(fileCopy.readingPdf);
     setIsReadingFile(true);
 
+    const attachedDocuments: QuoteDocument[] = files.map((file) => ({
+      name: file.name || 'PDF',
+      text: '',
+      mimeType: file.type || 'application/pdf',
+      sizeBytes: file.size,
+    }));
+    const previousDocuments = quoteDocuments;
+    setQuoteDocuments([...previousDocuments, ...attachedDocuments]);
+    setEarlyAccessInterest(false);
+
     try {
-      const newDocuments: QuoteDocument[] = files.map((file) => ({
-        name: file.name || 'PDF',
-        text: '',
-        mimeType: file.type || 'application/pdf',
-        sizeBytes: file.size,
-      }));
-      let nextDocuments = [...quoteDocuments, ...newDocuments];
-
-      setQuoteDocuments(nextDocuments);
-      setEarlyAccessInterest(false);
-      setFileStatus(
-        nextDocuments.length === 1
-          ? `${fileCopy.read}: ${nextDocuments[0].name}`
-          : `${fileCopy.readMany}: ${nextDocuments.length}`,
-      );
-
       const enrichedDocuments: QuoteDocument[] = [];
 
       for (const file of files) {
         let extractedText = '';
-        let fileData = '';
-
-        try {
-          if (file.size <= MAX_PDF_PAYLOAD_BYTES) {
-            fileData = await fileToDataUrl(file);
-          }
-        } catch {
-          fileData = '';
-        }
-
         try {
           extractedText = await extractPdfText(file);
         } catch {
@@ -216,21 +169,15 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
         enrichedDocuments.push({
           name: file.name || 'PDF',
           text: extractedText,
-          fileData,
           mimeType: file.type || 'application/pdf',
           sizeBytes: file.size,
         });
       }
 
-      nextDocuments = [...quoteDocuments, ...enrichedDocuments];
-      setQuoteDocuments(nextDocuments);
-      setFileStatus(
-        nextDocuments.length === 1
-          ? `${fileCopy.read}: ${nextDocuments[0].name}`
-          : `${fileCopy.readMany}: ${nextDocuments.length}`,
-      );
-    } catch (fileError) {
-      setFileStatus(fileCopy.unreadable);
+      setQuoteDocuments([...previousDocuments, ...enrichedDocuments]);
+      if (!enrichedDocuments.some((document) => document.text.trim())) {
+        setLocalError(fileCopy.unreadable);
+      }
     } finally {
       setIsReadingFile(false);
       input.value = '';
@@ -273,7 +220,6 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           />
         </div>
         <p>{content.quoteInputHint}</p>
-        {fileStatus && <p className="file-status">{fileStatus}</p>}
         {hasUploadedFiles && (
           <div className="attached-file-list" aria-live="polite">
             {quoteDocuments.map((document, index) => (
@@ -288,11 +234,9 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
         <textarea
           onChange={(event) => {
             setManualQuoteText(event.target.value);
-            if (hasUploadedFiles) {
-              setLocalError('');
-            }
+            if (hasUploadedFiles) setLocalError('');
           }}
-          placeholder={hasUploadedFiles ? 'Texto adicional opcional' : content.quotePlaceholder}
+          placeholder={hasUploadedFiles ? fileCopy.extraTextPlaceholder : content.quotePlaceholder}
           rows={3}
           value={manualQuoteText}
         />
@@ -301,11 +245,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
         <h2>{fileCopy.compareTeaserTitle}</h2>
         <p>{fileCopy.compareTeaserBody}</p>
         {earlyAccessInterest && <p className="file-status">{fileCopy.earlyAccessSaved}</p>}
-        <button
-          className="secondary-button"
-          onClick={() => setEarlyAccessInterest(true)}
-          type="button"
-        >
+        <button className="secondary-button" onClick={() => setEarlyAccessInterest(true)} type="button">
           {fileCopy.earlyAccessCta}
         </button>
       </section>
