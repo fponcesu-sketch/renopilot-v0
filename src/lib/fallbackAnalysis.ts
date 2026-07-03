@@ -1,43 +1,68 @@
 import type { QuoteCheckContent } from '../data/quoteCheckContent';
 import type { QuoteAnalysis, UpdatedRecommendationAnalysis } from '../types/analysis';
 
+const fallbackClarificationItems = [
+  {
+    title: 'IVA no confirmado',
+    consequence: 'Si el IVA no está incluido, el precio final puede ser más alto de lo que parece.',
+    consequence_type: 'cost',
+    question_to_ask: '¿El precio final incluye IVA?',
+  },
+  {
+    title: 'Plazo de ejecución no indicado',
+    consequence: 'Sin un plazo por escrito, la obra puede alargarse y será más difícil reclamar retrasos.',
+    consequence_type: 'time',
+    question_to_ask: '¿Cuál es la fecha estimada de inicio y finalización?',
+  },
+  {
+    title: 'Instalación eléctrica pendiente de definir',
+    consequence: 'Si el alcance no está cerrado, el precio puede cambiar durante la obra.',
+    consequence_type: 'scope',
+    question_to_ask: '¿Qué parte exacta de la instalación eléctrica está incluida en este presupuesto?',
+  },
+  {
+    title: 'Segundo pago no definido',
+    consequence: 'Puede generar discusión sobre cuándo toca abonar la siguiente parte si el hito no está claro.',
+    consequence_type: 'payment',
+    question_to_ask: '¿Qué hito concreto marca el segundo pago?',
+  },
+];
+
 export function buildFallbackQuoteAnalysis(content: QuoteCheckContent): QuoteAnalysis {
+  const messageToSend = `Hola, gracias por el presupuesto. Antes de aceptar, ¿podéis confirmarme estos puntos por escrito?\n\n${fallbackClarificationItems
+    .map((item, index) => `${index + 1}. ${item.question_to_ask}`)
+    .join('\n')}\n\nGracias.`;
+
   return {
     verdict: {
       level: 'yellow',
       title: content.result.status.replace(/^[🟢🟡🔴]\s*/, ''),
-      summary: 'Parece viable, pero hay que aclarar puntos clave antes de aceptar.',
+      summary: 'Parece viable, pero hay puntos clave que conviene aclarar antes de aceptar.',
     },
     mode: 'single_quote',
     comparison: {
       recommendedQuote: 'Oferta del proveedor',
       oneLineReason: 'Parece la opción más clara, pero faltan confirmaciones importantes antes de aceptar.',
       whyThisOne: ['Alcance más fácil de entender.'],
-      stillUnclear: ['Precio final con IVA.', 'Plazo y forma de pago.'],
+      stillUnclear: fallbackClarificationItems.map((item) => item.title),
       beCareful: ['No decidir solo por precio si otra oferta está más detallada.'],
     },
+    clarificationItems: fallbackClarificationItems,
     infoCategories: {
       confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
-      needsClarification: [
-        'Precio final con IVA incluido.',
-        'Qué está incluido exactamente en el alcance.',
-        'Plazo estimado y forma de pago.',
-      ],
-      risks: ['Aceptar sin confirmación escrita de los puntos abiertos.'],
+      needsClarification: fallbackClarificationItems.map((item) => `${item.title}. ${item.consequence}`),
+      risks: ['Aceptar sin confirmación escrita de los puntos abiertos puede generar discusión después.'],
     },
     vendorQuestions: {
       title: content.questions.title,
-      messageToSend: content.questions.message,
+      messageToSend,
       messagesByVendor: [
         {
           vendorName: 'Proveedor',
-          messageToSend: content.questions.message,
+          messageToSend,
         },
       ],
-      questions: content.questions.message
-        .split('\n')
-        .filter((line) => /^\d+\./.test(line.trim()))
-        .map((line) => line.replace(/^\d+\.\s*/, '').trim()),
+      questions: fallbackClarificationItems.map((item) => item.question_to_ask),
     },
     nextAction: {
       title: 'Siguiente paso',
