@@ -29,6 +29,12 @@ function getConfirmedTitle(label: string) {
   return 'Lo que parece claro';
 }
 
+function getClarificationTitle(label: string) {
+  if (label.toLowerCase().includes('clarification')) return 'To confirm before accepting';
+  if (label.toLowerCase().includes('wyja')) return 'Do potwierdzenia przed akceptacją';
+  return 'A confirmar antes de aceptar';
+}
+
 export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenProps) {
   const hasClarificationItems = Boolean(content.clarificationItems?.length);
   const confirmedItems = content.categories.confirmed.slice(0, 3);
@@ -41,6 +47,19 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
       </div>
       {hasClarificationItems ? (
         <>
+          {confirmedItems.length > 0 && (
+            <section className="confirmed-secondary-card confirmed-first-card">
+              <h2>{getConfirmedTitle(content.categoryLabels.confirmed)}</h2>
+              <ul>
+                {confirmedItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          <div className="clarification-section-heading">
+            <h2>{getClarificationTitle(content.categoryLabels.needsClarification)}</h2>
+          </div>
           <div className="clarification-item-list">
             {content.clarificationItems?.slice(0, 5).map((item) => (
               <section className="clarification-item-card" key={`${item.title}-${item.question_to_ask}`}>
@@ -59,16 +78,6 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
               </section>
             ))}
           </div>
-          {confirmedItems.length > 0 && (
-            <section className="confirmed-secondary-card">
-              <h2>{getConfirmedTitle(content.categoryLabels.confirmed)}</h2>
-              <ul>
-                {confirmedItems.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </section>
-          )}
         </>
       ) : (
         <div className="category-list">
