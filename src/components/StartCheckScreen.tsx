@@ -6,6 +6,8 @@ import type { QuoteDocument } from '../types/analysis';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
+const MAX_PDF_PAYLOAD_BYTES = 2_500_000;
+
 type StartCheckScreenProps = {
   content: QuoteCheckContent['startCheck'];
   error?: string;
@@ -35,12 +37,12 @@ const uploadCopy: Record<Language, {
 }> = {
   es: {
     reading: 'Leyendo…',
-    readingPdf: 'Leyendo PDFs…',
+    readingPdf: 'Adjuntando PDF…',
     onlyPdf: 'Ahora mismo solo podemos leer PDFs. Si estás en móvil, prueba a elegirlo desde Archivos / Files.',
-    unreadable: 'No hemos podido leer este PDF. Puedes copiar el texto manualmente.',
-    scanned: 'No hemos podido leer texto de uno de los PDFs. Puede ser un escaneo o una imagen.',
-    read: 'PDF leído',
-    readMany: 'PDFs leídos',
+    unreadable: 'PDF adjuntado. Si el análisis sale incompleto, copia también el texto manualmente.',
+    scanned: 'PDF adjuntado. Puede ser un escaneo, así que quizá necesitemos el texto manual si el análisis sale incompleto.',
+    read: 'PDF adjuntado',
+    readMany: 'PDFs adjuntados',
     missingInput: 'Sube uno o varios PDFs o pega el presupuesto para poder revisarlo.',
     multiFileNotice:
       'RenoPilot revisará estos archivos como un único paquete de presupuesto. La comparación de presupuestos todavía no está disponible en este prototipo.',
@@ -51,12 +53,12 @@ const uploadCopy: Record<Language, {
   },
   en: {
     reading: 'Reading…',
-    readingPdf: 'Reading PDFs…',
+    readingPdf: 'Attaching PDF…',
     onlyPdf: 'Right now we can only read PDFs. On mobile, try choosing it from Files.',
-    unreadable: 'We could not read this PDF. You can paste the text manually.',
-    scanned: 'We could not read text from one PDF. It may be a scan or image.',
-    read: 'PDF read',
-    readMany: 'PDFs read',
+    unreadable: 'PDF attached. If the review is incomplete, paste the text manually too.',
+    scanned: 'PDF attached. It may be a scan, so we may need pasted text if the review is incomplete.',
+    read: 'PDF attached',
+    readMany: 'PDFs attached',
     missingInput: 'Upload one or more PDFs, or paste the quote so we can review it.',
     multiFileNotice:
       'RenoPilot will review these files as one quote package. Multi-quote comparison is not available in this prototype yet.',
@@ -67,12 +69,12 @@ const uploadCopy: Record<Language, {
   },
   pl: {
     reading: 'Czytanie…',
-    readingPdf: 'Czytanie PDF-ów…',
+    readingPdf: 'Dodawanie PDF…',
     onlyPdf: 'Na razie możemy czytać tylko PDF-y. Na telefonie spróbuj wybrać plik z aplikacji Pliki / Files.',
-    unreadable: 'Nie udało się odczytać tego PDF-a. Możesz wkleić tekst ręcznie.',
-    scanned: 'Nie udało się odczytać tekstu z jednego PDF-a. To może być skan albo obraz.',
-    read: 'PDF odczytany',
-    readMany: 'PDF-y odczytane',
+    unreadable: 'PDF dodany. Jeśli analiza będzie niepełna, wklej też tekst ręcznie.',
+    scanned: 'PDF dodany. To może być skan, więc jeśli analiza będzie niepełna, wklej też tekst ręcznie.',
+    read: 'PDF dodany',
+    readMany: 'PDF-y dodane',
     missingInput: 'Wgraj jeden lub więcej PDF-ów albo wklej wycenę, aby ją sprawdzić.',
     multiFileNotice:
       'RenoPilot sprawdzi te pliki jako jeden pakiet wyceny. Porównywanie wycen nie jest jeszcze dostępne w tym prototypie.',
@@ -85,6 +87,15 @@ const uploadCopy: Record<Language, {
 
 function isPdfFile(file: File) {
   return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
 }
 
 async function extractPdfText(file: File) {
@@ -111,7 +122,7 @@ async function extractPdfText(file: File) {
 
 function buildQuoteText(documents: QuoteDocument[], pastedText: string) {
   const documentText = documents
-    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text}`)
+    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text || '[PDF attached]'}`)
     .join('\n\n---\n\n');
 
   return [documentText, pastedText.trim()].filter(Boolean).join('\n\n---\n\nPasted text:\n');
@@ -141,7 +152,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
     onSubmit({
       decisionContext,
       quoteText: combinedQuoteText,
-      quoteDocuments: hasMultipleFiles ? [] : quoteDocuments,
+      quoteDocuments,
     });
   };
 
@@ -162,26 +173,53 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
     setIsReadingFile(true);
 
     try {
-      const extractedDocuments: QuoteDocument[] = [];
+      const newDocuments: QuoteDocument[] = files.map((file) => ({
+        name: file.name || 'PDF',
+        text: '',
+        mimeType: file.type || 'application/pdf',
+        sizeBytes: file.size,
+      }));
+      let nextDocuments = [...quoteDocuments, ...newDocuments];
 
-      for (const file of files) {
-        const extractedText = await extractPdfText(file);
-
-        if (!extractedText.trim()) {
-          setFileStatus(fileCopy.scanned);
-          continue;
-        }
-
-        extractedDocuments.push({ name: file.name || 'PDF', text: extractedText });
-      }
-
-      if (!extractedDocuments.length) {
-        return;
-      }
-
-      const nextDocuments = [...quoteDocuments, ...extractedDocuments];
       setQuoteDocuments(nextDocuments);
       setEarlyAccessInterest(false);
+      setFileStatus(
+        nextDocuments.length === 1
+          ? `${fileCopy.read}: ${nextDocuments[0].name}`
+          : `${fileCopy.readMany}: ${nextDocuments.length}`,
+      );
+
+      const enrichedDocuments: QuoteDocument[] = [];
+
+      for (const file of files) {
+        let extractedText = '';
+        let fileData = '';
+
+        try {
+          if (file.size <= MAX_PDF_PAYLOAD_BYTES) {
+            fileData = await fileToDataUrl(file);
+          }
+        } catch {
+          fileData = '';
+        }
+
+        try {
+          extractedText = await extractPdfText(file);
+        } catch {
+          extractedText = '';
+        }
+
+        enrichedDocuments.push({
+          name: file.name || 'PDF',
+          text: extractedText,
+          fileData,
+          mimeType: file.type || 'application/pdf',
+          sizeBytes: file.size,
+        });
+      }
+
+      nextDocuments = [...quoteDocuments, ...enrichedDocuments];
+      setQuoteDocuments(nextDocuments);
       setFileStatus(
         nextDocuments.length === 1
           ? `${fileCopy.read}: ${nextDocuments[0].name}`
