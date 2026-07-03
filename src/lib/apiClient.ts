@@ -45,10 +45,15 @@ function buildSafeQuoteText(quoteText: string, quoteDocuments: QuoteDocument[]) 
   return combinedText.slice(0, MAX_QUOTE_CHARS);
 }
 
+function shouldSendFileFallback(document: QuoteDocument) {
+  return !document.text?.trim() && Boolean(document.fileData);
+}
+
 function buildSafeDocuments(quoteDocuments: QuoteDocument[]) {
   return quoteDocuments.slice(0, MAX_DOCUMENTS_TO_SEND).map((document) => ({
     name: document.name,
     text: (document.text || '').slice(0, MAX_QUOTE_CHARS),
+    fileData: shouldSendFileFallback(document) ? document.fileData : undefined,
     mimeType: document.mimeType,
     sizeBytes: document.sizeBytes,
   }));
