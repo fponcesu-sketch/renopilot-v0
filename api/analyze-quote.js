@@ -211,23 +211,57 @@ function extractOutputText(data) {
 }
 
 function normalizeDocuments(quoteDocuments, quoteText) {
-  if (Array.isArray(quoteDocuments) && quoteDocuments.length) {
-    return quoteDocuments
-      .filter((document) => String(document?.text || '').trim())
-      .map((document, index) => ({
+  const normalized = Array.isArray(quoteDocuments)
+    ? quoteDocuments.map((document, index) => ({
         id: `quote_${index + 1}`,
-        fileName: String(document.name || `Quote ${index + 1}`),
-        text: String(document.text || ''),
-      }));
-  }
+        fileName: String(document?.name || `Quote ${index + 1}`),
+        text: String(document?.text || ''),
+        fileData: typeof document?.fileData === 'string' ? document.fileData : '',
+      }))
+    : [];
+
+  if (normalized.length) return normalized;
 
   return [
     {
       id: 'quote_1',
       fileName: 'Pasted quote',
       text: String(quoteText || ''),
+      fileData: '',
     },
   ];
+}
+
+function buildUserContent({ responseLanguage, analysisModeHint, decisionContext, documents }) {
+  const textDocuments = documents.map((document) => ({
+    id: document.id,
+    fileName: document.fileName,
+    text: document.text,
+    hasAttachedPdf: Boolean(document.fileData),
+  }));
+  const content = [
+    {
+      type: 'input_text',
+      text: JSON.stringify({
+        responseLanguage,
+        analysisModeHint,
+        decisionContext,
+        documents: textDocuments,
+      }),
+    },
+  ];
+
+  for (const document of documents) {
+    if (document.fileData) {
+      content.push({
+        type: 'input_file',
+        filename: document.fileName,
+        file_data: document.fileData,
+      });
+    }
+  }
+
+  return content;
 }
 
 export default async function handler(req, res) {
@@ -238,8 +272,8 @@ export default async function handler(req, res) {
   const { decisionContext = '', quoteText = '', quoteDocuments = [], language = 'es' } = req.body || {};
   const responseLanguage = languageNames[language] || 'Spanish';
   const documents = normalizeDocuments(quoteDocuments, quoteText);
-  const hasInput = documents.some((document) => document.text.trim());
-  const analysisModeHint = documents.length > 1 ? 'quote_comparison' : 'single_quote';
+  const hasInput = documents.some((document) => document.text.trim() || document.fileData);
+  const analysisModeHint = 'single_quote';
 
   if (!hasInput) {
     return sendJson(res, 400, { error: 'Missing quote text' });
@@ -266,11 +300,11 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. The first screen should stay short and answer whether the homeowner can relax or should ask questions. Detailed consequences belong in clarificationItems. Every item in clarificationItems must explain: what is unclear, why it matters to the homeowner, and the exact question to ask. Use consequence_type as one of: cost, time, quality, scope, payment, dispute, decision_pressure. Include genuine missing, unclear, conditional or ambiguous points only. Do not invent hidden costs. If something is already quoted or confirmed, do not present it as a potential extra cost. For vendorQuestions, build the message from clarificationItems.question_to_ask. Keep the content practical and calm. Always write the product name exactly as RenoPilot. Never use PDF filenames as vendor names. Extract company names from the text; if unclear, use a neutral vendor label in ${responseLanguage}.`,
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. This prototype is a basic quote-check flow, not multi-quote comparison. Treat all uploaded files as one quote package. The first screen should stay short and answer whether the homeowner can relax or should ask questions. Detailed consequences belong in clarificationItems. Every item in clarificationItems must explain: what is unclear, why it matters to the homeowner, and the exact question to ask. Use consequence_type as one of: cost, time, quality, scope, payment, dispute, decision_pressure. Include genuine missing, unclear, conditional or ambiguous points only. Do not invent hidden costs. If something is already quoted or confirmed, do not present it as a potential extra cost. For vendorQuestions, build the message from clarificationItems.question_to_ask. Keep the content practical and calm. Always write the product name exactly as RenoPilot. Never use PDF filenames as vendor names. Extract company names from the content; if unclear, use a neutral vendor label in ${responseLanguage}.`,
           },
           {
             role: 'user',
-            content: JSON.stringify({
+            content: buildUserContent({
               responseLanguage,
               analysisModeHint,
               decisionContext,
