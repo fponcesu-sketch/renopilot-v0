@@ -28,6 +28,7 @@ const uploadCopy: Record<Language, {
   scanned: string;
   read: string;
   readMany: string;
+  attachedLabel: string;
   missingInput: string;
   multiFileNotice: string;
   compareTeaserTitle: string;
@@ -43,6 +44,7 @@ const uploadCopy: Record<Language, {
     scanned: 'PDF adjuntado. Puede ser un escaneo, así que quizá necesitemos el texto manual si el análisis sale incompleto.',
     read: 'PDF adjuntado',
     readMany: 'PDFs adjuntados',
+    attachedLabel: 'Archivo adjuntado',
     missingInput: 'Sube uno o varios PDFs o pega el presupuesto para poder revisarlo.',
     multiFileNotice:
       'RenoPilot revisará estos archivos como un único paquete de presupuesto. La comparación de presupuestos todavía no está disponible en este prototipo.',
@@ -59,6 +61,7 @@ const uploadCopy: Record<Language, {
     scanned: 'PDF attached. It may be a scan, so we may need pasted text if the review is incomplete.',
     read: 'PDF attached',
     readMany: 'PDFs attached',
+    attachedLabel: 'File attached',
     missingInput: 'Upload one or more PDFs, or paste the quote so we can review it.',
     multiFileNotice:
       'RenoPilot will review these files as one quote package. Multi-quote comparison is not available in this prototype yet.',
@@ -75,6 +78,7 @@ const uploadCopy: Record<Language, {
     scanned: 'PDF dodany. To może być skan, więc jeśli analiza będzie niepełna, wklej też tekst ręcznie.',
     read: 'PDF dodany',
     readMany: 'PDF-y dodane',
+    attachedLabel: 'Plik dodany',
     missingInput: 'Wgraj jeden lub więcej PDF-ów albo wklej wycenę, aby ją sprawdzić.',
     multiFileNotice:
       'RenoPilot sprawdzi te pliki jako jeden pakiet wyceny. Porównywanie wycen nie jest jeszcze dostępne w tym prototypie.',
@@ -270,6 +274,16 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
         </div>
         <p>{content.quoteInputHint}</p>
         {fileStatus && <p className="file-status">{fileStatus}</p>}
+        {hasUploadedFiles && (
+          <div className="attached-file-list" aria-live="polite">
+            {quoteDocuments.map((document, index) => (
+              <div className="attached-file-pill" key={`${document.name}-${index}`}>
+                <span>✓ {fileCopy.attachedLabel}</span>
+                <strong>{document.name}</strong>
+              </div>
+            ))}
+          </div>
+        )}
         {hasMultipleFiles && <p className="inline-warning">{fileCopy.multiFileNotice}</p>}
         <textarea
           onChange={(event) => {
