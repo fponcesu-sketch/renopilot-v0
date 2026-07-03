@@ -57,31 +57,30 @@
   padding: 8px 10px;
 }
 
-.multi-file-intent-card,
-.fake-door-card {
+.comparison-teaser-card {
   background: #fffaf4;
   border: 1px solid #e7dccd;
   border-radius: 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 13px;
+  gap: 8px;
+  padding: 12px;
 }
 
-.multi-file-intent-card h2,
-.fake-door-card h2 {
+.comparison-teaser-card h2 {
   color: #1e2b25;
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   line-height: 1.25;
   margin: 0;
 }
 
-.intent-option-group {
-  display: flex;
-  gap: 8px;
+.comparison-teaser-card p {
+  color: #4e5b54;
+  font-size: 0.84rem;
+  line-height: 1.35;
+  margin: 0;
 }
 
-.intent-option,
 .secondary-button {
   appearance: none;
   background: #f1e8dc;
@@ -95,38 +94,12 @@
   padding: 11px 12px;
 }
 
-.intent-option {
-  flex: 1;
-}
-
-.intent-option.selected {
-  background: #2f6b60;
-  border-color: #2f6b60;
-  color: #ffffff;
-}
-
-.fake-door-card p {
-  color: #4e5b54;
-  font-size: 0.9rem;
-  line-height: 1.35;
-  margin: 0;
-}
-
-.fake-door-card ul {
-  color: #3f4a44;
-  font-size: 0.88rem;
-  line-height: 1.34;
-  margin: 0;
-  padding-left: 18px;
-}
-
-.fake-door-card .primary-button,
-.fake-door-card .secondary-button {
-  width: 100%;
+.comparison-teaser-card .secondary-button {
+  align-self: flex-start;
 }
 
 @media (max-width: 600px) {
-  .intent-option-group {
-    flex-direction: column;
+  .comparison-teaser-card .secondary-button {
+    width: 100%;
   }
 }
