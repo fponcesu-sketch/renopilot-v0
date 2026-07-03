@@ -31,7 +31,7 @@ export const quoteCheckContent = {
       decisionPlaceholder:
         'Ejemplo: Quiero saber si este presupuesto para reformar el baño está claro antes de pagar la señal.',
       quoteInputLabel: 'Presupuesto, mensaje o captura',
-      quoteInputHint: 'Sube un archivo o copia el texto aquí. En este prototipo todavía no analizamos archivos reales.',
+      quoteInputHint: 'Sube uno o varios PDFs, o copia el texto aquí. RenoPilot revisará el contenido disponible.',
       uploadCta: 'Subir archivo o captura',
       quotePlaceholder:
         'Copia aquí el texto del presupuesto, WhatsApp, email o factura que quieres revisar.',
@@ -119,7 +119,7 @@ export const quoteCheckContent = {
       decisionPlaceholder:
         'Example: I want to know if this bathroom renovation quote is clear before I pay the deposit.',
       quoteInputLabel: 'Quote, message or screenshot',
-      quoteInputHint: 'Upload a file or copy the text here. This prototype does not analyze real files yet.',
+      quoteInputHint: 'Upload one or more PDFs, or copy the text here. RenoPilot will review the available content.',
       uploadCta: 'Upload file or screenshot',
       quotePlaceholder:
         'Copy the quote, WhatsApp, email or invoice text you want to review here.',
@@ -206,7 +206,7 @@ export const quoteCheckContent = {
       decisionPlaceholder:
         'Przykład: Chcę wiedzieć, czy ta wycena remontu łazienki jest jasna, zanim zapłacę zaliczkę.',
       quoteInputLabel: 'Wycena, wiadomość lub zrzut ekranu',
-      quoteInputHint: 'Wgraj plik albo wklej tekst tutaj. Ten prototyp nie analizuje jeszcze prawdziwych plików.',
+      quoteInputHint: 'Wgraj jeden lub więcej PDF-ów albo wklej tekst tutaj. RenoPilot sprawdzi dostępne treści.',
       uploadCta: 'Wgraj plik lub zrzut ekranu',
       quotePlaceholder:
         'Wklej tutaj tekst wyceny, WhatsAppa, e-maila albo faktury, którą chcesz sprawdzić.',
