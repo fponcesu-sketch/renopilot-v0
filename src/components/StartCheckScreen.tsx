@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import type { QuoteCheckContent, Language } from '../data/quoteCheckContent';
@@ -36,7 +36,7 @@ const uploadCopy: Record<Language, {
   es: {
     reading: 'Leyendo…',
     readingPdf: 'Leyendo PDFs…',
-    onlyPdf: 'Ahora mismo solo podemos leer PDFs. Las capturas todavía no se analizan automáticamente.',
+    onlyPdf: 'Ahora mismo solo podemos leer PDFs. Si estás en móvil, prueba a elegirlo desde Archivos / Files.',
     unreadable: 'No hemos podido leer este PDF. Puedes copiar el texto manualmente.',
     scanned: 'No hemos podido leer texto de uno de los PDFs. Puede ser un escaneo o una imagen.',
     read: 'PDF leído',
@@ -52,7 +52,7 @@ const uploadCopy: Record<Language, {
   en: {
     reading: 'Reading…',
     readingPdf: 'Reading PDFs…',
-    onlyPdf: 'Right now we can only read PDFs. Screenshots are not analyzed automatically yet.',
+    onlyPdf: 'Right now we can only read PDFs. On mobile, try choosing it from Files.',
     unreadable: 'We could not read this PDF. You can paste the text manually.',
     scanned: 'We could not read text from one PDF. It may be a scan or image.',
     read: 'PDF read',
@@ -68,7 +68,7 @@ const uploadCopy: Record<Language, {
   pl: {
     reading: 'Czytanie…',
     readingPdf: 'Czytanie PDF-ów…',
-    onlyPdf: 'Na razie możemy czytać tylko PDF-y. Zrzuty ekranu nie są jeszcze analizowane automatycznie.',
+    onlyPdf: 'Na razie możemy czytać tylko PDF-y. Na telefonie spróbuj wybrać plik z aplikacji Pliki / Files.',
     unreadable: 'Nie udało się odczytać tego PDF-a. Możesz wkleić tekst ręcznie.',
     scanned: 'Nie udało się odczytać tekstu z jednego PDF-a. To może być skan albo obraz.',
     read: 'PDF odczytany',
@@ -82,6 +82,10 @@ const uploadCopy: Record<Language, {
     earlyAccessSaved: 'Dzięki. Potraktujemy to jako zainteresowanie wczesnym dostępem.',
   },
 };
+
+function isPdfFile(file: File) {
+  return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+}
 
 async function extractPdfText(file: File) {
   const data = await file.arrayBuffer();
@@ -121,7 +125,6 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   const [localError, setLocalError] = useState('');
   const [fileStatus, setFileStatus] = useState('');
   const [isReadingFile, setIsReadingFile] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const fileCopy = uploadCopy[language];
   const hasMultipleFiles = quoteDocuments.length > 1;
 
@@ -140,13 +143,14 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   };
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
+    const input = event.currentTarget;
+    const files = Array.from(input.files || []);
 
     if (!files.length) return;
 
-    if (files.some((file) => file.type !== 'application/pdf')) {
+    if (files.some((file) => !isPdfFile(file))) {
       setLocalError(fileCopy.onlyPdf);
-      event.target.value = '';
+      input.value = '';
       return;
     }
 
@@ -165,7 +169,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           continue;
         }
 
-        extractedDocuments.push({ name: file.name, text: extractedText });
+        extractedDocuments.push({ name: file.name || 'PDF', text: extractedText });
       }
 
       if (!extractedDocuments.length) {
@@ -186,7 +190,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       setFileStatus(fileCopy.unreadable);
     } finally {
       setIsReadingFile(false);
-      event.target.value = '';
+      input.value = '';
     }
   };
 
@@ -213,20 +217,15 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       <section className="quote-input-card">
         <div className="quote-card-header">
           <h2>{content.quoteInputLabel}</h2>
-          <button
-            className="upload-button"
-            disabled={isReadingFile}
-            onClick={() => fileInputRef.current?.click()}
-            type="button"
-          >
+          <label className={isReadingFile ? 'upload-button disabled' : 'upload-button'} htmlFor="quote-file-upload">
             {isReadingFile ? fileCopy.reading : content.uploadCta}
-          </button>
+          </label>
           <input
             accept="application/pdf,.pdf"
             className="file-input-hidden"
+            id="quote-file-upload"
             multiple
             onChange={handleFileChange}
-            ref={fileInputRef}
             type="file"
           />
         </div>
