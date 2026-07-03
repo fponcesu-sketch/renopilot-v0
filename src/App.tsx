@@ -50,16 +50,16 @@ const screenPhase: Record<Screen, number | null> = {
 
 const checkingCopy: Record<Language, { items: string[]; slowMessage: string }> = {
   es: {
-    items: ['Leyendo el presupuesto', 'Detectando puntos poco claros', 'Preparando preguntas'],
-    slowMessage: 'Está tardando un poco más de lo normal. Estamos preparando una revisión básica.',
+    items: ['Leyendo el presupuesto', 'Detectando puntos poco claros', 'Revisando posibles costes extra', 'Preparando preguntas'],
+    slowMessage: 'Está tardando más de lo normal. Estamos terminando la revisión.',
   },
   en: {
-    items: ['Reading the quote', 'Spotting unclear points', 'Preparing questions'],
-    slowMessage: 'This is taking a little longer than usual. We are preparing a basic review.',
+    items: ['Reading the quote', 'Spotting unclear points', 'Checking possible extra costs', 'Preparing questions'],
+    slowMessage: 'This is taking longer than usual. We are finishing the review.',
   },
   pl: {
-    items: ['Czytanie wyceny', 'Wykrywanie niejasnych punktów', 'Przygotowywanie pytań'],
-    slowMessage: 'To trwa trochę dłużej niż zwykle. Przygotowujemy podstawową analizę.',
+    items: ['Czytanie wyceny', 'Wykrywanie niejasnych punktów', 'Sprawdzanie możliwych dodatkowych kosztów', 'Przygotowywanie pytań'],
+    slowMessage: 'To trwa dłużej niż zwykle. Kończymy analizę.',
   },
 };
 
