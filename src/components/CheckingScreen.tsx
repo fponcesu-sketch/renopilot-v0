@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type CheckingScreenProps = {
-  content: QuoteCheckContent['checking'];
+  content: QuoteCheckContent['checking'] & { slowMessage?: string };
   error?: string;
   isReady: boolean;
   onNext: () => void;
@@ -13,6 +13,7 @@ export function CheckingScreen({ content, error, isReady, onNext }: CheckingScre
   const [showSlowMessage, setShowSlowMessage] = useState(false);
   const animationComplete = progressIndex >= content.items.length;
   const canContinue = animationComplete && isReady;
+  const slowMessage = content.slowMessage || 'This is taking longer than usual.';
 
   useEffect(() => {
     setProgressIndex(0);
@@ -32,7 +33,7 @@ export function CheckingScreen({ content, error, isReady, onNext }: CheckingScre
       if (!isReady) {
         setShowSlowMessage(true);
       }
-    }, 9_000);
+    }, 9000);
 
     return () => {
       window.clearInterval(interval);
@@ -56,7 +57,7 @@ export function CheckingScreen({ content, error, isReady, onNext }: CheckingScre
           );
         })}
       </ul>
-      {showSlowMessage && !error && !isReady && <p className="inline-warning">{content.slowMessage}</p>}
+      {showSlowMessage && !error && !isReady && <p className="inline-warning">{slowMessage}</p>}
       {error && <p className="inline-warning">{error}</p>}
       <button className="primary-button" disabled={!canContinue} onClick={onNext}>
         {content.cta}
