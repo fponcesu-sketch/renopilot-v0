@@ -7,6 +7,13 @@ export type QuoteDocument = {
   text: string;
 };
 
+export type ClarificationItem = {
+  title: string;
+  consequence: string;
+  consequence_type: string;
+  question_to_ask: string;
+};
+
 export type QuoteInfoCategories = {
   confirmed: string[];
   needsClarification: string[];
@@ -35,6 +42,7 @@ export type QuoteAnalysis = {
   mode: 'single_quote' | 'quote_comparison';
   recommendedVendor?: string;
   comparison?: ComparisonSummary;
+  clarificationItems?: ClarificationItem[];
   infoCategories: QuoteInfoCategories;
   vendorQuestions: {
     title: string;
