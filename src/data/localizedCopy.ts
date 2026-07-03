@@ -34,7 +34,7 @@ export const localizedCopy: Record<Language, {
     disclaimerNote:
       'RenoPilot no sustituye el asesoramiento profesional, legal, arquitectónico o técnico. Confirma siempre los puntos importantes directamente con el profesional antes de firmar o pagar.',
     resultCta: 'Preparar preguntas para el proveedor',
-    reviewTitle: 'Puntos a aclarar',
+    reviewTitle: 'Revisión del presupuesto',
     reviewCta: 'Ver preguntas',
     questionsCta: 'Pegar respuesta',
     consequenceLabel: 'Por qué importa',
@@ -64,7 +64,7 @@ export const localizedCopy: Record<Language, {
     disclaimerNote:
       'RenoPilot does not replace professional, legal, architectural or technical advice. Always confirm important details directly with the contractor or a qualified professional before signing or paying.',
     resultCta: 'Prepare vendor questions',
-    reviewTitle: 'Points to clarify',
+    reviewTitle: 'Quote review',
     reviewCta: 'See questions',
     questionsCta: 'Paste reply',
     consequenceLabel: 'Why it matters',
@@ -94,7 +94,7 @@ export const localizedCopy: Record<Language, {
     disclaimerNote:
       'RenoPilot nie zastępuje porady profesjonalnej, prawnej, architektonicznej ani technicznej. Przed podpisaniem umowy lub płatnością zawsze potwierdź ważne szczegóły bezpośrednio z wykonawcą albo odpowiednim specjalistą.',
     resultCta: 'Przygotuj pytania do wykonawcy',
-    reviewTitle: 'Punkty do wyjaśnienia',
+    reviewTitle: 'Przegląd wyceny',
     reviewCta: 'Zobacz pytania',
     questionsCta: 'Wklej odpowiedź',
     consequenceLabel: 'Dlaczego to ważne',
@@ -114,7 +114,7 @@ export const localizedCopy: Record<Language, {
       conditionalSuffix: 'Nie jest jeszcze gotowa do zaakceptowania, dopóki ważne punkty nie zostaną potwierdzone pisemnie.',
     },
     fallbackWarning: 'Pokazujemy przykładową analizę, ponieważ LLM nie jest dostępny.',
-    analysisError: 'To trwa dłużej niż zwykle. Pokazujemy podstawową analizę, aby można było kontynuować.',
+    analysisError: 'To trwa dłużej niż zwykle. Pokazujemy podstawową analizę, aby można było kontynuować test.',
     vendorFallback: 'Ta analiza działa w trybie fallback/mock.',
     vendorError: 'Nie udało się zaktualizować analizy z AI. Pokazujemy przykład, aby można było kontynuować test.',
   },
