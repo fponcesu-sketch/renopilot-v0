@@ -6,20 +6,44 @@ import type {
   VendorReplyApiResponse,
 } from '../types/analysis';
 
-async function postJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
-  const response = await fetch(path, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+const MAX_QUOTE_CHARS = 18_000;
+const ANALYZE_QUOTE_TIMEOUT_MS = 25_000;
 
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`);
+async function postJson<TResponse>(path: string, body: unknown, timeoutMs?: number): Promise<TResponse> {
+  const controller = new AbortController();
+  const timeoutId = timeoutMs
+    ? window.setTimeout(() => controller.abort(), timeoutMs)
+    : undefined;
+
+  try {
+    const response = await fetch(path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    return response.json() as Promise<TResponse>;
+  } finally {
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
   }
+}
 
-  return response.json() as Promise<TResponse>;
+function buildSafeQuoteText(quoteText: string, quoteDocuments: QuoteDocument[]) {
+  const documentText = quoteDocuments
+    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text}`)
+    .join('\n\n---\n\n');
+  const combinedText = [documentText, quoteText.trim()].filter(Boolean).join('\n\n---\n\n');
+
+  return combinedText.slice(0, MAX_QUOTE_CHARS);
 }
 
 export async function analyzeQuote(input: {
@@ -28,7 +52,16 @@ export async function analyzeQuote(input: {
   quoteDocuments: QuoteDocument[];
   language: string;
 }): Promise<{ analysis: QuoteAnalysis; source: QuoteAnalysisApiResponse['source']; error?: string }> {
-  const data = await postJson<QuoteAnalysisApiResponse>('/api/analyze-quote', input);
+  const safeInput = {
+    ...input,
+    quoteText: buildSafeQuoteText(input.quoteText, input.quoteDocuments),
+    quoteDocuments: [],
+  };
+  const data = await postJson<QuoteAnalysisApiResponse>(
+    '/api/analyze-quote',
+    safeInput,
+    ANALYZE_QUOTE_TIMEOUT_MS,
+  );
 
   return {
     analysis: data.analysis,
@@ -48,7 +81,11 @@ export async function analyzeVendorReply(input: {
   source: VendorReplyApiResponse['source'];
   error?: string;
 }> {
-  const data = await postJson<VendorReplyApiResponse>('/api/analyze-vendor-reply', input);
+  const safeInput = {
+    ...input,
+    quoteText: input.quoteText.slice(0, MAX_QUOTE_CHARS),
+  };
+  const data = await postJson<VendorReplyApiResponse>('/api/analyze-vendor-reply', safeInput);
 
   return {
     analysis: data.analysis,
