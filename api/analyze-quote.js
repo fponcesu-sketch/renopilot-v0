@@ -1,8 +1,39 @@
+const fallbackClarificationItems = [
+  {
+    title: 'IVA no confirmado',
+    consequence: 'Si el IVA no está incluido, el precio final puede ser más alto de lo que parece.',
+    consequence_type: 'cost',
+    question_to_ask: '¿El precio final incluye IVA?',
+  },
+  {
+    title: 'Plazo de ejecución no indicado',
+    consequence: 'Sin un plazo por escrito, la obra puede alargarse y será más difícil reclamar retrasos.',
+    consequence_type: 'time',
+    question_to_ask: '¿Cuál es la fecha estimada de inicio y finalización?',
+  },
+  {
+    title: 'Instalación eléctrica pendiente de definir',
+    consequence: 'Si el alcance no está cerrado, el precio puede cambiar durante la obra.',
+    consequence_type: 'scope',
+    question_to_ask: '¿Qué parte exacta de la instalación eléctrica está incluida en este presupuesto?',
+  },
+  {
+    title: 'Segundo pago no definido',
+    consequence: 'Puede generar discusión sobre cuándo toca abonar la siguiente parte si el hito no está claro.',
+    consequence_type: 'payment',
+    question_to_ask: '¿Qué hito concreto marca el segundo pago?',
+  },
+];
+
+const fallbackMessage = `Hola, gracias por el presupuesto. Antes de aceptar, ¿podéis confirmarme estos puntos por escrito?\n\n${fallbackClarificationItems
+  .map((item, index) => `${index + 1}. ${item.question_to_ask}`)
+  .join('\n')}\n\nGracias.`;
+
 const fallbackAnalysis = {
   verdict: {
     level: 'yellow',
     title: 'Buena pinta, pero pregunta antes de firmar',
-    summary: 'Parece viable, pero hay que aclarar puntos clave antes de aceptar.',
+    summary: 'Parece viable, pero hay puntos clave que conviene aclarar antes de aceptar.',
   },
   mode: 'single_quote',
   recommendedVendor: '',
@@ -10,39 +41,29 @@ const fallbackAnalysis = {
     recommendedQuote: 'Proveedor recomendado',
     oneLineReason: 'Parece la opción más clara, pero faltan confirmaciones importantes.',
     whyThisOne: ['Alcance más fácil de entender.'],
-    stillUnclear: ['Precio final con IVA.', 'Plazo y forma de pago.'],
-    beCareful: ['No pagar señal sin confirmación escrita.'],
+    stillUnclear: fallbackClarificationItems.map((item) => item.title),
+    beCareful: ['No decidir solo por precio si otra oferta está más detallada.'],
   },
+  clarificationItems: fallbackClarificationItems,
   infoCategories: {
     confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
-    needsClarification: [
-      'Precio final con IVA incluido.',
-      'Qué está incluido exactamente en el alcance.',
-      'Plazo estimado y forma de pago.',
-    ],
-    risks: ['Aceptar o pagar señal sin confirmación escrita de los puntos abiertos.'],
+    needsClarification: fallbackClarificationItems.map((item) => `${item.title}. ${item.consequence}`),
+    risks: ['Aceptar sin confirmación escrita de los puntos abiertos puede generar discusión después.'],
   },
   vendorQuestions: {
     title: 'Mensaje para copiar y enviar',
-    messageToSend:
-      'Hola, gracias por el presupuesto. Antes de aceptar, ¿podéis confirmarme estos puntos por escrito?\n\n1. ¿Cuál será el precio final con IVA incluido?\n2. ¿Qué está incluido exactamente y qué podría costar extra?\n3. ¿Cuánto durará la obra o servicio?\n4. ¿Cuáles son las condiciones de pago y cuándo se paga cada parte?\n\nGracias.',
+    messageToSend: fallbackMessage,
     messagesByVendor: [
       {
         vendorName: 'Proveedor',
-        messageToSend:
-          'Hola, gracias por el presupuesto. Antes de aceptar, ¿podéis confirmarme estos puntos por escrito?\n\n1. ¿Cuál será el precio final con IVA incluido?\n2. ¿Qué está incluido exactamente y qué podría costar extra?\n3. ¿Cuánto durará la obra o servicio?\n4. ¿Cuáles son las condiciones de pago y cuándo se paga cada parte?\n\nGracias.',
+        messageToSend: fallbackMessage,
       },
     ],
-    questions: [
-      '¿Cuál será el precio final con IVA incluido?',
-      '¿Qué está incluido exactamente y qué podría costar extra?',
-      '¿Cuánto durará la obra o servicio?',
-      '¿Cuáles son las condiciones de pago y cuándo se paga cada parte?',
-    ],
+    questions: fallbackClarificationItems.map((item) => item.question_to_ask),
   },
   nextAction: {
-    title: 'Nuestra recomendación',
-    summary: 'No aceptes todavía. Pide confirmación por escrito y decide después.',
+    title: 'Siguiente paso',
+    summary: 'Pide confirmación por escrito y decide después.',
   },
   confidence: 'medium',
   assumptions: ['Fallback del prototipo: no se ha podido generar una revisión real con el LLM.'],
@@ -51,6 +72,24 @@ const fallbackAnalysis = {
 const listSchema = {
   type: 'array',
   items: { type: 'string' },
+};
+
+const clarificationItemSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['title', 'consequence', 'consequence_type', 'question_to_ask'],
+    properties: {
+      title: { type: 'string' },
+      consequence: { type: 'string' },
+      consequence_type: {
+        type: 'string',
+        enum: ['cost', 'time', 'quality', 'scope', 'payment', 'dispute', 'decision_pressure'],
+      },
+      question_to_ask: { type: 'string' },
+    },
+  },
 };
 
 const vendorMessageSchema = {
@@ -87,6 +126,7 @@ const schema = {
     'mode',
     'recommendedVendor',
     'comparison',
+    'clarificationItems',
     'infoCategories',
     'vendorQuestions',
     'nextAction',
@@ -107,6 +147,7 @@ const schema = {
     mode: { type: 'string', enum: ['single_quote', 'quote_comparison'] },
     recommendedVendor: { type: 'string' },
     comparison: comparisonSchema,
+    clarificationItems: clarificationItemSchema,
     infoCategories: {
       type: 'object',
       additionalProperties: false,
@@ -225,7 +266,7 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Less reading, one idea per screen. Give confidence, not a technical report. Return consequences, not construction details. Never call quoted prices hidden costs. If one quote is provided, give a single quote decision check. If more than one quote document is provided, set mode to quote_comparison and give a very simple recommendation: recommendedQuote, oneLineReason, whyThisOne, stillUnclear, beCareful. Do not create a scoring table. Do not claim a quote is definitively best; recommend the best one to continue with. Keep all arrays to 0-3 short items. IMPORTANT: extract vendor/company names from the document text. Never use PDF filenames, file extensions, document IDs, or strings like "Oferta190.pdf" as vendor names or recommendedQuote. If the company name is unclear, use a neutral label like "Proveedor 1" / "Vendor 1" / "Wykonawca 1" in the selected language. For multiple vendors, generate a separate ready-to-send message for each vendor in messagesByVendor. The messagesByVendor.vendorName values must also be extracted company names or neutral vendor labels, never filenames. For one vendor, generate one message. Do not invent prices. If information is missing, say it needs clarification.`,
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. The first screen should stay short and answer whether the homeowner can relax or should ask questions. Detailed consequences belong in clarificationItems. Every item in clarificationItems must explain: what is unclear, why it matters to the homeowner, and the exact question to ask. Use consequence_type as one of: cost, time, quality, scope, payment, dispute, decision_pressure. Include genuine missing, unclear, conditional or ambiguous points only. Do not invent hidden costs. If something is already quoted or confirmed, do not present it as a potential extra cost. For vendorQuestions, build the message from clarificationItems.question_to_ask. Keep the content practical and calm. Always write the product name exactly as RenoPilot. Never use PDF filenames as vendor names. Extract company names from the text; if unclear, use a neutral vendor label in ${responseLanguage}.`,
           },
           {
             role: 'user',
