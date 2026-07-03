@@ -10,11 +10,13 @@ type CheckingScreenProps = {
 
 export function CheckingScreen({ content, error, isReady, onNext }: CheckingScreenProps) {
   const [progressIndex, setProgressIndex] = useState(0);
+  const [showSlowMessage, setShowSlowMessage] = useState(false);
   const animationComplete = progressIndex >= content.items.length;
   const canContinue = animationComplete && isReady;
 
   useEffect(() => {
     setProgressIndex(0);
+    setShowSlowMessage(false);
 
     const interval = window.setInterval(() => {
       setProgressIndex((currentIndex) => {
@@ -26,9 +28,17 @@ export function CheckingScreen({ content, error, isReady, onNext }: CheckingScre
         return currentIndex + 1;
       });
     }, 850);
+    const slowTimer = window.setTimeout(() => {
+      if (!isReady) {
+        setShowSlowMessage(true);
+      }
+    }, 9_000);
 
-    return () => window.clearInterval(interval);
-  }, [content.items.length]);
+    return () => {
+      window.clearInterval(interval);
+      window.clearTimeout(slowTimer);
+    };
+  }, [content.items.length, isReady]);
 
   return (
     <div className="screen-content checking-screen">
@@ -46,6 +56,7 @@ export function CheckingScreen({ content, error, isReady, onNext }: CheckingScre
           );
         })}
       </ul>
+      {showSlowMessage && !error && !isReady && <p className="inline-warning">{content.slowMessage}</p>}
       {error && <p className="inline-warning">{error}</p>}
       <button className="primary-button" disabled={!canContinue} onClick={onNext}>
         {content.cta}
