@@ -18,8 +18,6 @@ type PdfTextItem = {
   str?: string;
 };
 
-type MultiFileIntent = 'one_package' | 'compare_quotes' | null;
-
 const uploadCopy: Record<Language, {
   reading: string;
   readingPdf: string;
@@ -29,14 +27,10 @@ const uploadCopy: Record<Language, {
   read: string;
   readMany: string;
   missingInput: string;
-  intentQuestion: string;
-  onePackage: string;
-  compareQuotes: string;
-  comingSoonTitle: string;
-  comingSoonBodyIntro: string;
-  comingSoonBullets: string[];
+  multiFileNotice: string;
+  compareTeaserTitle: string;
+  compareTeaserBody: string;
   earlyAccessCta: string;
-  continueBasicCta: string;
   earlyAccessSaved: string;
 }> = {
   es: {
@@ -48,19 +42,11 @@ const uploadCopy: Record<Language, {
     read: 'PDF leído',
     readMany: 'PDFs leídos',
     missingInput: 'Sube uno o varios PDFs o pega el presupuesto para poder revisarlo.',
-    intentQuestion: '¿Estos archivos pertenecen al mismo presupuesto o son presupuestos de distintos profesionales?',
-    onePackage: 'Un solo presupuesto',
-    compareQuotes: 'Comparar presupuestos distintos',
-    comingSoonTitle: 'Comparación de presupuestos próximamente',
-    comingSoonBodyIntro: 'RenoPilot comparará hasta 3 presupuestos y te dirá:',
-    comingSoonBullets: [
-      'cuál parece más claro / seguro',
-      'qué falta en cada uno',
-      'por qué uno puede ser más barato o más arriesgado',
-      'qué preguntar antes de elegir',
-    ],
+    multiFileNotice:
+      'RenoPilot revisará estos archivos como un único paquete de presupuesto. La comparación de presupuestos todavía no está disponible en este prototipo.',
+    compareTeaserTitle: '¿Necesitas comparar varios presupuestos?',
+    compareTeaserBody: 'La comparación de presupuestos llegará pronto.',
     earlyAccessCta: 'Quiero probarlo cuando esté listo',
-    continueBasicCta: 'Seguir con revisión básica',
     earlyAccessSaved: 'Gracias. Lo tendremos en cuenta para acceso temprano.',
   },
   en: {
@@ -72,19 +58,11 @@ const uploadCopy: Record<Language, {
     read: 'PDF read',
     readMany: 'PDFs read',
     missingInput: 'Upload one or more PDFs, or paste the quote so we can review it.',
-    intentQuestion: 'Are these files part of one quote, or are they quotes from different contractors?',
-    onePackage: 'One quote package',
-    compareQuotes: 'Compare different quotes',
-    comingSoonTitle: 'Multi-quote comparison is coming soon.',
-    comingSoonBodyIntro: 'RenoPilot will compare up to 3 quotes and show:',
-    comingSoonBullets: [
-      'which one is clearer / safer',
-      'what each quote is missing',
-      'why one may be cheaper or riskier',
-      'what to ask before choosing',
-    ],
+    multiFileNotice:
+      'RenoPilot will review these files as one quote package. Multi-quote comparison is not available in this prototype yet.',
+    compareTeaserTitle: 'Need to compare several quotes?',
+    compareTeaserBody: 'Multi-quote comparison is coming soon.',
     earlyAccessCta: 'Join early access',
-    continueBasicCta: 'Continue with basic check for now',
     earlyAccessSaved: 'Thanks. We will count this as early-access interest.',
   },
   pl: {
@@ -96,19 +74,11 @@ const uploadCopy: Record<Language, {
     read: 'PDF odczytany',
     readMany: 'PDF-y odczytane',
     missingInput: 'Wgraj jeden lub więcej PDF-ów albo wklej wycenę, aby ją sprawdzić.',
-    intentQuestion: 'Czy te pliki należą do jednej wyceny, czy są wycenami od różnych wykonawców?',
-    onePackage: 'Jedna wycena',
-    compareQuotes: 'Porównaj różne wyceny',
-    comingSoonTitle: 'Porównywanie wycen już wkrótce',
-    comingSoonBodyIntro: 'RenoPilot porówna do 3 wycen i pokaże:',
-    comingSoonBullets: [
-      'która wygląda jaśniej / bezpieczniej',
-      'czego brakuje w każdej wycenie',
-      'dlaczego jedna może być tańsza lub bardziej ryzykowna',
-      'o co zapytać przed wyborem',
-    ],
+    multiFileNotice:
+      'RenoPilot sprawdzi te pliki jako jeden pakiet wyceny. Porównywanie wycen nie jest jeszcze dostępne w tym prototypie.',
+    compareTeaserTitle: 'Chcesz porównać kilka wycen?',
+    compareTeaserBody: 'Porównywanie wycen pojawi się wkrótce.',
     earlyAccessCta: 'Chcę przetestować, gdy będzie gotowe',
-    continueBasicCta: 'Kontynuuj podstawową analizę',
     earlyAccessSaved: 'Dzięki. Potraktujemy to jako zainteresowanie wczesnym dostępem.',
   },
 };
@@ -147,15 +117,13 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   const [decisionContext, setDecisionContext] = useState('');
   const [quoteText, setQuoteText] = useState('');
   const [quoteDocuments, setQuoteDocuments] = useState<QuoteDocument[]>([]);
-  const [multiFileIntent, setMultiFileIntent] = useState<MultiFileIntent>(null);
   const [earlyAccessInterest, setEarlyAccessInterest] = useState(false);
   const [localError, setLocalError] = useState('');
   const [fileStatus, setFileStatus] = useState('');
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const fileCopy = uploadCopy[language];
-  const showMultiFileQuestion = quoteDocuments.length > 1;
-  const showFakeDoor = showMultiFileQuestion && multiFileIntent === 'compare_quotes';
+  const hasMultipleFiles = quoteDocuments.length > 1;
 
   const submitBasicCheck = () => {
     if (!quoteText.trim()) {
@@ -164,11 +132,10 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
     }
 
     setLocalError('');
-    const shouldTreatAsOnePackage = quoteDocuments.length > 1;
     onSubmit({
       decisionContext,
       quoteText,
-      quoteDocuments: shouldTreatAsOnePackage ? [] : quoteDocuments,
+      quoteDocuments: hasMultipleFiles ? [] : quoteDocuments,
     });
   };
 
@@ -209,7 +176,6 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       const manualText = quoteDocuments.length ? '' : quoteText;
       setQuoteDocuments(nextDocuments);
       setQuoteText(buildQuoteText(nextDocuments, manualText));
-      setMultiFileIntent(null);
       setEarlyAccessInterest(false);
       setFileStatus(
         nextDocuments.length === 1
@@ -227,19 +193,9 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   return (
     <form
       className="screen-content form-screen start-check-screen"
-      data-multi-file-intent={multiFileIntent || 'not_selected'}
+      data-multi-file-intent={earlyAccessInterest ? 'comparison_interest' : 'basic_check'}
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        if (showMultiFileQuestion && !multiFileIntent) {
-          setLocalError(fileCopy.intentQuestion);
-          return;
-        }
-
-        if (showFakeDoor) {
-          return;
-        }
-
         submitBasicCheck();
       }}
     >
@@ -276,11 +232,11 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
         </div>
         <p>{content.quoteInputHint}</p>
         {fileStatus && <p className="file-status">{fileStatus}</p>}
+        {hasMultipleFiles && <p className="inline-warning">{fileCopy.multiFileNotice}</p>}
         <textarea
           onChange={(event) => {
             setQuoteText(event.target.value);
             setQuoteDocuments([]);
-            setMultiFileIntent(null);
             setEarlyAccessInterest(false);
           }}
           placeholder={content.quotePlaceholder}
@@ -288,66 +244,22 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           value={quoteText}
         />
       </section>
-      {showMultiFileQuestion && (
-        <section className="multi-file-intent-card">
-          <h2>{fileCopy.intentQuestion}</h2>
-          <div className="intent-option-group">
-            <button
-              className={multiFileIntent === 'one_package' ? 'intent-option selected' : 'intent-option'}
-              onClick={() => {
-                setMultiFileIntent('one_package');
-                setEarlyAccessInterest(false);
-                setLocalError('');
-              }}
-              type="button"
-            >
-              {fileCopy.onePackage}
-            </button>
-            <button
-              className={multiFileIntent === 'compare_quotes' ? 'intent-option selected' : 'intent-option'}
-              onClick={() => {
-                setMultiFileIntent('compare_quotes');
-                setLocalError('');
-              }}
-              type="button"
-            >
-              {fileCopy.compareQuotes}
-            </button>
-          </div>
-        </section>
-      )}
-      {showFakeDoor && (
-        <section className="fake-door-card">
-          <h2>{fileCopy.comingSoonTitle}</h2>
-          <p>{fileCopy.comingSoonBodyIntro}</p>
-          <ul>
-            {fileCopy.comingSoonBullets.map((bullet) => (
-              <li key={bullet}>{bullet}</li>
-            ))}
-          </ul>
-          {earlyAccessInterest && <p className="file-status">{fileCopy.earlyAccessSaved}</p>}
-          <button
-            className="primary-button"
-            onClick={() => setEarlyAccessInterest(true)}
-            type="button"
-          >
-            {fileCopy.earlyAccessCta}
-          </button>
-          <button
-            className="secondary-button"
-            onClick={submitBasicCheck}
-            type="button"
-          >
-            {fileCopy.continueBasicCta}
-          </button>
-        </section>
-      )}
-      {(localError || error) && <p className="inline-error">{localError || error}</p>}
-      {!showFakeDoor && (
-        <button className="primary-button" disabled={isReadingFile} type="submit">
-          {isReadingFile ? fileCopy.readingPdf : content.cta}
+      <section className="comparison-teaser-card">
+        <h2>{fileCopy.compareTeaserTitle}</h2>
+        <p>{fileCopy.compareTeaserBody}</p>
+        {earlyAccessInterest && <p className="file-status">{fileCopy.earlyAccessSaved}</p>}
+        <button
+          className="secondary-button"
+          onClick={() => setEarlyAccessInterest(true)}
+          type="button"
+        >
+          {fileCopy.earlyAccessCta}
         </button>
-      )}
+      </section>
+      {(localError || error) && <p className="inline-error">{localError || error}</p>}
+      <button className="primary-button" disabled={isReadingFile} type="submit">
+        {isReadingFile ? fileCopy.readingPdf : content.cta}
+      </button>
     </form>
   );
 }
