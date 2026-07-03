@@ -5,6 +5,9 @@ export type AnalysisSource = 'llm' | 'mock';
 export type QuoteDocument = {
   name: string;
   text: string;
+  fileData?: string;
+  mimeType?: string;
+  sizeBytes?: number;
 };
 
 export type ClarificationItem = {
