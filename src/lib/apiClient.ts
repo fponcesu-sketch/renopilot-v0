@@ -12,9 +12,7 @@ const MAX_DOCUMENTS_TO_SEND = 3;
 
 async function postJson<TResponse>(path: string, body: unknown, timeoutMs?: number): Promise<TResponse> {
   const controller = new AbortController();
-  const timeoutId = timeoutMs
-    ? window.setTimeout(() => controller.abort(), timeoutMs)
-    : undefined;
+  const timeoutId = timeoutMs ? window.setTimeout(() => controller.abort(), timeoutMs) : undefined;
 
   try {
     const response = await fetch(path, {
@@ -51,7 +49,6 @@ function buildSafeDocuments(quoteDocuments: QuoteDocument[]) {
   return quoteDocuments.slice(0, MAX_DOCUMENTS_TO_SEND).map((document) => ({
     name: document.name,
     text: (document.text || '').slice(0, MAX_QUOTE_CHARS),
-    fileData: document.fileData,
     mimeType: document.mimeType,
     sizeBytes: document.sizeBytes,
   }));
@@ -68,11 +65,7 @@ export async function analyzeQuote(input: {
     quoteText: buildSafeQuoteText(input.quoteText, input.quoteDocuments),
     quoteDocuments: buildSafeDocuments(input.quoteDocuments),
   };
-  const data = await postJson<QuoteAnalysisApiResponse>(
-    '/api/analyze-quote',
-    safeInput,
-    ANALYZE_QUOTE_TIMEOUT_MS,
-  );
+  const data = await postJson<QuoteAnalysisApiResponse>('/api/analyze-quote', safeInput, ANALYZE_QUOTE_TIMEOUT_MS);
 
   return {
     analysis: data.analysis,
