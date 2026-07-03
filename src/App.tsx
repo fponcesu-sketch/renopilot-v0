@@ -14,7 +14,7 @@ import { analyzeQuote, analyzeVendorReply } from './lib/apiClient';
 import { buildFallbackQuoteAnalysis, buildFallbackUpdatedRecommendation, levelIcon } from './lib/fallbackAnalysis';
 import { defaultLanguage, quoteCheckContent, type Language } from './data/quoteCheckContent';
 import { localizedCopy } from './data/localizedCopy';
-import type { AnalysisSource, QuoteAnalysis, QuoteDocument, UpdatedRecommendationAnalysis } from './types/analysis';
+import type { AnalysisSource, ClarificationItem, QuoteAnalysis, QuoteDocument, UpdatedRecommendationAnalysis } from './types/analysis';
 
 type Screen =
   | 'landing'
@@ -72,6 +72,25 @@ function normalizeTextList(items: string[]) {
   return items.map((item) => normalizeProductName(item));
 }
 
+function normalizeClarificationItems(items: ClarificationItem[]) {
+  return items.map((item) => ({
+    ...item,
+    title: normalizeProductName(item.title),
+    consequence: normalizeProductName(item.consequence),
+    consequence_type: item.consequence_type,
+    question_to_ask: normalizeProductName(item.question_to_ask),
+  }));
+}
+
+function fallbackClarificationItems(items: string[]): ClarificationItem[] {
+  return items.slice(0, 4).map((item) => ({
+    title: normalizeProductName(item),
+    consequence: 'Puede afectar al precio, al plazo o al alcance real si no queda confirmado por escrito.',
+    consequence_type: 'scope',
+    question_to_ask: `¿Puedes confirmar por escrito este punto: ${normalizeProductName(item)}?`,
+  }));
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('landing');
   const [language, setLanguage] = useState<Language>(defaultLanguage);
@@ -94,6 +113,12 @@ export default function App() {
   const activeAnalysis = analysis ?? fallbackQuoteAnalysis;
   const activeUpdatedAnalysis = updatedAnalysis ?? buildFallbackUpdatedRecommendation(content);
   const isComparison = activeAnalysis.mode === 'quote_comparison';
+  const clarificationItems = activeAnalysis.clarificationItems?.length
+    ? normalizeClarificationItems(activeAnalysis.clarificationItems)
+    : fallbackClarificationItems([
+        ...activeAnalysis.infoCategories.needsClarification,
+        ...activeAnalysis.infoCategories.risks,
+      ]);
   const rawComparisonSummary = activeAnalysis.comparison ?? {
     recommendedQuote: activeAnalysis.recommendedVendor || activeAnalysis.verdict.title,
     oneLineReason: activeAnalysis.verdict.summary,
@@ -133,7 +158,10 @@ export default function App() {
       needsClarification: normalizeTextList(activeAnalysis.infoCategories.needsClarification),
       risks: normalizeTextList(activeAnalysis.infoCategories.risks),
     },
+    clarificationItems,
     categoryLabels: copy.categoryLabels,
+    consequenceLabel: copy.consequenceLabel,
+    questionLabel: copy.questionLabel,
     cta: copy.reviewCta,
   };
 
@@ -145,6 +173,9 @@ export default function App() {
       beCareful: copy.comparison.beCareful,
     },
     summary: comparisonSummary,
+    clarificationItems,
+    consequenceLabel: copy.consequenceLabel,
+    questionLabel: copy.questionLabel,
     cta: copy.reviewCta,
   };
 
