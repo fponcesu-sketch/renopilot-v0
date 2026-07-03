@@ -119,7 +119,7 @@ function buildQuoteText(documents: QuoteDocument[], pastedText: string) {
 
 export function StartCheckScreen({ content, error, language, note, onSubmit }: StartCheckScreenProps) {
   const [decisionContext, setDecisionContext] = useState('');
-  const [quoteText, setQuoteText] = useState('');
+  const [manualQuoteText, setManualQuoteText] = useState('');
   const [quoteDocuments, setQuoteDocuments] = useState<QuoteDocument[]>([]);
   const [earlyAccessInterest, setEarlyAccessInterest] = useState(false);
   const [localError, setLocalError] = useState('');
@@ -127,9 +127,12 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileCopy = uploadCopy[language];
   const hasMultipleFiles = quoteDocuments.length > 1;
+  const hasUploadedFiles = quoteDocuments.length > 0;
 
   const submitBasicCheck = () => {
-    if (!quoteText.trim()) {
+    const combinedQuoteText = buildQuoteText(quoteDocuments, manualQuoteText);
+
+    if (!combinedQuoteText.trim()) {
       setLocalError(fileCopy.missingInput);
       return;
     }
@@ -137,7 +140,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
     setLocalError('');
     onSubmit({
       decisionContext,
-      quoteText,
+      quoteText: combinedQuoteText,
       quoteDocuments: hasMultipleFiles ? [] : quoteDocuments,
     });
   };
@@ -177,9 +180,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       }
 
       const nextDocuments = [...quoteDocuments, ...extractedDocuments];
-      const manualText = quoteDocuments.length ? '' : quoteText;
       setQuoteDocuments(nextDocuments);
-      setQuoteText(buildQuoteText(nextDocuments, manualText));
       setEarlyAccessInterest(false);
       setFileStatus(
         nextDocuments.length === 1
@@ -234,13 +235,14 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
         {hasMultipleFiles && <p className="inline-warning">{fileCopy.multiFileNotice}</p>}
         <textarea
           onChange={(event) => {
-            setQuoteText(event.target.value);
-            setQuoteDocuments([]);
-            setEarlyAccessInterest(false);
+            setManualQuoteText(event.target.value);
+            if (hasUploadedFiles) {
+              setLocalError('');
+            }
           }}
-          placeholder={content.quotePlaceholder}
+          placeholder={hasUploadedFiles ? 'Texto adicional opcional' : content.quotePlaceholder}
           rows={3}
-          value={quoteText}
+          value={manualQuoteText}
         />
       </section>
       <section className="comparison-teaser-card">
