@@ -8,6 +8,7 @@ import type {
 
 const MAX_QUOTE_CHARS = 18_000;
 const ANALYZE_QUOTE_TIMEOUT_MS = 25_000;
+const MAX_DOCUMENTS_TO_SEND = 3;
 
 async function postJson<TResponse>(path: string, body: unknown, timeoutMs?: number): Promise<TResponse> {
   const controller = new AbortController();
@@ -39,11 +40,21 @@ async function postJson<TResponse>(path: string, body: unknown, timeoutMs?: numb
 
 function buildSafeQuoteText(quoteText: string, quoteDocuments: QuoteDocument[]) {
   const documentText = quoteDocuments
-    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text}`)
+    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text || ''}`)
     .join('\n\n---\n\n');
   const combinedText = [documentText, quoteText.trim()].filter(Boolean).join('\n\n---\n\n');
 
   return combinedText.slice(0, MAX_QUOTE_CHARS);
+}
+
+function buildSafeDocuments(quoteDocuments: QuoteDocument[]) {
+  return quoteDocuments.slice(0, MAX_DOCUMENTS_TO_SEND).map((document) => ({
+    name: document.name,
+    text: (document.text || '').slice(0, MAX_QUOTE_CHARS),
+    fileData: document.fileData,
+    mimeType: document.mimeType,
+    sizeBytes: document.sizeBytes,
+  }));
 }
 
 export async function analyzeQuote(input: {
@@ -55,7 +66,7 @@ export async function analyzeQuote(input: {
   const safeInput = {
     ...input,
     quoteText: buildSafeQuoteText(input.quoteText, input.quoteDocuments),
-    quoteDocuments: [],
+    quoteDocuments: buildSafeDocuments(input.quoteDocuments),
   };
   const data = await postJson<QuoteAnalysisApiResponse>(
     '/api/analyze-quote',
