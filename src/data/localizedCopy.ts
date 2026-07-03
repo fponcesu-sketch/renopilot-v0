@@ -7,6 +7,8 @@ export const localizedCopy: Record<Language, {
   reviewTitle: string;
   reviewCta: string;
   questionsCta: string;
+  consequenceLabel: string;
+  questionLabel: string;
   categoryLabels: {
     confirmed: string;
     needsClarification: string;
@@ -32,9 +34,11 @@ export const localizedCopy: Record<Language, {
     disclaimerNote:
       'RenoPilot no sustituye el asesoramiento profesional, legal, arquitectónico o técnico. Confirma siempre los puntos importantes directamente con el profesional antes de firmar o pagar.',
     resultCta: 'Preparar preguntas para el proveedor',
-    reviewTitle: 'Antes de decidir',
+    reviewTitle: 'Puntos a aclarar',
     reviewCta: 'Ver preguntas',
     questionsCta: 'Pegar respuesta',
+    consequenceLabel: 'Por qué importa',
+    questionLabel: 'Pregunta',
     categoryLabels: {
       confirmed: '🟢 Confirmado',
       needsClarification: '🟡 A aclarar',
@@ -45,7 +49,7 @@ export const localizedCopy: Record<Language, {
       recommendationLabel: 'Probable mejor valor — aclara antes de aceptar',
       detailsTitle: 'Por qué la elegimos — y qué revisar primero',
       whyThisOne: 'Por qué parece fuerte',
-      stillUnclear: 'Aclara antes de aceptar',
+      stillUnclear: 'Puntos a aclarar',
       beCareful: 'Riesgo principal',
       conditionalSuffix: 'No está listo para aceptar hasta confirmar por escrito los puntos importantes.',
     },
@@ -60,9 +64,11 @@ export const localizedCopy: Record<Language, {
     disclaimerNote:
       'RenoPilot does not replace professional, legal, architectural or technical advice. Always confirm important details directly with the contractor or a qualified professional before signing or paying.',
     resultCta: 'Prepare vendor questions',
-    reviewTitle: 'Before you decide',
+    reviewTitle: 'Points to clarify',
     reviewCta: 'See questions',
     questionsCta: 'Paste reply',
+    consequenceLabel: 'Why it matters',
+    questionLabel: 'Question',
     categoryLabels: {
       confirmed: '🟢 Confirmed',
       needsClarification: '🟡 Needs clarification',
@@ -73,7 +79,7 @@ export const localizedCopy: Record<Language, {
       recommendationLabel: 'Likely best value — clarify before accepting',
       detailsTitle: 'Why we picked this — and what to check first',
       whyThisOne: 'Why it looks strong',
-      stillUnclear: 'Clarify before accepting',
+      stillUnclear: 'Points to clarify',
       beCareful: 'Main risk',
       conditionalSuffix: 'It is not ready to accept until the important points are confirmed in writing.',
     },
@@ -88,9 +94,11 @@ export const localizedCopy: Record<Language, {
     disclaimerNote:
       'RenoPilot nie zastępuje porady profesjonalnej, prawnej, architektonicznej ani technicznej. Przed podpisaniem umowy lub płatnością zawsze potwierdź ważne szczegóły bezpośrednio z wykonawcą albo odpowiednim specjalistą.',
     resultCta: 'Przygotuj pytania do wykonawcy',
-    reviewTitle: 'Przed decyzją',
+    reviewTitle: 'Punkty do wyjaśnienia',
     reviewCta: 'Zobacz pytania',
     questionsCta: 'Wklej odpowiedź',
+    consequenceLabel: 'Dlaczego to ważne',
+    questionLabel: 'Pytanie',
     categoryLabels: {
       confirmed: '🟢 Potwierdzone',
       needsClarification: '🟡 Do wyjaśnienia',
@@ -101,7 +109,7 @@ export const localizedCopy: Record<Language, {
       recommendationLabel: 'Prawdopodobnie najlepsza wartość — wyjaśnij przed akceptacją',
       detailsTitle: 'Dlaczego ją wybraliśmy — i co najpierw sprawdzić',
       whyThisOne: 'Dlaczego wygląda mocno',
-      stillUnclear: 'Wyjaśnij przed akceptacją',
+      stillUnclear: 'Punkty do wyjaśnienia',
       beCareful: 'Główne ryzyko',
       conditionalSuffix: 'Nie jest jeszcze gotowa do zaakceptowania, dopóki ważne punkty nie zostaną potwierdzone pisemnie.',
     },
