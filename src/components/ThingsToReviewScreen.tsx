@@ -11,6 +11,8 @@ type ThingsToReviewContent = {
   categories: QuoteInfoCategories;
   clarificationItems?: ClarificationItem[];
   categoryLabels: CategoryLabels;
+  consequenceLabel: string;
+  questionLabel: string;
   cta: string;
 };
 
@@ -36,11 +38,11 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
                 <span>{item.consequence_type}</span>
               </div>
               <p>
-                <strong>Por qué importa: </strong>
+                <strong>{content.consequenceLabel}: </strong>
                 {item.consequence}
               </p>
               <p>
-                <strong>Pregunta: </strong>
+                <strong>{content.questionLabel}: </strong>
                 {item.question_to_ask}
               </p>
             </section>
