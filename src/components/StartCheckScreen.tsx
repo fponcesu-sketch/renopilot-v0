@@ -34,7 +34,7 @@ const uploadCopy: Record<Language, {
     reading: 'Leyendo…',
     readingPdf: 'Leyendo PDF…',
     onlyPdf: 'Ahora mismo solo podemos leer PDFs. Si estás en móvil, prueba a elegirlo desde Archivos / Files.',
-    unreadable: 'No hemos podido leer el texto del PDF. Prueba de nuevo o copia el texto del presupuesto.',
+    unreadable: 'Archivo adjuntado. Si la revisión sale incompleta, copia también el texto del presupuesto.',
     attachedLabel: 'Archivo adjuntado',
     extraTextPlaceholder: 'Texto adicional opcional',
     missingInput: 'Sube un PDF legible o pega el presupuesto para poder revisarlo.',
@@ -48,7 +48,7 @@ const uploadCopy: Record<Language, {
     reading: 'Reading…',
     readingPdf: 'Reading PDF…',
     onlyPdf: 'Right now we can only read PDFs. On mobile, try choosing it from Files.',
-    unreadable: 'We could not read the PDF text. Try again or paste the quote text.',
+    unreadable: 'File attached. If the review is incomplete, paste the quote text too.',
     attachedLabel: 'File attached',
     extraTextPlaceholder: 'Optional extra text',
     missingInput: 'Upload a readable PDF or paste the quote so we can review it.',
@@ -62,7 +62,7 @@ const uploadCopy: Record<Language, {
     reading: 'Czytanie…',
     readingPdf: 'Czytanie PDF…',
     onlyPdf: 'Na razie możemy czytać tylko PDF-y. Na telefonie spróbuj wybrać plik z aplikacji Pliki / Files.',
-    unreadable: 'Nie udało się odczytać tekstu z PDF-a. Spróbuj ponownie albo wklej tekst wyceny.',
+    unreadable: 'Plik dodany. Jeśli analiza będzie niepełna, wklej też tekst wyceny.',
     attachedLabel: 'Plik dodany',
     extraTextPlaceholder: 'Opcjonalny dodatkowy tekst',
     missingInput: 'Wgraj czytelny PDF albo wklej wycenę, aby ją sprawdzić.',
@@ -113,6 +113,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   const [quoteDocuments, setQuoteDocuments] = useState<QuoteDocument[]>([]);
   const [earlyAccessInterest, setEarlyAccessInterest] = useState(false);
   const [localError, setLocalError] = useState('');
+  const [softWarning, setSoftWarning] = useState('');
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileCopy = uploadCopy[language];
   const hasMultipleFiles = quoteDocuments.length > 1;
@@ -143,6 +144,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
     }
 
     setLocalError('');
+    setSoftWarning('');
     setIsReadingFile(true);
 
     const attachedDocuments: QuoteDocument[] = files.map((file) => ({
@@ -176,7 +178,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
 
       setQuoteDocuments([...previousDocuments, ...enrichedDocuments]);
       if (!enrichedDocuments.some((document) => document.text.trim())) {
-        setLocalError(fileCopy.unreadable);
+        setSoftWarning(fileCopy.unreadable);
       }
     } finally {
       setIsReadingFile(false);
@@ -230,11 +232,15 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
             ))}
           </div>
         )}
+        {softWarning && <p className="inline-warning">{softWarning}</p>}
         {hasMultipleFiles && <p className="inline-warning">{fileCopy.multiFileNotice}</p>}
         <textarea
           onChange={(event) => {
             setManualQuoteText(event.target.value);
-            if (hasUploadedFiles) setLocalError('');
+            if (hasUploadedFiles) {
+              setLocalError('');
+              setSoftWarning('');
+            }
           }}
           placeholder={hasUploadedFiles ? fileCopy.extraTextPlaceholder : content.quotePlaceholder}
           rows={3}
