@@ -191,6 +191,7 @@ export default function App() {
     priceSanityTitle: copy.priceSanityTitle,
     priceNextStepLabel: copy.priceNextStepLabel,
     categoryLabels: copy.categoryLabels,
+    consequenceLabels: copy.consequenceLabels,
     consequenceLabel: copy.consequenceLabel,
     questionLabel: copy.questionLabel,
     cta: copy.reviewCta,
