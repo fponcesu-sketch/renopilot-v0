@@ -6,6 +6,8 @@ type CategoryLabels = {
   risks: string;
 };
 
+type ConsequenceLabels = Record<ClarificationItem['consequence_type'], string>;
+
 type ThingsToReviewContent = {
   title: string;
   categories: QuoteInfoCategories;
@@ -14,6 +16,7 @@ type ThingsToReviewContent = {
   priceSanityTitle: string;
   priceNextStepLabel: string;
   categoryLabels: CategoryLabels;
+  consequenceLabels: ConsequenceLabels;
   consequenceLabel: string;
   questionLabel: string;
   cta: string;
@@ -66,6 +69,19 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
               </ul>
             </section>
           )}
+          {priceSanity && (
+            <section className="price-sanity-card price-sanity-prominent-card">
+              <h2>{content.priceSanityTitle}</h2>
+              <strong>
+                {priceStatusIcon[priceSanity.status]} {priceSanity.title}
+              </strong>
+              <p>{priceSanity.summary}</p>
+              <p>
+                <span>{content.priceNextStepLabel}: </span>
+                {priceSanity.next_step}
+              </p>
+            </section>
+          )}
           <div className="clarification-section-heading">
             <h2>{getClarificationTitle(content.categoryLabels.needsClarification)}</h2>
           </div>
@@ -74,7 +90,7 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
               <section className="clarification-item-card" key={`${item.title}-${item.question_to_ask}`}>
                 <div className="clarification-item-header">
                   <h2>{item.title}</h2>
-                  <span>{item.consequence_type}</span>
+                  <span>{content.consequenceLabels[item.consequence_type]}</span>
                 </div>
                 <p>
                   <strong>{content.consequenceLabel}: </strong>
@@ -87,19 +103,6 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
               </section>
             ))}
           </div>
-          {priceSanity && (
-            <section className="price-sanity-card">
-              <h2>{content.priceSanityTitle}</h2>
-              <strong>
-                {priceStatusIcon[priceSanity.status]} {priceSanity.title}
-              </strong>
-              <p>{priceSanity.summary}</p>
-              <p>
-                <span>{content.priceNextStepLabel}: </span>
-                {priceSanity.next_step}
-              </p>
-            </section>
-          )}
         </>
       ) : (
         <div className="category-list">
