@@ -288,24 +288,33 @@
   padding: 12px;
 }
 
+.price-sanity-prominent-card {
+  background: #fffaf4;
+  border-color: #dfcdb7;
+  box-shadow: 0 10px 24px rgba(95, 70, 38, 0.08);
+  gap: 10px;
+  padding: 14px;
+}
+
 .price-sanity-card h2 {
-  color: #6f655b;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
+  color: #8b6f3d;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
   margin: 0;
   text-transform: uppercase;
 }
 
 .price-sanity-card strong {
   color: #1e2b25;
-  font-size: 0.94rem;
+  font-size: 1.05rem;
   line-height: 1.25;
 }
 
 .price-sanity-card p {
-  color: #4e5b54;
-  font-size: 0.84rem;
-  line-height: 1.38;
+  color: #3f4c45;
+  font-size: 0.88rem;
+  line-height: 1.42;
   margin: 0;
 }
 
