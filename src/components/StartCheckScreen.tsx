@@ -8,6 +8,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 const MAX_PDF_FALLBACK_BYTES = 2_500_000;
 
+type MultiFileIntent = 'undecided' | 'single_package' | 'comparison_interest';
+
 type StartCheckScreenProps = {
   content: QuoteCheckContent['startCheck'];
   error?: string;
@@ -25,12 +27,16 @@ const uploadCopy: Record<Language, {
   attachedLabel: string;
   extraTextPlaceholder: string;
   missingInput: string;
-  multiFileNotice: string;
   privacyNote: string;
+  multiFileQuestion: string;
+  onePackageOption: string;
+  compareOption: string;
   compareTeaserTitle: string;
   compareTeaserBody: string;
+  compareBullets: string[];
   earlyAccessCta: string;
   earlyAccessSaved: string;
+  continueBasicCta: string;
 }> = {
   es: {
     reading: 'Leyendo…',
@@ -39,12 +45,21 @@ const uploadCopy: Record<Language, {
     attachedLabel: 'Archivo adjuntado',
     extraTextPlaceholder: 'Texto adicional opcional',
     missingInput: 'Sube un PDF o pega el presupuesto para poder revisarlo.',
-    multiFileNotice: 'RenoPilot revisará estos archivos como un único paquete de presupuesto. La comparación de presupuestos todavía no está disponible en este prototipo.',
     privacyNote: 'Puedes ocultar datos personales antes de subir el presupuesto. RenoPilot revisa el contenido del presupuesto; no necesita tus datos personales.',
-    compareTeaserTitle: '¿Necesitas comparar varios presupuestos?',
-    compareTeaserBody: 'La comparación de presupuestos llegará pronto.',
+    multiFileQuestion: '¿Estos archivos pertenecen al mismo presupuesto o son presupuestos de distintos profesionales?',
+    onePackageOption: 'Un solo presupuesto',
+    compareOption: 'Comparar presupuestos distintos',
+    compareTeaserTitle: 'Comparación de presupuestos próximamente.',
+    compareTeaserBody: 'RenoPilot comparará hasta 3 presupuestos y te dirá:',
+    compareBullets: [
+      'cuál parece más claro / seguro',
+      'qué falta en cada uno',
+      'por qué uno puede ser más barato o más arriesgado',
+      'qué preguntar antes de elegir',
+    ],
     earlyAccessCta: 'Quiero probarlo cuando esté listo',
     earlyAccessSaved: 'Gracias. Lo tendremos en cuenta para acceso temprano.',
+    continueBasicCta: 'Seguir con revisión básica',
   },
   en: {
     reading: 'Reading…',
@@ -53,12 +68,21 @@ const uploadCopy: Record<Language, {
     attachedLabel: 'File attached',
     extraTextPlaceholder: 'Optional extra text',
     missingInput: 'Upload a PDF or paste the quote so we can review it.',
-    multiFileNotice: 'RenoPilot will review these files as one quote package. Multi-quote comparison is not available in this prototype yet.',
     privacyNote: 'You can remove personal details before uploading. RenoPilot reviews the quote content; it does not need your personal data.',
-    compareTeaserTitle: 'Need to compare several quotes?',
-    compareTeaserBody: 'Multi-quote comparison is coming soon.',
+    multiFileQuestion: 'Are these files part of one quote, or are they quotes from different contractors?',
+    onePackageOption: 'One quote package',
+    compareOption: 'Compare different quotes',
+    compareTeaserTitle: 'Multi-quote comparison is coming soon.',
+    compareTeaserBody: 'RenoPilot will compare up to 3 quotes and show:',
+    compareBullets: [
+      'which one is clearer / safer',
+      'what each quote is missing',
+      'why one may be cheaper or riskier',
+      'what to ask before choosing',
+    ],
     earlyAccessCta: 'Join early access',
     earlyAccessSaved: 'Thanks. We will count this as early-access interest.',
+    continueBasicCta: 'Continue with basic check for now',
   },
   pl: {
     reading: 'Czytanie…',
@@ -67,12 +91,21 @@ const uploadCopy: Record<Language, {
     attachedLabel: 'Plik dodany',
     extraTextPlaceholder: 'Opcjonalny dodatkowy tekst',
     missingInput: 'Wgraj PDF albo wklej wycenę, aby ją sprawdzić.',
-    multiFileNotice: 'RenoPilot sprawdzi te pliki jako jeden pakiet wyceny. Porównywanie wycen nie jest jeszcze dostępne w tym prototypie.',
     privacyNote: 'Możesz ukryć dane osobowe przed przesłaniem wyceny. RenoPilot analizuje treść wyceny; nie potrzebuje Twoich danych osobowych.',
-    compareTeaserTitle: 'Chcesz porównać kilka wycen?',
-    compareTeaserBody: 'Porównywanie wycen pojawi się wkrótce.',
+    multiFileQuestion: 'Czy te pliki są częścią jednej wyceny, czy to wyceny od różnych wykonawców?',
+    onePackageOption: 'Jeden pakiet wyceny',
+    compareOption: 'Porównaj różne wyceny',
+    compareTeaserTitle: 'Porównywanie wycen pojawi się wkrótce.',
+    compareTeaserBody: 'RenoPilot porówna do 3 wycen i pokaże:',
+    compareBullets: [
+      'która wygląda jaśniej / bezpieczniej',
+      'czego brakuje w każdej wycenie',
+      'dlaczego jedna może być tańsza albo bardziej ryzykowna',
+      'o co zapytać przed wyborem',
+    ],
     earlyAccessCta: 'Chcę przetestować, gdy będzie gotowe',
     earlyAccessSaved: 'Dzięki. Potraktujemy to jako zainteresowanie wczesnym dostępem.',
+    continueBasicCta: 'Kontynuuj podstawową analizę',
   },
 };
 
@@ -122,6 +155,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   const [manualQuoteText, setManualQuoteText] = useState('');
   const [quoteDocuments, setQuoteDocuments] = useState<QuoteDocument[]>([]);
   const [earlyAccessInterest, setEarlyAccessInterest] = useState(false);
+  const [multiFileIntent, setMultiFileIntent] = useState<MultiFileIntent>('undecided');
   const [localError, setLocalError] = useState('');
   const [isReadingFile, setIsReadingFile] = useState(false);
   const fileCopy = uploadCopy[language];
@@ -162,8 +196,10 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       sizeBytes: file.size,
     }));
     const previousDocuments = quoteDocuments;
-    setQuoteDocuments([...previousDocuments, ...attachedDocuments]);
+    const nextDocuments = [...previousDocuments, ...attachedDocuments];
+    setQuoteDocuments(nextDocuments);
     setEarlyAccessInterest(false);
+    setMultiFileIntent(nextDocuments.length > 1 ? 'undecided' : 'single_package');
 
     try {
       const enrichedDocuments: QuoteDocument[] = [];
@@ -205,7 +241,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   return (
     <form
       className="screen-content form-screen start-check-screen"
-      data-multi-file-intent={earlyAccessInterest ? 'comparison_interest' : 'basic_check'}
+      data-multi-file-intent={hasMultipleFiles ? multiFileIntent : 'basic_check'}
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         submitBasicCheck();
@@ -249,7 +285,45 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
             ))}
           </div>
         )}
-        {hasMultipleFiles && <p className="inline-warning">{fileCopy.multiFileNotice}</p>}
+        {hasMultipleFiles && (
+          <section className="multi-file-intent-card">
+            <h2>{fileCopy.multiFileQuestion}</h2>
+            <div className="multi-file-actions">
+              <button
+                className={multiFileIntent === 'single_package' ? 'intent-option active' : 'intent-option'}
+                onClick={() => setMultiFileIntent('single_package')}
+                type="button"
+              >
+                {fileCopy.onePackageOption}
+              </button>
+              <button
+                className={multiFileIntent === 'comparison_interest' ? 'intent-option active' : 'intent-option'}
+                onClick={() => setMultiFileIntent('comparison_interest')}
+                type="button"
+              >
+                {fileCopy.compareOption}
+              </button>
+            </div>
+          </section>
+        )}
+        {hasMultipleFiles && multiFileIntent === 'comparison_interest' && (
+          <section className="comparison-teaser-card">
+            <h2>{fileCopy.compareTeaserTitle}</h2>
+            <p>{fileCopy.compareTeaserBody}</p>
+            <ul>
+              {fileCopy.compareBullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+            {earlyAccessInterest && <p className="file-status">{fileCopy.earlyAccessSaved}</p>}
+            <button className="secondary-button" onClick={() => setEarlyAccessInterest(true)} type="button">
+              {fileCopy.earlyAccessCta}
+            </button>
+            <button className="text-button" onClick={() => setMultiFileIntent('single_package')} type="button">
+              {fileCopy.continueBasicCta}
+            </button>
+          </section>
+        )}
         <textarea
           onChange={(event) => {
             setManualQuoteText(event.target.value);
@@ -259,14 +333,6 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           rows={3}
           value={manualQuoteText}
         />
-      </section>
-      <section className="comparison-teaser-card">
-        <h2>{fileCopy.compareTeaserTitle}</h2>
-        <p>{fileCopy.compareTeaserBody}</p>
-        {earlyAccessInterest && <p className="file-status">{fileCopy.earlyAccessSaved}</p>}
-        <button className="secondary-button" onClick={() => setEarlyAccessInterest(true)} type="button">
-          {fileCopy.earlyAccessCta}
-        </button>
       </section>
       {(localError || error) && <p className="inline-error">{localError || error}</p>}
       <button className="primary-button" disabled={isReadingFile} type="submit">
