@@ -64,7 +64,7 @@ const checkingCopy: Record<Language, { items: string[]; slowMessage: string }> =
 };
 
 function normalizeProductName(value: string) {
-  return value.replace(/\bRENOPILOT\b|\bRenopilot\b|\brenoPilot\b|\brenopilot\b/g, 'RenoPilot');
+  return value.replace(/\bRENOPILOT\b|\bRenopilot\b|\brenoPilot\b|\brenopilot\b|\bReno Pilot\b/g, 'RenoPilot');
 }
 
 function withConditionalSuffix(value: string, suffix: string) {
@@ -180,6 +180,16 @@ export default function App() {
       risks: normalizeTextList(activeAnalysis.infoCategories.risks),
     },
     clarificationItems,
+    priceSanity: activeAnalysis.priceSanity
+      ? {
+          ...activeAnalysis.priceSanity,
+          title: normalizeProductName(activeAnalysis.priceSanity.title),
+          summary: normalizeProductName(activeAnalysis.priceSanity.summary),
+          next_step: normalizeProductName(activeAnalysis.priceSanity.next_step),
+        }
+      : undefined,
+    priceSanityTitle: copy.priceSanityTitle,
+    priceNextStepLabel: copy.priceNextStepLabel,
     categoryLabels: copy.categoryLabels,
     consequenceLabel: copy.consequenceLabel,
     questionLabel: copy.questionLabel,
