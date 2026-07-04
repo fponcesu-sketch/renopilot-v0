@@ -26,6 +26,7 @@ const uploadCopy: Record<Language, {
   extraTextPlaceholder: string;
   missingInput: string;
   multiFileNotice: string;
+  privacyNote: string;
   compareTeaserTitle: string;
   compareTeaserBody: string;
   earlyAccessCta: string;
@@ -39,6 +40,7 @@ const uploadCopy: Record<Language, {
     extraTextPlaceholder: 'Texto adicional opcional',
     missingInput: 'Sube un PDF o pega el presupuesto para poder revisarlo.',
     multiFileNotice: 'RenoPilot revisará estos archivos como un único paquete de presupuesto. La comparación de presupuestos todavía no está disponible en este prototipo.',
+    privacyNote: 'Puedes ocultar datos personales antes de subir el presupuesto. RenoPilot revisa el contenido del presupuesto; no necesita tus datos personales.',
     compareTeaserTitle: '¿Necesitas comparar varios presupuestos?',
     compareTeaserBody: 'La comparación de presupuestos llegará pronto.',
     earlyAccessCta: 'Quiero probarlo cuando esté listo',
@@ -52,6 +54,7 @@ const uploadCopy: Record<Language, {
     extraTextPlaceholder: 'Optional extra text',
     missingInput: 'Upload a PDF or paste the quote so we can review it.',
     multiFileNotice: 'RenoPilot will review these files as one quote package. Multi-quote comparison is not available in this prototype yet.',
+    privacyNote: 'You can remove personal details before uploading. RenoPilot reviews the quote content; it does not need your personal data.',
     compareTeaserTitle: 'Need to compare several quotes?',
     compareTeaserBody: 'Multi-quote comparison is coming soon.',
     earlyAccessCta: 'Join early access',
@@ -65,6 +68,7 @@ const uploadCopy: Record<Language, {
     extraTextPlaceholder: 'Opcjonalny dodatkowy tekst',
     missingInput: 'Wgraj PDF albo wklej wycenę, aby ją sprawdzić.',
     multiFileNotice: 'RenoPilot sprawdzi te pliki jako jeden pakiet wyceny. Porównywanie wycen nie jest jeszcze dostępne w tym prototypie.',
+    privacyNote: 'Możesz ukryć dane osobowe przed przesłaniem wyceny. RenoPilot analizuje treść wyceny; nie potrzebuje Twoich danych osobowych.',
     compareTeaserTitle: 'Chcesz porównać kilka wycen?',
     compareTeaserBody: 'Porównywanie wycen pojawi się wkrótce.',
     earlyAccessCta: 'Chcę przetestować, gdy będzie gotowe',
@@ -234,6 +238,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           />
         </div>
         <p>{content.quoteInputHint}</p>
+        <p className="privacy-note">{fileCopy.privacyNote}</p>
         {hasUploadedFiles && (
           <div className="attached-file-list" aria-live="polite">
             {quoteDocuments.map((document, index) => (
