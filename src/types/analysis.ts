@@ -13,8 +13,15 @@ export type QuoteDocument = {
 export type ClarificationItem = {
   title: string;
   consequence: string;
-  consequence_type: string;
+  consequence_type: 'cost' | 'time' | 'quality' | 'scope' | 'payment' | 'dispute' | 'decision_pressure';
   question_to_ask: string;
+};
+
+export type PriceSanity = {
+  status: 'yes' | 'partly' | 'no';
+  title: string;
+  summary: string;
+  next_step: string;
 };
 
 export type QuoteInfoCategories = {
@@ -46,6 +53,7 @@ export type QuoteAnalysis = {
   recommendedVendor?: string;
   comparison?: ComparisonSummary;
   clarificationItems?: ClarificationItem[];
+  priceSanity?: PriceSanity;
   infoCategories: QuoteInfoCategories;
   vendorQuestions: {
     title: string;
