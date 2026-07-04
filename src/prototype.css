@@ -19,6 +19,23 @@
   opacity: 0.82;
 }
 
+.privacy-note {
+  color: #756c62;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: -4px 0 0;
+  opacity: 0.88;
+}
+
+.prototype-version {
+  color: #9b9288;
+  font-size: 0.68rem;
+  font-weight: 750;
+  margin-top: 10px;
+  text-align: center;
+}
+
 .inline-error,
 .inline-warning {
   border-radius: 14px;
