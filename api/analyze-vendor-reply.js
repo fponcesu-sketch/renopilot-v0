@@ -123,7 +123,7 @@ export default async function handler(req, res) {
     return sendJson(res, 200, {
       source: 'mock',
       analysis: fallbackAnalysis,
-      error: 'No API key configured. Showing mock fallback.',
+      error: '',
     });
   }
 
@@ -136,11 +136,12 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+        temperature: 0,
         input: [
           {
             role: 'system',
             content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Update the recommendation based only on the original quote context, previous analysis, and vendor replies. The vendorReply field may contain one reply or several replies separated and labelled by vendor name. If there are multiple labelled replies, compare what changed per vendor and update the recommendation accordingly. Keep it short, practical, and decision-oriented. Do not invent missing confirmations. Keep arrays concise: 0 to 6 items maximum.`,
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. Update the recommendation based only on the original quote context, previous analysis, and vendor replies. The vendorReply field may contain one reply or several replies separated and labelled by vendor name. If there are multiple labelled replies, compare what changed per vendor and update the recommendation accordingly. Keep it short, practical, and decision-oriented. Do not invent missing confirmations. Keep arrays concise: 0 to 6 items maximum. Always write the product name exactly as RenoPilot.`,
           },
           {
             role: 'user',
@@ -180,7 +181,7 @@ export default async function handler(req, res) {
     return sendJson(res, 200, {
       source: 'mock',
       analysis: fallbackAnalysis,
-      error: 'LLM unavailable. Showing mock fallback.',
+      error: '',
     });
   }
 }
