@@ -1,4 +1,4 @@
-import type { ClarificationItem, QuoteInfoCategories } from '../types/analysis';
+import type { ClarificationItem, PriceSanity, QuoteInfoCategories } from '../types/analysis';
 
 type CategoryLabels = {
   confirmed: string;
@@ -10,6 +10,9 @@ type ThingsToReviewContent = {
   title: string;
   categories: QuoteInfoCategories;
   clarificationItems?: ClarificationItem[];
+  priceSanity?: PriceSanity;
+  priceSanityTitle: string;
+  priceNextStepLabel: string;
   categoryLabels: CategoryLabels;
   consequenceLabel: string;
   questionLabel: string;
@@ -22,9 +25,14 @@ type ThingsToReviewScreenProps = {
 };
 
 const categoryKeys = ['confirmed', 'needsClarification', 'risks'] as const;
+const priceStatusIcon: Record<PriceSanity['status'], string> = {
+  yes: '🟢',
+  partly: '🟡',
+  no: '🔴',
+};
 
 function getConfirmedTitle(label: string) {
-  if (label.toLowerCase().includes('confirmed')) return 'What seems clear';
+  if (label.toLowerCase().includes('confirmed')) return 'What looks clear';
   if (label.toLowerCase().includes('potwier')) return 'Co wygląda jasno';
   return 'Lo que parece claro';
 }
@@ -38,6 +46,7 @@ function getClarificationTitle(label: string) {
 export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenProps) {
   const hasClarificationItems = Boolean(content.clarificationItems?.length);
   const confirmedItems = content.categories.confirmed.slice(0, 3);
+  const priceSanity = content.priceSanity;
 
   return (
     <div className="screen-content clarify-screen">
@@ -78,6 +87,19 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
               </section>
             ))}
           </div>
+          {priceSanity && (
+            <section className="price-sanity-card">
+              <h2>{content.priceSanityTitle}</h2>
+              <strong>
+                {priceStatusIcon[priceSanity.status]} {priceSanity.title}
+              </strong>
+              <p>{priceSanity.summary}</p>
+              <p>
+                <span>{content.priceNextStepLabel}: </span>
+                {priceSanity.next_step}
+              </p>
+            </section>
+          )}
         </>
       ) : (
         <div className="category-list">
