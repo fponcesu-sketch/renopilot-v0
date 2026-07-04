@@ -53,10 +53,10 @@ export const localizedCopy: Record<Language, {
       beCareful: 'Riesgo principal',
       conditionalSuffix: 'No está listo para aceptar hasta confirmar por escrito los puntos importantes.',
     },
-    fallbackWarning: 'Mostramos una revisión de ejemplo porque el LLM no está disponible.',
-    analysisError: 'Está tardando más de lo normal. Te mostramos una revisión básica para que puedas seguir.',
-    vendorFallback: 'Esta revisión está en modo fallback/mock.',
-    vendorError: 'No hemos podido actualizar la revisión con IA. Mostramos un ejemplo para seguir probando.',
+    fallbackWarning: 'No hemos podido completar la revisión automática. Puedes probar de nuevo o revisar los puntos principales como ejemplo.',
+    analysisError: 'No hemos podido completar la revisión automática. Prueba de nuevo o copia el texto del presupuesto.',
+    vendorFallback: 'No hemos podido verificar la respuesta automáticamente. Revisa los puntos pendientes antes de aceptar.',
+    vendorError: 'No hemos podido actualizar la revisión. Prueba de nuevo o revisa la respuesta manualmente.',
   },
   en: {
     prototypeNote:
@@ -83,10 +83,10 @@ export const localizedCopy: Record<Language, {
       beCareful: 'Main risk',
       conditionalSuffix: 'It is not ready to accept until the important points are confirmed in writing.',
     },
-    fallbackWarning: 'Showing an example review because the LLM is not available.',
-    analysisError: 'This is taking longer than usual. We are showing a basic review so you can continue.',
-    vendorFallback: 'This review is in fallback/mock mode.',
-    vendorError: 'We could not update the review with AI. Showing an example so you can keep testing.',
+    fallbackWarning: 'We could not complete the automatic review. You can try again or use the main points as an example.',
+    analysisError: 'We could not complete the automatic review. Try again or paste the quote text.',
+    vendorFallback: 'We could not verify the reply automatically. Review the open points before accepting.',
+    vendorError: 'We could not update the review. Try again or review the reply manually.',
   },
   pl: {
     prototypeNote:
@@ -113,9 +113,9 @@ export const localizedCopy: Record<Language, {
       beCareful: 'Główne ryzyko',
       conditionalSuffix: 'Nie jest jeszcze gotowa do zaakceptowania, dopóki ważne punkty nie zostaną potwierdzone pisemnie.',
     },
-    fallbackWarning: 'Pokazujemy przykładową analizę, ponieważ LLM nie jest dostępny.',
-    analysisError: 'To trwa dłużej niż zwykle. Pokazujemy podstawową analizę, aby można było kontynuować test.',
-    vendorFallback: 'Ta analiza działa w trybie fallback/mock.',
-    vendorError: 'Nie udało się zaktualizować analizy z AI. Pokazujemy przykład, aby można było kontynuować test.',
+    fallbackWarning: 'Nie udało się ukończyć automatycznej analizy. Możesz spróbować ponownie albo potraktować główne punkty jako przykład.',
+    analysisError: 'Nie udało się ukończyć automatycznej analizy. Spróbuj ponownie albo wklej tekst wyceny.',
+    vendorFallback: 'Nie udało się automatycznie sprawdzić odpowiedzi. Przejrzyj otwarte punkty przed akceptacją.',
+    vendorError: 'Nie udało się zaktualizować analizy. Spróbuj ponownie albo sprawdź odpowiedź ręcznie.',
   },
 };
