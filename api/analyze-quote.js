@@ -66,7 +66,7 @@ const fallbackAnalysis = {
     summary: 'Pide confirmación por escrito y decide después.',
   },
   confidence: 'medium',
-  assumptions: ['Fallback del prototipo: no se ha podido generar una revisión real con el LLM.'],
+  assumptions: ['No se ha podido completar una revisión automática real, así que estos puntos sirven solo como guía de prueba.'],
 };
 
 const listSchema = {
@@ -283,7 +283,7 @@ export default async function handler(req, res) {
     return sendJson(res, 200, {
       source: 'mock',
       analysis: fallbackAnalysis,
-      error: 'No API key configured. Showing mock fallback.',
+      error: '',
     });
   }
 
@@ -296,6 +296,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+        temperature: 0,
         input: [
           {
             role: 'system',
@@ -339,7 +340,7 @@ export default async function handler(req, res) {
     return sendJson(res, 200, {
       source: 'mock',
       analysis: fallbackAnalysis,
-      error: 'LLM unavailable. Showing mock fallback.',
+      error: '',
     });
   }
 }
