@@ -105,6 +105,48 @@
   overflow-wrap: anywhere;
 }
 
+.multi-file-intent-card {
+  background: #f8f4ee;
+  border: 1px solid #e6dacb;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.multi-file-intent-card h2 {
+  color: #1e2b25;
+  font-size: 0.9rem;
+  line-height: 1.28;
+  margin: 0;
+}
+
+.multi-file-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.intent-option {
+  appearance: none;
+  background: #fffaf4;
+  border: 1px solid #e4d8c8;
+  border-radius: 14px;
+  color: #3f4c45;
+  cursor: pointer;
+  flex: 1;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  padding: 10px 9px;
+}
+
+.intent-option.active {
+  background: #eef7f3;
+  border-color: #cfe5dc;
+  color: #2f5f58;
+}
+
 .clarify-header {
   display: flex;
   flex-direction: column;
@@ -116,6 +158,14 @@
   font-size: 0.74rem;
   font-weight: 950;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.clarification-section-heading h2 {
+  color: #6f655b;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  margin: 0;
   text-transform: uppercase;
 }
 
@@ -228,6 +278,42 @@
   font-weight: 900;
 }
 
+.price-sanity-card {
+  background: #f8f4ee;
+  border: 1px solid #e6dacb;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.price-sanity-card h2 {
+  color: #6f655b;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.price-sanity-card strong {
+  color: #1e2b25;
+  font-size: 0.94rem;
+  line-height: 1.25;
+}
+
+.price-sanity-card p {
+  color: #4e5b54;
+  font-size: 0.84rem;
+  line-height: 1.38;
+  margin: 0;
+}
+
+.price-sanity-card span {
+  color: #26342e;
+  font-weight: 900;
+}
+
 .comparison-teaser-card {
   background: #fffaf4;
   border: 1px solid #e7dccd;
@@ -245,24 +331,47 @@
   margin: 0;
 }
 
-.comparison-teaser-card p {
+.comparison-teaser-card p,
+.comparison-teaser-card li {
   color: #4e5b54;
   font-size: 0.84rem;
   line-height: 1.35;
   margin: 0;
 }
 
-.secondary-button {
+.comparison-teaser-card ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.secondary-button,
+.text-button {
   appearance: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.secondary-button {
   background: #f1e8dc;
   border: 1px solid #e2d5c4;
   border-radius: 14px;
   color: #2f3c36;
-  cursor: pointer;
-  font: inherit;
   font-size: 0.86rem;
   font-weight: 900;
   padding: 11px 12px;
+}
+
+.text-button {
+  background: transparent;
+  border: 0;
+  color: #6f655b;
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 4px 0 0;
+  text-align: left;
 }
 
 .comparison-teaser-card .secondary-button {
@@ -272,5 +381,9 @@
 @media (max-width: 600px) {
   .comparison-teaser-card .secondary-button {
     width: 100%;
+  }
+
+  .multi-file-actions {
+    flex-direction: column;
   }
 }
