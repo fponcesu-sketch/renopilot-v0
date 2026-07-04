@@ -9,6 +9,8 @@ export const localizedCopy: Record<Language, {
   questionsCta: string;
   consequenceLabel: string;
   questionLabel: string;
+  priceSanityTitle: string;
+  priceNextStepLabel: string;
   categoryLabels: {
     confirmed: string;
     needsClarification: string;
@@ -39,6 +41,8 @@ export const localizedCopy: Record<Language, {
     questionsCta: 'Pegar respuesta',
     consequenceLabel: 'Por qué importa',
     questionLabel: 'Pregunta',
+    priceSanityTitle: '¿Podemos juzgar el precio?',
+    priceNextStepLabel: 'Antes de aceptar',
     categoryLabels: {
       confirmed: '🟢 Confirmado',
       needsClarification: '🟡 A aclarar',
@@ -69,6 +73,8 @@ export const localizedCopy: Record<Language, {
     questionsCta: 'Paste reply',
     consequenceLabel: 'Why it matters',
     questionLabel: 'Question',
+    priceSanityTitle: 'Can we judge the price?',
+    priceNextStepLabel: 'Before accepting',
     categoryLabels: {
       confirmed: '🟢 Confirmed',
       needsClarification: '🟡 Needs clarification',
@@ -99,6 +105,8 @@ export const localizedCopy: Record<Language, {
     questionsCta: 'Wklej odpowiedź',
     consequenceLabel: 'Dlaczego to ważne',
     questionLabel: 'Pytanie',
+    priceSanityTitle: 'Czy możemy ocenić cenę?',
+    priceNextStepLabel: 'Przed akceptacją',
     categoryLabels: {
       confirmed: '🟢 Potwierdzone',
       needsClarification: '🟡 Do wyjaśnienia',
