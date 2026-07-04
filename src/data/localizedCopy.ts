@@ -1,4 +1,5 @@
 import type { Language } from './quoteCheckContent';
+import type { ClarificationItem } from '../types/analysis';
 
 export const localizedCopy: Record<Language, {
   prototypeNote: string;
@@ -11,6 +12,7 @@ export const localizedCopy: Record<Language, {
   questionLabel: string;
   priceSanityTitle: string;
   priceNextStepLabel: string;
+  consequenceLabels: Record<ClarificationItem['consequence_type'], string>;
   categoryLabels: {
     confirmed: string;
     needsClarification: string;
@@ -43,6 +45,15 @@ export const localizedCopy: Record<Language, {
     questionLabel: 'Pregunta',
     priceSanityTitle: '¿Podemos juzgar el precio?',
     priceNextStepLabel: 'Antes de aceptar',
+    consequenceLabels: {
+      cost: 'coste',
+      time: 'plazo',
+      quality: 'calidad',
+      scope: 'alcance',
+      payment: 'pago',
+      dispute: 'disputa',
+      decision_pressure: 'presión',
+    },
     categoryLabels: {
       confirmed: '🟢 Confirmado',
       needsClarification: '🟡 A aclarar',
@@ -75,6 +86,15 @@ export const localizedCopy: Record<Language, {
     questionLabel: 'Question',
     priceSanityTitle: 'Can we judge the price?',
     priceNextStepLabel: 'Before accepting',
+    consequenceLabels: {
+      cost: 'cost',
+      time: 'time',
+      quality: 'quality',
+      scope: 'scope',
+      payment: 'payment',
+      dispute: 'dispute',
+      decision_pressure: 'pressure',
+    },
     categoryLabels: {
       confirmed: '🟢 Confirmed',
       needsClarification: '🟡 Needs clarification',
@@ -107,6 +127,15 @@ export const localizedCopy: Record<Language, {
     questionLabel: 'Pytanie',
     priceSanityTitle: 'Czy możemy ocenić cenę?',
     priceNextStepLabel: 'Przed akceptacją',
+    consequenceLabels: {
+      cost: 'koszt',
+      time: 'czas',
+      quality: 'jakość',
+      scope: 'zakres',
+      payment: 'płatność',
+      dispute: 'spór',
+      decision_pressure: 'presja',
+    },
     categoryLabels: {
       confirmed: '🟢 Potwierdzone',
       needsClarification: '🟡 Do wyjaśnienia',
