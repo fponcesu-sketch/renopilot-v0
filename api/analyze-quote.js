@@ -45,6 +45,13 @@ const fallbackAnalysis = {
     beCareful: ['No decidir solo por precio si otra oferta está más detallada.'],
   },
   clarificationItems: fallbackClarificationItems,
+  priceSanity: {
+    status: 'partly',
+    title: 'Solo parcialmente',
+    summary:
+      'Hay un precio de referencia, pero faltan detalles para saber si incluye todos los conceptos importantes o si puede haber extras.',
+    next_step: 'Pide un desglose sencillo de mano de obra, materiales, IVA y partidas opcionales.',
+  },
   infoCategories: {
     confirmed: ['Hay una propuesta de trabajo y un precio de referencia.'],
     needsClarification: fallbackClarificationItems.map((item) => `${item.title}. ${item.consequence}`),
@@ -92,6 +99,18 @@ const clarificationItemSchema = {
   },
 };
 
+const priceSanitySchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['status', 'title', 'summary', 'next_step'],
+  properties: {
+    status: { type: 'string', enum: ['yes', 'partly', 'no'] },
+    title: { type: 'string' },
+    summary: { type: 'string' },
+    next_step: { type: 'string' },
+  },
+};
+
 const vendorMessageSchema = {
   type: 'array',
   items: {
@@ -127,6 +146,7 @@ const schema = {
     'recommendedVendor',
     'comparison',
     'clarificationItems',
+    'priceSanity',
     'infoCategories',
     'vendorQuestions',
     'nextAction',
@@ -148,6 +168,7 @@ const schema = {
     recommendedVendor: { type: 'string' },
     comparison: comparisonSchema,
     clarificationItems: clarificationItemSchema,
+    priceSanity: priceSanitySchema,
     infoCategories: {
       type: 'object',
       additionalProperties: false,
@@ -301,7 +322,7 @@ export default async function handler(req, res) {
           {
             role: 'system',
             content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. This prototype is a basic quote-check flow, not multi-quote comparison. Treat all uploaded files as one quote package. The first screen should stay short and answer whether the homeowner can relax or should ask questions. Detailed consequences belong in clarificationItems. Every item in clarificationItems must explain: what is unclear, why it matters to the homeowner, and the exact question to ask. Use consequence_type as one of: cost, time, quality, scope, payment, dispute, decision_pressure. Include genuine missing, unclear, conditional or ambiguous points only. Do not invent hidden costs. If something is already quoted or confirmed, do not present it as a potential extra cost. For vendorQuestions, build the message from clarificationItems.question_to_ask. Keep the content practical and calm. Always write the product name exactly as RenoPilot. Never use PDF filenames as vendor names. Extract company names from the content; if unclear, use a neutral vendor label in ${responseLanguage}.`,
+              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. This prototype is a basic quote-check flow, not multi-quote comparison. Treat all uploaded files as one quote package. The first screen should stay short and answer whether the homeowner can relax or should ask questions. Detailed consequences belong in clarificationItems. Every item in clarificationItems must explain: what is unclear, why it matters to the homeowner, and the exact question to ask. Use consequence_type as one of: cost, time, quality, scope, payment, dispute, decision_pressure. Include genuine missing, unclear, conditional or ambiguous points only. Do not invent hidden costs. If something is already quoted or confirmed, do not present it as a potential extra cost. In infoCategories.confirmed, include short fair points that appear clear in the quote. For priceSanity, judge only price transparency from the quote content, not market pricing. Use status yes, partly or no. Do not say overpriced, below market or fair market unless the documents themselves provide data. Prefer hard to judge, partly clear, cannot compare properly without breakdown, cheaper but missing details, or higher but includes more scope. For vendorQuestions, build the message from clarificationItems.question_to_ask. Keep the content practical, calm, homeowner-friendly and concise. Always write the product name exactly as RenoPilot. Never use PDF filenames as vendor names. Extract company names from the content; if unclear, use a neutral vendor label in ${responseLanguage}.`,
           },
           {
             role: 'user',
