@@ -27,7 +27,9 @@ const uploadCopy: Record<Language, {
   attachedLabel: string;
   extraTextPlaceholder: string;
   missingInput: string;
-  privacyNote: string;
+  privacyNoteTitle: string;
+  privacyNoteBody: string;
+  privacyNoteUse: string;
   multiFileQuestion: string;
   onePackageOption: string;
   compareOption: string;
@@ -45,7 +47,11 @@ const uploadCopy: Record<Language, {
     attachedLabel: 'Archivo adjuntado',
     extraTextPlaceholder: 'Texto adicional opcional',
     missingInput: 'Sube un PDF o pega el presupuesto para poder revisarlo.',
-    privacyNote: 'Puedes ocultar datos personales antes de subir el presupuesto. RenoPilot revisa el contenido del presupuesto; no necesita tus datos personales.',
+    privacyNoteTitle: 'Nota de privacidad',
+    privacyNoteBody:
+      'Antes de compartir, puedes borrar o tapar datos sensibles como nombres, dirección, teléfono, datos bancarios o firmas.',
+    privacyNoteUse:
+      'Usaremos lo que compartas solo para generar tu revisión en RenoPilot y mejorar el prototipo. Podemos guardar aprendizajes o feedback anonimizados, pero no publicaremos tus documentos ni tus datos personales.',
     multiFileQuestion: '¿Estos archivos pertenecen al mismo presupuesto o son presupuestos de distintos profesionales?',
     onePackageOption: 'Un solo presupuesto',
     compareOption: 'Comparar presupuestos distintos',
@@ -68,7 +74,11 @@ const uploadCopy: Record<Language, {
     attachedLabel: 'File attached',
     extraTextPlaceholder: 'Optional extra text',
     missingInput: 'Upload a PDF or paste the quote so we can review it.',
-    privacyNote: 'You can remove personal details before uploading. RenoPilot reviews the quote content; it does not need your personal data.',
+    privacyNoteTitle: 'Privacy note',
+    privacyNoteBody:
+      'Please remove or blur anything sensitive before sharing, such as names, addresses, phone numbers, bank details or signatures.',
+    privacyNoteUse:
+      'We will use what you share only to generate your RenoPilot quote check and improve the prototype. We may keep anonymised learnings or feedback, but we will not publish your documents or personal details.',
     multiFileQuestion: 'Are these files part of one quote, or are they quotes from different contractors?',
     onePackageOption: 'One quote package',
     compareOption: 'Compare different quotes',
@@ -91,7 +101,11 @@ const uploadCopy: Record<Language, {
     attachedLabel: 'Plik dodany',
     extraTextPlaceholder: 'Opcjonalny dodatkowy tekst',
     missingInput: 'Wgraj PDF albo wklej wycenę, aby ją sprawdzić.',
-    privacyNote: 'Możesz ukryć dane osobowe przed przesłaniem wyceny. RenoPilot analizuje treść wyceny; nie potrzebuje Twoich danych osobowych.',
+    privacyNoteTitle: 'Informacja o prywatności',
+    privacyNoteBody:
+      'Przed udostępnieniem możesz usunąć lub zasłonić dane wrażliwe, takie jak imiona i nazwiska, adres, numer telefonu, dane bankowe lub podpisy.',
+    privacyNoteUse:
+      'Użyjemy przesłanych materiałów tylko do przygotowania analizy w RenoPilot i ulepszania prototypu. Możemy zachować anonimowe wnioski lub feedback, ale nie będziemy publikować Twoich dokumentów ani danych osobowych.',
     multiFileQuestion: 'Czy te pliki są częścią jednej wyceny, czy to wyceny od różnych wykonawców?',
     onePackageOption: 'Jeden pakiet wyceny',
     compareOption: 'Porównaj różne wyceny',
@@ -274,7 +288,11 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           />
         </div>
         <p>{content.quoteInputHint}</p>
-        <p className="privacy-note">{fileCopy.privacyNote}</p>
+        <div className="privacy-note-card">
+          <strong>{fileCopy.privacyNoteTitle}</strong>
+          <p>{fileCopy.privacyNoteBody}</p>
+          <p>{fileCopy.privacyNoteUse}</p>
+        </div>
         {hasUploadedFiles && (
           <div className="attached-file-list" aria-live="polite">
             {quoteDocuments.map((document, index) => (
