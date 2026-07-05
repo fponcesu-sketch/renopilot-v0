@@ -19,13 +19,31 @@
   opacity: 0.82;
 }
 
-.privacy-note {
+.privacy-note-card {
+  background: #f8f4ee;
+  border: 1px solid #e6dacb;
+  border-radius: 16px;
+  color: #756c62;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 12px;
+}
+
+.privacy-note-card strong {
+  color: #3f4c45;
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.privacy-note-card p {
   color: #756c62;
   font-size: 0.76rem;
   font-weight: 700;
   line-height: 1.35;
-  margin: -4px 0 0;
-  opacity: 0.88;
+  margin: 0;
 }
 
 .prototype-version {
