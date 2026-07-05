@@ -301,11 +301,8 @@ export default async function handler(req, res) {
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    return sendJson(res, 200, {
-      source: 'mock',
-      analysis: fallbackAnalysis,
-      error: '',
-    });
+    console.error('OpenAI API key missing for quote analysis');
+    return sendJson(res, 503, { error: 'Quote analysis unavailable' });
   }
 
   try {
@@ -348,7 +345,7 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const errorBody = await response.text();
       console.error('OpenAI quote analysis error', response.status, errorBody);
-      throw new Error(`OpenAI request failed: ${response.status}`);
+      return sendJson(res, 502, { error: 'Quote analysis failed' });
     }
 
     const data = await response.json();
@@ -357,11 +354,7 @@ export default async function handler(req, res) {
 
     return sendJson(res, 200, { source: 'llm', analysis });
   } catch (error) {
-    console.error('Quote analysis fallback', error);
-    return sendJson(res, 200, {
-      source: 'mock',
-      analysis: fallbackAnalysis,
-      error: '',
-    });
+    console.error('Quote analysis failed', error);
+    return sendJson(res, 502, { error: 'Quote analysis failed' });
   }
 }
