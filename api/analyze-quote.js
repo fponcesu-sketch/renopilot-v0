@@ -285,6 +285,64 @@ function buildUserContent({ responseLanguage, analysisModeHint, decisionContext,
   return content;
 }
 
+function buildOpenAiPayload({ model, responseLanguage, analysisModeHint, decisionContext, documents, includeTemperature }) {
+  const payload = {
+    model,
+    input: [
+      {
+        role: 'system',
+        content:
+          `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. This prototype is a basic quote-check flow, not multi-quote comparison. Treat all uploaded files as one quote package. The first screen should stay short and answer whether the homeowner can relax or should ask questions. Detailed consequences belong in clarificationItems. Every item in clarificationItems must explain: what is unclear, why it matters to the homeowner, and the exact question to ask. Use consequence_type as one of: cost, time, quality, scope, payment, dispute, decision_pressure. Include genuine missing, unclear, conditional or ambiguous points only. Do not invent hidden costs. If something is already quoted or confirmed, do not present it as a potential extra cost. In infoCategories.confirmed, include short fair points that appear clear in the quote. For priceSanity, judge only price transparency from the quote content, not market pricing. Use status yes, partly or no. Do not say overpriced, below market or fair market unless the documents themselves provide data. Prefer hard to judge, partly clear, cannot compare properly without breakdown, cheaper but missing details, or higher but includes more scope. For vendorQuestions, build the message from clarificationItems.question_to_ask. Keep the content practical, calm, homeowner-friendly and concise. Always write the product name exactly as RenoPilot. Never use PDF filenames as vendor names. Extract company names from the content; if unclear, use a neutral vendor label in ${responseLanguage}.`,
+      },
+      {
+        role: 'user',
+        content: buildUserContent({
+          responseLanguage,
+          analysisModeHint,
+          decisionContext,
+          documents,
+        }),
+      },
+    ],
+    text: {
+      format: {
+        type: 'json_schema',
+        name: 'quote_analysis',
+        strict: true,
+        schema,
+      },
+    },
+  };
+
+  if (includeTemperature) {
+    payload.temperature = 0;
+  }
+
+  return payload;
+}
+
+async function callOpenAi(payload) {
+  const response = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const bodyText = await response.text();
+
+  if (!response.ok) {
+    const error = new Error(`OpenAI request failed: ${response.status}`);
+    error.status = response.status;
+    error.bodyText = bodyText;
+    throw error;
+  }
+
+  return JSON.parse(bodyText);
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return sendJson(res, 405, { error: 'Method not allowed' });
@@ -295,6 +353,7 @@ export default async function handler(req, res) {
   const documents = normalizeDocuments(quoteDocuments, quoteText);
   const hasInput = documents.some((document) => document.text.trim() || document.fileData);
   const analysisModeHint = 'single_quote';
+  const model = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
 
   if (!hasInput) {
     return sendJson(res, 400, { error: 'Missing quote text' });
@@ -306,55 +365,30 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
-        temperature: 0,
-        input: [
-          {
-            role: 'system',
-            content:
-              `You are RenoPilot, a homeowner quote decision assistant. You MUST respond entirely in ${responseLanguage}. This prototype is a basic quote-check flow, not multi-quote comparison. Treat all uploaded files as one quote package. The first screen should stay short and answer whether the homeowner can relax or should ask questions. Detailed consequences belong in clarificationItems. Every item in clarificationItems must explain: what is unclear, why it matters to the homeowner, and the exact question to ask. Use consequence_type as one of: cost, time, quality, scope, payment, dispute, decision_pressure. Include genuine missing, unclear, conditional or ambiguous points only. Do not invent hidden costs. If something is already quoted or confirmed, do not present it as a potential extra cost. In infoCategories.confirmed, include short fair points that appear clear in the quote. For priceSanity, judge only price transparency from the quote content, not market pricing. Use status yes, partly or no. Do not say overpriced, below market or fair market unless the documents themselves provide data. Prefer hard to judge, partly clear, cannot compare properly without breakdown, cheaper but missing details, or higher but includes more scope. For vendorQuestions, build the message from clarificationItems.question_to_ask. Keep the content practical, calm, homeowner-friendly and concise. Always write the product name exactly as RenoPilot. Never use PDF filenames as vendor names. Extract company names from the content; if unclear, use a neutral vendor label in ${responseLanguage}.`,
-          },
-          {
-            role: 'user',
-            content: buildUserContent({
-              responseLanguage,
-              analysisModeHint,
-              decisionContext,
-              documents,
-            }),
-          },
-        ],
-        text: {
-          format: {
-            type: 'json_schema',
-            name: 'quote_analysis',
-            strict: true,
-            schema,
-          },
-        },
-      }),
-    });
+    const basePayload = {
+      model,
+      responseLanguage,
+      analysisModeHint,
+      decisionContext,
+      documents,
+    };
+    let data;
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('OpenAI quote analysis error', response.status, errorBody);
-      return sendJson(res, 502, { error: 'Quote analysis failed' });
+    try {
+      data = await callOpenAi(buildOpenAiPayload({ ...basePayload, includeTemperature: true }));
+    } catch (firstError) {
+      console.error('OpenAI quote analysis first attempt failed', firstError.status, firstError.bodyText || firstError);
+      data = await callOpenAi(buildOpenAiPayload({ ...basePayload, includeTemperature: false }));
     }
 
-    const data = await response.json();
     const outputText = extractOutputText(data);
+    if (!outputText) throw new Error('OpenAI response had no output text');
+
     const analysis = JSON.parse(outputText);
 
     return sendJson(res, 200, { source: 'llm', analysis });
   } catch (error) {
-    console.error('Quote analysis failed', error);
+    console.error('Quote analysis failed', error.status, error.bodyText || error);
     return sendJson(res, 502, { error: 'Quote analysis failed' });
   }
 }
