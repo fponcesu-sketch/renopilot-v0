@@ -30,20 +30,22 @@
   padding: 10px 12px;
 }
 
-.privacy-note-card strong {
+.privacy-note-title {
   color: #3f4c45;
+  display: block;
   font-size: 0.76rem;
   font-weight: 950;
   letter-spacing: 0.04em;
+  line-height: 1.25;
   text-transform: uppercase;
 }
 
-.privacy-note-card p {
+.privacy-note-text {
   color: #756c62;
+  display: block;
   font-size: 0.76rem;
   font-weight: 700;
   line-height: 1.35;
-  margin: 0;
 }
 
 .prototype-version {
