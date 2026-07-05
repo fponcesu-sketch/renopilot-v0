@@ -16,7 +16,7 @@ export const quoteCheckContent = {
       backLabel: 'Volver',
       languageLabel: 'Idioma',
       phaseLabel: 'Fase',
-      phases: ['Subir', 'Revisar', 'Preguntar', 'Confirmar'],
+      phases: ['Subir', 'Revisar', 'Preguntar', 'Decidir'],
     },
     landing: {
       eyebrow: 'Revisión rápida de presupuestos',
@@ -104,7 +104,7 @@ export const quoteCheckContent = {
       backLabel: 'Back',
       languageLabel: 'Language',
       phaseLabel: 'Phase',
-      phases: ['Upload', 'Review', 'Ask', 'Confirm'],
+      phases: ['Upload', 'Review', 'Ask', 'Decide'],
     },
     landing: {
       eyebrow: 'Quick quote review',
@@ -191,7 +191,7 @@ export const quoteCheckContent = {
       backLabel: 'Wróć',
       languageLabel: 'Język',
       phaseLabel: 'Etap',
-      phases: ['Wgraj', 'Sprawdź', 'Zapytaj', 'Potwierdź'],
+      phases: ['Wgraj', 'Sprawdź', 'Zapytaj', 'Decyzja'],
     },
     landing: {
       eyebrow: 'Szybka weryfikacja wycen',
@@ -266,11 +266,77 @@ export const quoteCheckContent = {
     updatedRecommendation: {
       status: '🟡 Nadal są punkty do zamknięcia',
       explanation:
-        'Odpowiedź jest dobra, ale nadal brakuje pisemnego potwierdzenia końcowej ceny z VAT i dokładnej zasady drugiej płatności.',
+        'Dobra odpowiedź, ale końcowa cena z VAT i dokładna zasada drugiej płatności nadal wymagają pisemnego potwierdzenia.',
       nextActionTitle: 'Następny krok',
       nextAction: 'Poproś o pisemne potwierdzenie przed zapłatą zaliczki.',
     },
   },
+} satisfies Record<Language, {
+  brand: string;
+  shell: {
+    ariaLabel: string;
+    backLabel: string;
+    languageLabel: string;
+    phaseLabel: string;
+    phases: string[];
+  };
+  landing: {
+    eyebrow: string;
+    headline: string;
+    subcopy: string;
+    cta: string;
+  };
+  startCheck: {
+    title: string;
+    decisionLabel: string;
+    decisionPlaceholder: string;
+    quoteInputLabel: string;
+    quoteInputHint: string;
+    uploadCta: string;
+    quotePlaceholder: string;
+    emailLabel: string;
+    emailHelper: string;
+    emailPlaceholder: string;
+    cta: string;
+  };
+  checking: {
+    title: string;
+    items: string[];
+    cta: string;
+  };
+  result: {
+    title: string;
+    status: string;
+    explanation: string;
+    costExposure: string;
+    biggestRiskTitle: string;
+    biggestRisk: string;
+    nextActionTitle: string;
+    nextAction: string;
+    cta: string;
+  };
+  review: {
+    title: string;
+    items: string[];
+    cta: string;
+  };
+  questions: {
+    title: string;
+    message: string;
+    copyCta: string;
+    copiedLabel: string;
+    cta: string;
+  };
+  vendorReply: {
+    title: string;
+    label: string;
+    placeholder: string;
+    cta: string;
+  };
+  updatedRecommendation: {
+    status: string;
+    explanation: string;
+    nextActionTitle: string;
+    nextAction: string;
+  };
 };
-
-export type QuoteCheckContent = (typeof quoteCheckContent)[Language];
