@@ -277,11 +277,15 @@ export default function App() {
         language,
       });
 
+      if (response.source !== 'llm') {
+        throw new Error('Quote analysis did not complete');
+      }
+
       setAnalysis(response.analysis);
       setAnalysisSource(response.source);
-      setAnalysisWarning(response.error || (response.source === 'mock' ? copy.fallbackWarning : ''));
+      setAnalysisWarning('');
     } catch (error) {
-      setAnalysis(fallbackQuoteAnalysis);
+      setAnalysis(null);
       setAnalysisSource('mock');
       setAnalysisWarning(copy.analysisError);
     } finally {
