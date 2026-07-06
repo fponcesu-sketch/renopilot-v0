@@ -9,7 +9,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 const MAX_PDF_FALLBACK_BYTES = 2_500_000;
 
 type MultiFileIntent = 'undecided' | 'single_package' | 'comparison_interest';
-type InputMode = 'written_quote' | 'verbal_estimate' | 'contractor_reply';
+export type InputMode = 'written_quote' | 'verbal_estimate' | 'contractor_reply';
 
 type StartCheckScreenProps = {
   content: QuoteCheckContent['startCheck'];
@@ -38,7 +38,8 @@ const uploadCopy: Record<Language, {
   verbalSubtitle: string;
   verbalInputLabel: string;
   verbalPlaceholder: string;
-  verbalChips: string[];
+  verbalHintsLabel: string;
+  verbalHints: string[];
   verbalCta: string;
   replyTitle: string;
   replySubtitle: string;
@@ -80,7 +81,8 @@ const uploadCopy: Record<Language, {
     verbalInputLabel: 'Escribe lo que recuerdas de la llamada',
     verbalPlaceholder:
       'Mosquiteras para 5 ventanas. Unos 1.200 PLN. Dijo que la instalación estaba incluida, quizá en 2 semanas. No sé si incluye IVA, garantía o modelo exacto.',
-    verbalChips: ['Precio', 'Plazo', 'Pago', 'Materiales / producto', 'Garantía / IVA', 'Qué no está claro'],
+    verbalHintsLabel: 'Puedes incluir:',
+    verbalHints: ['precio', 'plazo', 'pago', 'materiales / producto', 'garantía / IVA', 'qué no está claro'],
     verbalCta: 'Preparar mensaje para pedir presupuesto por escrito',
     replyTitle: 'Revisar respuesta del profesional',
     replySubtitle: 'Pega la respuesta que te han dado. RenoPilot revisará si aclara lo importante o si todavía falta algo.',
@@ -129,7 +131,8 @@ const uploadCopy: Record<Language, {
     verbalInputLabel: 'Write what you remember from the call',
     verbalPlaceholder:
       'Mosquito screens for 5 windows. Around 1,200 PLN. He said installation included, maybe 2 weeks. Not sure about VAT, warranty or exact model.',
-    verbalChips: ['Price', 'Timeline', 'Payment', 'Materials / product', 'Warranty / VAT', 'What is unclear'],
+    verbalHintsLabel: 'You can include:',
+    verbalHints: ['price', 'timeline', 'payment', 'materials / product', 'warranty / VAT', 'what is unclear'],
     verbalCta: 'Prepare message to request written quote',
     replyTitle: 'Check contractor reply',
     replySubtitle: 'Paste the answer you received. RenoPilot will check whether it clarifies the important points or if something is still missing.',
@@ -178,10 +181,11 @@ const uploadCopy: Record<Language, {
     verbalInputLabel: 'Napisz, co pamiętasz z rozmowy',
     verbalPlaceholder:
       'Moskitiery do 5 okien. Około 1 200 PLN. Powiedział, że montaż jest w cenie, może za 2 tygodnie. Nie wiem, czy cena zawiera VAT, gwarancję albo dokładny model.',
-    verbalChips: ['Cena', 'Termin', 'Płatność', 'Materiały / produkt', 'Gwarancja / VAT', 'Co jest niejasne'],
+    verbalHintsLabel: 'Możesz uwzględnić:',
+    verbalHints: ['cena', 'termin', 'płatność', 'materiały / produkt', 'gwarancja / VAT', 'co jest niejasne'],
     verbalCta: 'Przygotuj wiadomość z prośbą o pisemną ofertę',
     replyTitle: 'Sprawdź odpowiedź wykonawcy',
-    replySubtitle: 'Wklej otrzymaną odpowiedź. RenoPilot sprawdzi, czy wyjaśnia ważne punkty i czy coś nadal brakuje.',
+    replySubtitle: 'Wklej otrzymaną odpowiedź. RenoPilot sprawdzi, czy wyjaśnia ważne punkty i czy czegoś nadal brakuje.',
     replyInputLabel: 'Wklej otrzymaną odpowiedź',
     replyPlaceholder: 'Skopiuj tutaj odpowiedź wykonawcy.',
     replyCta: 'Sprawdź odpowiedź',
@@ -279,12 +283,7 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       }
 
       setLocalError('');
-      onSubmit({
-        decisionContext,
-        quoteText: verbalText,
-        quoteDocuments: [],
-        inputMode,
-      });
+      onSubmit({ decisionContext, quoteText: verbalText, quoteDocuments: [], inputMode });
       return;
     }
 
@@ -318,16 +317,13 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   };
 
   const handleModeChange = (mode: InputMode) => {
-    setInputMode(mode);
-    setLocalError('');
-    setEarlyAccessInterest(false);
-  };
+    if (mode !== inputMode) {
+      setManualQuoteText('');
+      setLocalError('');
+      setEarlyAccessInterest(false);
+    }
 
-  const handleChipClick = (chip: string) => {
-    setManualQuoteText((current) => {
-      const prefix = current.trim() ? `${current.trim()}\n` : '';
-      return `${prefix}${chip}: `;
-    });
+    setInputMode(mode);
   };
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -535,11 +531,10 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           </section>
         )}
         {isVerbalMode && (
-          <div className="helper-chip-list" aria-label={fileCopy.verbalInputLabel}>
-            {fileCopy.verbalChips.map((chip) => (
-              <button className="helper-chip" key={chip} onClick={() => handleChipClick(chip)} type="button">
-                {chip}
-              </button>
+          <div className="helper-chip-list" aria-label={fileCopy.verbalHintsLabel}>
+            <span className="helper-chip-label">{fileCopy.verbalHintsLabel}</span>
+            {fileCopy.verbalHints.map((hint) => (
+              <span className="helper-chip" key={hint}>{hint}</span>
             ))}
           </div>
         )}
