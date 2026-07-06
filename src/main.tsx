@@ -6,6 +6,7 @@ import './prototype.css';
 import './decisionFlow.css';
 import './uiOverrides.css';
 import './verbalEstimate.css';
+import './joannaFeedback.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
