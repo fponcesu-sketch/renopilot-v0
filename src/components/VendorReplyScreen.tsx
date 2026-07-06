@@ -19,25 +19,25 @@ const replyCopy: Record<Language, {
   helperMultiple: string;
 }> = {
   es: {
-    defaultVendor: 'Proveedor',
-    missing: 'Pega al menos una respuesta para poder actualizar la recomendación.',
-    loading: 'Actualizando…',
-    helperSingle: 'Pega aquí la respuesta de quien te pasó el presupuesto.',
-    helperMultiple: 'Pega cada respuesta debajo de su proveedor. Puedes dejar vacío si aún no ha respondido.',
+    defaultVendor: 'Profesional',
+    missing: 'Pega la respuesta del profesional para poder revisarla.',
+    loading: 'Revisando respuesta…',
+    helperSingle: 'Cuando el profesional responda, pega aquí su respuesta y RenoPilot comprobará si los puntos pendientes ya están claros.',
+    helperMultiple: 'Pega cada respuesta debajo de su profesional. Puedes dejar vacío si aún no ha respondido.',
   },
   en: {
-    defaultVendor: 'Vendor',
-    missing: 'Paste at least one reply so we can update the recommendation.',
-    loading: 'Updating…',
-    helperSingle: 'Paste the reply from the person or company who sent the quote.',
-    helperMultiple: 'Paste each reply under the right vendor. You can leave it empty if they have not replied yet.',
+    defaultVendor: 'Contractor',
+    missing: 'Paste the contractor reply so we can check it.',
+    loading: 'Checking reply…',
+    helperSingle: 'After the contractor replies, paste their answer here and RenoPilot will check if the missing points are now clear.',
+    helperMultiple: 'Paste each reply under the right contractor. You can leave it empty if they have not replied yet.',
   },
   pl: {
     defaultVendor: 'Wykonawca',
-    missing: 'Wklej przynajmniej jedną odpowiedź, aby zaktualizować rekomendację.',
-    loading: 'Aktualizacja…',
-    helperSingle: 'Wklej tutaj odpowiedź od osoby lub firmy, która wysłała wycenę.',
-    helperMultiple: 'Wklej każdą odpowiedź pod właściwym wykonawcą. Możesz zostawić puste, jeśli jeszcze nie odpowiedział.',
+    missing: 'Wklej odpowiedź wykonawcy, aby ją sprawdzić.',
+    loading: 'Sprawdzanie odpowiedzi…',
+    helperSingle: 'Gdy wykonawca odpowie, wklej tutaj jego odpowiedź. RenoPilot sprawdzi, czy brakujące informacje są już jasne.',
+    helperMultiple: 'Wklej każdą odpowiedź pod właściwym wykonawcą. Możesz zostawić puste, jeśli ktoś jeszcze nie odpowiedział.',
   },
 };
 
