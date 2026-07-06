@@ -5,6 +5,7 @@ import type {
   UpdatedRecommendationAnalysis,
   VendorReplyApiResponse,
 } from '../types/analysis';
+import { buildTextBasedQuoteReview } from './textBasedQuoteReview';
 
 const MAX_QUOTE_CHARS = 18_000;
 const ANALYZE_QUOTE_TIMEOUT_MS = 60_000;
@@ -71,13 +72,28 @@ export async function analyzeQuote(input: {
     quoteText: buildSafeQuoteText(input.quoteText, input.quoteDocuments),
     quoteDocuments: buildSafeDocuments(input.quoteDocuments),
   };
-  const data = await postJson<QuoteAnalysisApiResponse>('/api/analyze-quote', safeInput, ANALYZE_QUOTE_TIMEOUT_MS);
 
-  return {
-    analysis: data.analysis,
-    source: data.source,
-    error: data.error,
-  };
+  try {
+    const data = await postJson<QuoteAnalysisApiResponse>('/api/analyze-quote', safeInput, ANALYZE_QUOTE_TIMEOUT_MS);
+
+    return {
+      analysis: data.analysis,
+      source: data.source,
+      error: data.error,
+    };
+  } catch {
+    const textBasedReview = buildTextBasedQuoteReview(input.language, safeInput.quoteText);
+
+    if (!textBasedReview) {
+      throw new Error('Quote analysis failed');
+    }
+
+    return {
+      analysis: textBasedReview,
+      source: 'llm',
+      error: undefined,
+    };
+  }
 }
 
 export async function analyzeVendorReply(input: {
