@@ -2,18 +2,20 @@ import { useEffect, useState } from 'react';
 import type { QuoteCheckContent } from '../data/quoteCheckContent';
 
 type CheckingScreenProps = {
-  content: QuoteCheckContent['checking'] & { slowMessage?: string };
+  content: QuoteCheckContent['checking'] & { slowMessage?: string; errorCta?: string };
   error?: string;
   isReady: boolean;
+  onBack?: () => void;
   onNext: () => void;
 };
 
-export function CheckingScreen({ content, error, isReady, onNext }: CheckingScreenProps) {
+export function CheckingScreen({ content, error, isReady, onBack, onNext }: CheckingScreenProps) {
   const [progressIndex, setProgressIndex] = useState(0);
   const [showSlowMessage, setShowSlowMessage] = useState(false);
   const animationComplete = progressIndex >= content.items.length;
   const canContinue = animationComplete && isReady;
   const slowMessage = content.slowMessage || 'This is taking longer than usual.';
+  const buttonLabel = error ? content.errorCta || 'Try again' : content.cta;
 
   useEffect(() => {
     setProgressIndex(0);
@@ -59,8 +61,8 @@ export function CheckingScreen({ content, error, isReady, onNext }: CheckingScre
       </ul>
       {showSlowMessage && !error && !isReady && <p className="inline-warning">{slowMessage}</p>}
       {error && <p className="inline-warning">{error}</p>}
-      <button className="primary-button" disabled={!canContinue} onClick={onNext}>
-        {content.cta}
+      <button className="primary-button" disabled={!error && !canContinue} onClick={error ? onBack : onNext}>
+        {buttonLabel}
       </button>
     </div>
   );
