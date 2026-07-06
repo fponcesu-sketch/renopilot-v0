@@ -15,7 +15,7 @@ type ContractorQuestionsContent = {
 
 type ContractorQuestionsScreenProps = {
   content: ContractorQuestionsContent;
-  language: Language;
+  language?: Language;
   onNext: () => void;
 };
 
@@ -125,12 +125,12 @@ function extractQuestions(message: string, fallbackQuestions: string[]) {
   const extracted = lines
     .map((line) => line.replace(/^[-•]\s*/, '').replace(/^\d+[.)]\s*/, '').trim())
     .filter((line) => line.length > 8)
-    .filter((line) => !/^(hola|hi|dzięń dobry|dzień dobry|gracias|thanks|thank you|dziękuję)/i.test(line));
+    .filter((line) => !/^(hola|hi|dzień dobry|gracias|thanks|thank you|dziękuję)/i.test(line));
 
   return extracted.length ? extracted.slice(0, 6) : fallbackQuestions;
 }
 
-export function ContractorQuestionsScreen({ content, language, onNext }: ContractorQuestionsScreenProps) {
+export function ContractorQuestionsScreen({ content, language = 'es', onNext }: ContractorQuestionsScreenProps) {
   const [tone, setTone] = useState<MessageTone>('casual');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const copy = toneCopy[language];
