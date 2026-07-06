@@ -47,8 +47,12 @@ function buildSafeQuoteText(quoteText: string, quoteDocuments: QuoteDocument[]) 
   return combinedText.slice(0, MAX_QUOTE_CHARS);
 }
 
+function isPdfDocument(document: QuoteDocument) {
+  return document.mimeType === 'application/pdf' || document.name.toLowerCase().endsWith('.pdf');
+}
+
 function shouldSendFileFallback(document: QuoteDocument) {
-  return !document.text?.trim() && Boolean(document.fileData) && document.mimeType?.startsWith('image/');
+  return !document.text?.trim() && Boolean(document.fileData) && (document.mimeType?.startsWith('image/') || isPdfDocument(document));
 }
 
 function buildSafeDocuments(quoteDocuments: QuoteDocument[]) {
