@@ -259,6 +259,40 @@ function isImageDocument(document) {
   return document.mimeType.toLowerCase().startsWith('image/') || /^data:image\//i.test(document.fileData);
 }
 
+function documentMetadata(document) {
+  return {
+    id: document.id,
+    fileNameLength: document.fileName.length,
+    mimeType: document.mimeType || 'text/plain',
+    textLength: document.text.trim().length,
+    hasFileData: Boolean(document.fileData),
+    isImage: isImageDocument(document),
+  };
+}
+
+function buildDebugBase({ requestId, language, decisionContext, documents, hasInput }) {
+  return {
+    event: 'quote_analysis_debug',
+    requestId,
+    language,
+    inputModeHint: String(decisionContext || '').slice(0, 80),
+    documentCount: documents.length,
+    hasInput,
+    hasReadableText: documents.some((document) => document.text.trim().length > 0),
+    totalTextLength: documents.reduce((total, document) => total + document.text.trim().length, 0),
+    hasFileData: documents.some((document) => Boolean(document.fileData)),
+    documents: documents.map(documentMetadata),
+  };
+}
+
+function logInfo(payload) {
+  console.info(JSON.stringify(payload));
+}
+
+function logError(payload) {
+  console.error(JSON.stringify(payload));
+}
+
 function buildUserContent({ responseLanguage, analysisModeHint, decisionContext, documents }) {
   const textDocuments = documents.map((document) => ({
     id: document.id,
@@ -284,12 +318,6 @@ function buildUserContent({ responseLanguage, analysisModeHint, decisionContext,
       content.push({
         type: 'input_image',
         image_url: document.fileData,
-      });
-    } else if (document.fileData) {
-      content.push({
-        type: 'input_file',
-        filename: document.fileName,
-        file_data: document.fileData,
       });
     }
   }
@@ -348,7 +376,7 @@ async function callOpenAi(payload) {
   if (!response.ok) {
     const error = new Error(`OpenAI request failed: ${response.status}`);
     error.status = response.status;
-    error.bodyText = bodyText;
+    error.bodyText = bodyText.slice(0, 1200);
     throw error;
   }
 
@@ -356,6 +384,8 @@ async function callOpenAi(payload) {
 }
 
 export default async function handler(req, res) {
+  const requestId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
   if (req.method !== 'POST') {
     return sendJson(res, 405, { error: 'Method not allowed' });
   }
@@ -364,15 +394,20 @@ export default async function handler(req, res) {
   const responseLanguage = languageNames[language] || 'Spanish';
   const documents = normalizeDocuments(quoteDocuments, quoteText);
   const hasInput = documents.some((document) => document.text.trim() || document.fileData);
+  const hasReadableContent = documents.some((document) => document.text.trim().length >= 20 || document.fileData);
   const analysisModeHint = 'single_quote';
   const model = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
+  const debugBase = buildDebugBase({ requestId, language, decisionContext, documents, hasInput });
 
-  if (!hasInput) {
-    return sendJson(res, 400, { error: 'Missing quote text' });
+  logInfo({ ...debugBase, stage: 'received' });
+
+  if (!hasInput || !hasReadableContent) {
+    logInfo({ ...debugBase, stage: 'rejected_unreadable' });
+    return sendJson(res, 422, { error: 'Quote content unreadable' });
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    console.error('OpenAI API key missing for quote analysis');
+    logError({ ...debugBase, stage: 'missing_api_key' });
     return sendJson(res, 503, { error: 'Quote analysis unavailable' });
   }
 
@@ -387,9 +422,17 @@ export default async function handler(req, res) {
     let data;
 
     try {
+      logInfo({ ...debugBase, stage: 'openai_attempt', includeTemperature: true });
       data = await callOpenAi(buildOpenAiPayload({ ...basePayload, includeTemperature: true }));
     } catch (firstError) {
-      console.error('OpenAI quote analysis first attempt failed', firstError.status, firstError.bodyText || firstError);
+      logError({
+        ...debugBase,
+        stage: 'openai_first_attempt_failed',
+        status: firstError.status || null,
+        errorMessage: firstError.message,
+        errorBody: firstError.bodyText || '',
+      });
+      logInfo({ ...debugBase, stage: 'openai_attempt', includeTemperature: false });
       data = await callOpenAi(buildOpenAiPayload({ ...basePayload, includeTemperature: false }));
     }
 
@@ -398,9 +441,16 @@ export default async function handler(req, res) {
 
     const analysis = JSON.parse(outputText);
 
+    logInfo({ ...debugBase, stage: 'success', outputLength: outputText.length });
     return sendJson(res, 200, { source: 'llm', analysis });
   } catch (error) {
-    console.error('Quote analysis failed', error.status, error.bodyText || error);
-    return sendJson(res, 502, { error: 'Quote analysis failed' });
+    logError({
+      ...debugBase,
+      stage: 'failed',
+      status: error.status || null,
+      errorMessage: error.message,
+      errorBody: error.bodyText || '',
+    });
+    return sendJson(res, 502, { error: 'Quote analysis failed', requestId });
   }
 }
