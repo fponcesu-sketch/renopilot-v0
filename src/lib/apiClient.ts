@@ -7,7 +7,7 @@ import type {
 } from '../types/analysis';
 
 const MAX_QUOTE_CHARS = 18_000;
-const ANALYZE_QUOTE_TIMEOUT_MS = 25_000;
+const ANALYZE_QUOTE_TIMEOUT_MS = 60_000;
 const MAX_DOCUMENTS_TO_SEND = 3;
 
 async function postJson<TResponse>(path: string, body: unknown, timeoutMs?: number): Promise<TResponse> {
@@ -38,7 +38,7 @@ async function postJson<TResponse>(path: string, body: unknown, timeoutMs?: numb
 
 function buildSafeQuoteText(quoteText: string, quoteDocuments: QuoteDocument[]) {
   const documentText = quoteDocuments
-    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text || ''}`)
+    .map((document, index) => `File ${index + 1}: ${document.name}\n${document.text || ''}`)
     .join('\n\n---\n\n');
   const combinedText = [documentText, quoteText.trim()].filter(Boolean).join('\n\n---\n\n');
 
