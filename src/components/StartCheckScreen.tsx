@@ -1,2 +1,2 @@
-export { SafeStartCheckScreen as StartCheckScreen } from './SafeStartCheckScreen';
-export type { InputMode } from './SafeStartCheckScreen';
+export { StartInputScreen as StartCheckScreen } from './StartInputScreen';
+export type { InputMode } from './StartInputScreen';
