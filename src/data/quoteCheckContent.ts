@@ -26,7 +26,7 @@ export const quoteCheckContent = {
       cta: 'Empezar revisión',
     },
     startCheck: {
-      title: 'Empecemos con lo que te han enviado',
+      title: '¿Qué quieres revisar?',
       decisionLabel: '¿Qué quieres decidir?',
       decisionPlaceholder:
         'Ejemplo: Quiero saber si este presupuesto para reformar el baño está claro antes de pagar la señal.',
@@ -114,7 +114,7 @@ export const quoteCheckContent = {
       cta: 'Start review',
     },
     startCheck: {
-      title: "Let's start with what they sent you",
+      title: 'What do you want to review?',
       decisionLabel: 'What do you want to decide?',
       decisionPlaceholder:
         'Example: I want to know if this bathroom renovation quote is clear before I pay the deposit.',
@@ -201,7 +201,7 @@ export const quoteCheckContent = {
       cta: 'Rozpocznij sprawdzanie',
     },
     startCheck: {
-      title: 'Zacznijmy od tego, co dostałeś',
+      title: 'Co chcesz sprawdzić?',
       decisionLabel: 'Jaką decyzję chcesz podjąć?',
       decisionPlaceholder:
         'Przykład: Chcę wiedzieć, czy ta wycena remontu łazienki jest jasna, zanim zapłacę zaliczkę.',
