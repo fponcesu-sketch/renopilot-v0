@@ -259,6 +259,10 @@ function isImageDocument(document) {
   return document.mimeType.toLowerCase().startsWith('image/') || /^data:image\//i.test(document.fileData);
 }
 
+function isPdfDocument(document) {
+  return document.mimeType.toLowerCase() === 'application/pdf' || document.fileName.toLowerCase().endsWith('.pdf') || /^data:application\/pdf/i.test(document.fileData);
+}
+
 function documentMetadata(document) {
   return {
     id: document.id,
@@ -267,6 +271,7 @@ function documentMetadata(document) {
     textLength: document.text.trim().length,
     hasFileData: Boolean(document.fileData),
     isImage: isImageDocument(document),
+    isPdf: isPdfDocument(document),
   };
 }
 
@@ -318,6 +323,12 @@ function buildUserContent({ responseLanguage, analysisModeHint, decisionContext,
       content.push({
         type: 'input_image',
         image_url: document.fileData,
+      });
+    } else if (document.fileData && isPdfDocument(document)) {
+      content.push({
+        type: 'input_file',
+        filename: document.fileName,
+        file_data: document.fileData,
       });
     }
   }
