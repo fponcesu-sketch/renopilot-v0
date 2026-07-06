@@ -80,22 +80,30 @@
 }
 
 .helper-chip-list {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
 }
 
-.helper-chip {
-  appearance: none;
-  background: #eef7f3;
-  border: 1px solid #cfe5dc;
-  border-radius: 999px;
-  color: #2f5f58;
-  cursor: pointer;
-  font: inherit;
+.helper-chip-label {
+  color: #70675d;
   font-size: 0.74rem;
-  font-weight: 900;
-  padding: 7px 9px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.helper-chip {
+  background: #f8f4ee;
+  border: 1px solid #e6dacb;
+  border-radius: 999px;
+  color: #70675d;
+  cursor: default;
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 6px 8px;
 }
 
 .compact-field {
