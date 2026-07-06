@@ -26,6 +26,8 @@ type Screen =
   | 'reply'
   | 'updated';
 
+type InputMode = 'written_quote' | 'verbal_estimate' | 'contractor_reply';
+
 const screenOrder: Screen[] = [
   'landing',
   'start',
@@ -104,6 +106,124 @@ function fallbackClarificationItems(items: string[]): ClarificationItem[] {
     consequence_type: 'scope',
     question_to_ask: `¿Puedes confirmar por escrito este punto: ${normalizeProductName(item)}?`,
   }));
+}
+
+function buildVerbalEstimateAnalysis(language: Language): QuoteAnalysis {
+  const content = {
+    es: {
+      title: 'No está listo para aceptar todavía',
+      summary:
+        'Esto se ha hablado solo por teléfono, así que los puntos importantes no están por escrito. Antes de aceptar o pagar, pide al profesional que confirme la oferta por escrito.',
+      confirmed: ['Hay una estimación verbal inicial.', 'El siguiente paso está claro: pedir confirmación por escrito.'],
+      section: 'Qué pedir por escrito',
+      items: [
+        ['Precio final y si incluye IVA', 'Sin precio final por escrito, el coste puede cambiar o generar discusión después.', '¿Cuál es el precio final y está incluido el IVA?', 'cost'],
+        ['Alcance exacto del trabajo', 'Si el alcance no está detallado, puede haber malentendidos sobre qué está incluido.', '¿Qué trabajo exacto está incluido?', 'scope'],
+        ['Detalles del producto/material', 'Sin modelo, marca o características, el resultado puede no coincidir con lo esperado.', '¿Qué producto, modelo, material o características exactas incluye la oferta?', 'quality'],
+        ['Fecha de entrega/instalación', 'Sin plazo por escrito, será difícil planificar o reclamar retrasos.', '¿Cuál es la fecha prevista de entrega o instalación?', 'time'],
+        ['Garantía', 'Sin garantía clara, no sabes qué pasa si algo falla después.', '¿Qué garantía tiene el producto y la instalación?', 'dispute'],
+        ['Forma de pago', 'Sin condiciones de pago claras, puedes pagar demasiado pronto o sin protección suficiente.', '¿Cuál es la forma de pago y cuándo se paga cada parte?', 'payment'],
+      ] as Array<[string, string, string, ClarificationItem['consequence_type']]>,
+      priceTitle: 'No todavía',
+      priceSummary: 'Una estimación verbal no permite juzgar bien el precio. Primero hace falta una oferta escrita con desglose básico.',
+      priceNext: 'Pide precio final, IVA, alcance, producto, instalación, plazo, garantía y forma de pago por escrito.',
+      questionsTitle: 'Mensaje para pedir presupuesto por escrito',
+      message: `Hola, gracias por la llamada. Antes de confirmar, ¿podrías enviarme la oferta por escrito?\n\nPor favor incluye:\n- precio final y si incluye IVA\n- alcance exacto del trabajo\n- detalles del producto/material\n- si la instalación está incluida\n- fecha de entrega/instalación\n- garantía\n- forma de pago\n- cualquier cosa no incluida o posible extra\n\nGracias.`,
+    },
+    en: {
+      title: 'Not ready to accept yet',
+      summary:
+        'This was only discussed by phone, so the key terms are not written down. Before accepting or paying, ask the contractor to confirm the offer in writing.',
+      confirmed: ['There is an initial verbal estimate.', 'The next step is clear: ask for written confirmation.'],
+      section: 'What to confirm in writing',
+      items: [
+        ['Final price and whether VAT is included', 'Without a final written price, the cost may change or create a dispute later.', 'What is the final price, and is VAT included?', 'cost'],
+        ['Exact scope of work', 'If the scope is not detailed, there may be misunderstandings about what is included.', 'What exact work is included?', 'scope'],
+        ['Product/material details', 'Without model, brand or characteristics, the final result may not match what you expect.', 'What exact product, model, material or characteristics are included?', 'quality'],
+        ['Delivery / installation date', 'Without a written timeline, it is harder to plan or challenge delays.', 'What is the expected delivery or installation date?', 'time'],
+        ['Warranty', 'Without clear warranty terms, you do not know what happens if something fails later.', 'What warranty applies to the product and installation?', 'dispute'],
+        ['Payment terms', 'Without clear payment terms, you may pay too early or without enough protection.', 'What are the payment terms and when is each part due?', 'payment'],
+      ] as Array<[string, string, string, ClarificationItem['consequence_type']]>,
+      priceTitle: 'No, not yet',
+      priceSummary: 'A verbal estimate is not enough to judge the price properly. First, you need a written offer with a basic breakdown.',
+      priceNext: 'Ask for final price, VAT, scope, product, installation, timeline, warranty and payment terms in writing.',
+      questionsTitle: 'Message to request written quote',
+      message: `Hi, thanks for the call. Before confirming, could you please send me the offer in writing?\n\nPlease include:\n- final price and whether VAT is included\n- exact scope of work\n- product/material details\n- whether installation is included\n- delivery/installation date\n- warranty\n- payment terms\n- anything not included or possible extras\n\nThank you.`,
+    },
+    pl: {
+      title: 'To nie jest jeszcze gotowe do akceptacji',
+      summary:
+        'To było omówione tylko przez telefon, więc najważniejsze warunki nie są zapisane. Przed akceptacją lub płatnością poproś wykonawcę o potwierdzenie oferty na piśmie.',
+      confirmed: ['Istnieje wstępna ustna wycena.', 'Następny krok jest jasny: poprosić o potwierdzenie na piśmie.'],
+      section: 'Co potwierdzić na piśmie',
+      items: [
+        ['Cena końcowa i czy zawiera VAT', 'Bez końcowej ceny na piśmie koszt może się zmienić albo spowodować późniejszy spór.', 'Jaka jest końcowa cena i czy zawiera VAT?', 'cost'],
+        ['Dokładny zakres prac', 'Jeśli zakres nie jest opisany, może dojść do nieporozumień, co jest w cenie.', 'Jaki dokładnie zakres prac jest w cenie?', 'scope'],
+        ['Szczegóły produktu/materiałów', 'Bez modelu, marki lub parametrów efekt końcowy może nie odpowiadać oczekiwaniom.', 'Jaki dokładnie produkt, model, materiał lub parametry są uwzględnione?', 'quality'],
+        ['Termin dostawy/montażu', 'Bez terminu na piśmie trudniej planować i reagować na opóźnienia.', 'Jaki jest przewidywany termin dostawy lub montażu?', 'time'],
+        ['Gwarancja', 'Bez jasnej gwarancji nie wiadomo, co się stanie, jeśli coś później nie zadziała.', 'Jaka gwarancja obejmuje produkt i montaż?', 'dispute'],
+        ['Warunki płatności', 'Bez jasnych płatności możesz zapłacić za wcześnie lub bez wystarczającej ochrony.', 'Jakie są warunki płatności i kiedy płaci się poszczególne części?', 'payment'],
+      ] as Array<[string, string, string, ClarificationItem['consequence_type']]>,
+      priceTitle: 'Nie, jeszcze nie',
+      priceSummary: 'Ustna wycena nie wystarcza, aby dobrze ocenić cenę. Najpierw potrzebna jest pisemna oferta z podstawowym zakresem.',
+      priceNext: 'Poproś na piśmie o cenę końcową, VAT, zakres, produkt, montaż, termin, gwarancję i warunki płatności.',
+      questionsTitle: 'Wiadomość z prośbą o pisemną ofertę',
+      message: `Dzień dobry, dziękuję za rozmowę. Przed potwierdzeniem proszę o przesłanie oferty na piśmie.\n\nProszę uwzględnić:\n- końcową cenę i informację, czy zawiera VAT\n- dokładny zakres prac\n- szczegóły produktu/materiałów\n- czy montaż jest w cenie\n- termin dostawy/montażu\n- gwarancję\n- warunki płatności\n- ewentualne rzeczy nieujęte w cenie lub dodatkowe koszty\n\nDziękuję.`,
+    },
+  }[language];
+
+  const clarificationItems = content.items.map(([title, consequence, question_to_ask, consequence_type]) => ({
+    title,
+    consequence,
+    consequence_type,
+    question_to_ask,
+  }));
+
+  return {
+    verdict: {
+      level: 'red',
+      title: content.title,
+      summary: content.summary,
+    },
+    mode: 'single_quote',
+    recommendedVendor: '',
+    comparison: {
+      recommendedQuote: '',
+      oneLineReason: content.summary,
+      whyThisOne: content.confirmed,
+      stillUnclear: clarificationItems.map((item) => item.title),
+      beCareful: ['A verbal estimate cannot be fully checked. Request written confirmation before accepting.'],
+    },
+    clarificationItems,
+    priceSanity: {
+      status: 'no',
+      title: content.priceTitle,
+      summary: content.priceSummary,
+      next_step: content.priceNext,
+    },
+    infoCategories: {
+      confirmed: content.confirmed,
+      needsClarification: [content.section],
+      risks: ['A verbal estimate cannot be fully checked. The next best step is to request written confirmation.'],
+    },
+    vendorQuestions: {
+      title: content.questionsTitle,
+      messageToSend: content.message,
+      messagesByVendor: [
+        {
+          vendorName: content.questionsTitle,
+          messageToSend: content.message,
+        },
+      ],
+      questions: clarificationItems.map((item) => item.question_to_ask),
+    },
+    nextAction: {
+      title: content.questionsTitle,
+      summary: content.priceNext,
+    },
+    confidence: 'high',
+    assumptions: ['No written quote has been provided yet.'],
+  };
 }
 
 export default function App() {
@@ -258,6 +378,7 @@ export default function App() {
     decisionContext: string;
     quoteText: string;
     quoteDocuments: QuoteDocument[];
+    inputMode: InputMode;
   }) => {
     setDecisionContext(input.decisionContext);
     setQuoteText(input.quoteText);
@@ -266,6 +387,14 @@ export default function App() {
     setUpdatedAnalysis(null);
     setAnalysisWarning('');
     setStartError('');
+
+    if (input.inputMode === 'verbal_estimate') {
+      setAnalysis(buildVerbalEstimateAnalysis(language));
+      setAnalysisSource('llm');
+      setScreen('result');
+      return;
+    }
+
     setIsAnalyzing(true);
     setScreen('checking');
 
