@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import { languageOptions, type Language, type QuoteCheckContent } from '../data/quoteCheckContent';
 
-const PROTOTYPE_VERSION = 'RenoPilot v0.1';
-
 type AppShellProps = {
   brand: string;
   children: ReactNode;
@@ -80,9 +78,6 @@ export function AppShell({
           </div>
         )}
         <div className="screen-card">{children}</div>
-        <footer className="prototype-version" aria-label="Prototype version">
-          {PROTOTYPE_VERSION}
-        </footer>
       </section>
     </main>
   );
