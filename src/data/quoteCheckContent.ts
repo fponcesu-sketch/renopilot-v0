@@ -8,7 +8,75 @@ export const languageOptions: Array<{ code: Language; label: string }> = [
   { code: 'pl', label: 'PL' },
 ];
 
-export const quoteCheckContent = {
+export const quoteCheckContent: Record<Language, {
+  brand: string;
+  shell: {
+    ariaLabel: string;
+    backLabel: string;
+    languageLabel: string;
+    phaseLabel: string;
+    phases: string[];
+  };
+  landing: {
+    eyebrow: string;
+    headline: string;
+    subcopy: string;
+    cta: string;
+  };
+  startCheck: {
+    title: string;
+    decisionLabel: string;
+    decisionPlaceholder: string;
+    quoteInputLabel: string;
+    quoteInputHint: string;
+    uploadCta: string;
+    quotePlaceholder: string;
+    emailLabel: string;
+    emailHelper: string;
+    emailPlaceholder: string;
+    cta: string;
+  };
+  checking: {
+    title: string;
+    items: string[];
+    cta: string;
+  };
+  result: {
+    title: string;
+    status: string;
+    explanation: string;
+    costExposure: string;
+    biggestRiskTitle: string;
+    biggestRisk: string;
+    nextActionTitle: string;
+    nextAction: string;
+    cta: string;
+  };
+  review: {
+    title: string;
+    items: string[];
+    cta: string;
+  };
+  questions: {
+    title: string;
+    message: string;
+    copyCta: string;
+    copiedLabel: string;
+    cta: string;
+  };
+  vendorReply: {
+    title: string;
+    label: string;
+    placeholder: string;
+    cta: string;
+  };
+  updatedRecommendation: {
+    status: string;
+    explanation: string;
+    nextActionTitle: string;
+    nextAction: string;
+  };
+}> = {
   es: {
     brand: 'RenoPilot',
     shell: {
@@ -271,72 +339,4 @@ export const quoteCheckContent = {
       nextAction: 'Poproś o pisemne potwierdzenie przed zapłatą zaliczki.',
     },
   },
-} satisfies Record<Language, {
-  brand: string;
-  shell: {
-    ariaLabel: string;
-    backLabel: string;
-    languageLabel: string;
-    phaseLabel: string;
-    phases: string[];
-  };
-  landing: {
-    eyebrow: string;
-    headline: string;
-    subcopy: string;
-    cta: string;
-  };
-  startCheck: {
-    title: string;
-    decisionLabel: string;
-    decisionPlaceholder: string;
-    quoteInputLabel: string;
-    quoteInputHint: string;
-    uploadCta: string;
-    quotePlaceholder: string;
-    emailLabel: string;
-    emailHelper: string;
-    emailPlaceholder: string;
-    cta: string;
-  };
-  checking: {
-    title: string;
-    items: string[];
-    cta: string;
-  };
-  result: {
-    title: string;
-    status: string;
-    explanation: string;
-    costExposure: string;
-    biggestRiskTitle: string;
-    biggestRisk: string;
-    nextActionTitle: string;
-    nextAction: string;
-    cta: string;
-  };
-  review: {
-    title: string;
-    items: string[];
-    cta: string;
-  };
-  questions: {
-    title: string;
-    message: string;
-    copyCta: string;
-    copiedLabel: string;
-    cta: string;
-  };
-  vendorReply: {
-    title: string;
-    label: string;
-    placeholder: string;
-    cta: string;
-  };
-  updatedRecommendation: {
-    status: string;
-    explanation: string;
-    nextActionTitle: string;
-    nextAction: string;
-  };
 };
