@@ -5,6 +5,10 @@
   z-index: 5;
 }
 
+.input-mode-options .input-mode-option:nth-child(3) {
+  display: flex;
+}
+
 .tone-selector-card,
 .reply-loop-card {
   background: #fffaf4;
