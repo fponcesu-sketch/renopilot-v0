@@ -5,6 +5,7 @@ import './styles.css';
 import './prototype.css';
 import './decisionFlow.css';
 import './uiOverrides.css';
+import './verbalEstimate.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
