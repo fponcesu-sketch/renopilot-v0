@@ -19,6 +19,7 @@ type Props = {
 type PdfTextItem = { str?: string };
 
 const MIN_READABLE_TEXT_CHARS = 80;
+const MAX_FILE_FALLBACK_BYTES = 4_000_000;
 
 const labels = {
   es: {
@@ -37,7 +38,7 @@ const labels = {
     reading: 'Leyendo archivo…',
     missing: 'Pega, escribe o sube algo para revisarlo.',
     unreadablePdf: 'No hemos podido leer texto suficiente del PDF. Pega el texto del presupuesto o sube una versión más clara.',
-    attached: 'Archivo leído',
+    attached: 'Archivo listo',
     imageAttached: 'Imagen adjuntada',
     expectation: 'Te decimos qué falta, qué no está claro y qué puedes preguntarle.',
     privacy: '🔒 Puedes tapar datos sensibles si quieres.',
@@ -59,7 +60,7 @@ const labels = {
     reading: 'Reading file…',
     missing: 'Paste, write, or upload something so we can review it.',
     unreadablePdf: 'We could not read enough text from the PDF. Paste the quote text or upload a clearer version.',
-    attached: 'File read',
+    attached: 'File ready',
     imageAttached: 'Image attached',
     expectation: 'We tell you what is missing, what is unclear, and what you can ask.',
     privacy: '🔒 You can hide sensitive details if you want.',
@@ -81,7 +82,7 @@ const labels = {
     reading: 'Czytanie pliku…',
     missing: 'Wklej, napisz albo wgraj coś, aby to sprawdzić.',
     unreadablePdf: 'Nie udało się odczytać wystarczająco dużo tekstu z PDF-a. Wklej tekst oferty albo wgraj wyraźniejszą wersję.',
-    attached: 'Plik odczytany',
+    attached: 'Plik gotowy',
     imageAttached: 'Obraz dodany',
     expectation: 'Powiemy, czego brakuje, co jest niejasne i o co możesz zapytać.',
     privacy: '🔒 Możesz zasłonić dane wrażliwe, jeśli chcesz.',
@@ -115,7 +116,7 @@ async function extractPdfText(file: File) {
   return pages.join('\n\n');
 }
 
-function readImage(file: File): Promise<string> {
+function readFile(file: File): Promise<string> {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ''));
@@ -135,9 +136,9 @@ function buildText(documents: QuoteDocument[], text: string) {
 
 function hasReadableText(documents: QuoteDocument[], text: string) {
   const documentTextLength = documents.reduce((total, document) => total + (document.text?.trim().length || 0), 0);
-  const hasImage = documents.some((document) => Boolean(document.fileData) && document.mimeType?.startsWith('image/'));
+  const hasFallbackFile = documents.some((document) => Boolean(document.fileData));
 
-  return text.trim().length >= 20 || documentTextLength >= MIN_READABLE_TEXT_CHARS || hasImage;
+  return text.trim().length >= 20 || documentTextLength >= MIN_READABLE_TEXT_CHARS || hasFallbackFile;
 }
 
 export function StartInputScreen({ error, language, onSubmit }: Props) {
@@ -163,32 +164,30 @@ export function StartInputScreen({ error, language, onSubmit }: Props) {
       const loaded = await Promise.all(files.map(async (file) => {
         const pdf = isPdf(file);
         const extractedText = pdf ? await extractPdfText(file).catch(() => '') : '';
-        const imageData = !pdf && file.size <= 4_000_000 ? await readImage(file) : '';
+        const needsFallback = pdf ? extractedText.trim().length < MIN_READABLE_TEXT_CHARS : true;
+        const fallbackData = needsFallback && file.size <= MAX_FILE_FALLBACK_BYTES ? await readFile(file) : '';
 
         return {
           name: file.name || 'File',
           text: extractedText,
-          fileData: imageData,
-          mimeType: file.type || 'application/octet-stream',
+          fileData: fallbackData,
+          mimeType: file.type || (pdf ? 'application/pdf' : 'application/octet-stream'),
           sizeBytes: file.size,
         };
       }));
 
-      const readableFiles = loaded.filter((document) => {
-        const isPdfDocument = document.mimeType === 'application/pdf' || document.name.toLowerCase().endsWith('.pdf');
-        return !isPdfDocument || document.text.trim().length >= MIN_READABLE_TEXT_CHARS;
-      });
+      const usableFiles = loaded.filter((document) => document.text.trim().length >= MIN_READABLE_TEXT_CHARS || document.fileData);
 
-      if (!readableFiles.length) {
+      if (!usableFiles.length) {
         setLocalError(t.unreadablePdf);
         return;
       }
 
-      if (readableFiles.length < loaded.length) {
+      if (usableFiles.length < loaded.length) {
         setLocalError(t.unreadablePdf);
       }
 
-      setDocuments((current) => [...current, ...readableFiles]);
+      setDocuments((current) => [...current, ...usableFiles]);
     } finally {
       setIsReading(false);
       event.currentTarget.value = '';
