@@ -1,0 +1,157 @@
+.simple-input-screen {
+  gap: 12px;
+}
+
+.simple-input-screen h1 {
+  font-size: 1.55rem;
+  line-height: 1.08;
+  margin-bottom: 0;
+}
+
+.simple-input-subtitle {
+  color: #5e6b64;
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.32;
+  margin: -4px 0 0;
+}
+
+.input-pill-row {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.input-pill {
+  appearance: none;
+  background: #f8f4ee;
+  border: 1px solid #e4d8c8;
+  border-radius: 999px;
+  color: #4d5a53;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 8px 11px;
+}
+
+.input-pill.active {
+  background: #eef7f3;
+  border-color: #cfe5dc;
+  color: #2f5f58;
+}
+
+.selected-helper-line {
+  color: #617067;
+  font-size: 0.8rem;
+  font-weight: 760;
+  line-height: 1.32;
+  margin: -2px 0 0;
+}
+
+.simple-input-card {
+  background: #fffaf4;
+  border: 1px solid #e4d8c8;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.simple-input-card textarea {
+  background: transparent;
+  border: 0;
+  color: #22312b;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  min-height: 170px;
+  outline: none;
+  padding: 14px;
+  resize: vertical;
+  width: 100%;
+}
+
+.simple-input-card textarea::placeholder {
+  color: #94897d;
+}
+
+.inline-upload-action {
+  align-items: center;
+  border-top: 1px solid #eadfce;
+  color: #2f5f58;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.84rem;
+  font-weight: 950;
+  justify-content: flex-start;
+  padding: 11px 14px;
+}
+
+.inline-upload-action.disabled {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.compact-attached-list {
+  gap: 6px;
+  margin-top: -4px;
+}
+
+.simple-input-screen > .primary-button {
+  margin-top: 2px;
+}
+
+.expectation-line {
+  color: #536158;
+  font-size: 0.82rem;
+  font-weight: 780;
+  line-height: 1.34;
+  margin: -4px 0 0;
+  text-align: center;
+}
+
+.privacy-inline-note {
+  color: #81766b;
+  font-size: 0.72rem;
+  font-weight: 720;
+  line-height: 1.35;
+  margin: -2px 0 0;
+  text-align: center;
+}
+
+.privacy-inline-note summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.privacy-inline-note summary::-webkit-details-marker {
+  display: none;
+}
+
+.privacy-inline-note p {
+  margin: 6px 0 0;
+}
+
+.subtle-hints {
+  display: none;
+}
+
+.simple-input-screen .input-mode-card,
+.simple-input-screen .quote-input-card,
+.simple-input-screen .privacy-note-card,
+.simple-input-screen .decision-field {
+  display: none;
+}
+
+@media (max-height: 760px) {
+  .simple-input-card textarea {
+    min-height: 135px;
+  }
+
+  .simple-input-screen {
+    gap: 10px;
+  }
+}
