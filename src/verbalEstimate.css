@@ -1,3 +1,15 @@
+.start-check-screen > .prototype-note {
+  display: none;
+}
+
+.start-check-screen .decision-field {
+  display: none;
+}
+
+.input-mode-options .input-mode-option:nth-child(3) {
+  display: none;
+}
+
 .input-mode-card {
   background: #fffaf4;
   border: 1px solid #e7dccd;
