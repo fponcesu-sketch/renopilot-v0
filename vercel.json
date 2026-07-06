@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/analyze-quote.js": {
+      "maxDuration": 60
+    },
+    "api/analyze-vendor-reply.js": {
+      "maxDuration": 60
+    }
+  }
+}
