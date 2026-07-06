@@ -9,7 +9,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 const MAX_PDF_FALLBACK_BYTES = 2_500_000;
 
 type MultiFileIntent = 'undecided' | 'single_package' | 'comparison_interest';
-export type InputMode = 'written_quote' | 'verbal_estimate' | 'contractor_reply';
+export type InputMode = 'written_quote' | 'informal_message' | 'verbal_estimate';
 
 type StartCheckScreenProps = {
   content: QuoteCheckContent['startCheck'];
@@ -30,10 +30,14 @@ const uploadCopy: Record<Language, {
   entryTitle: string;
   writtenOption: string;
   writtenSubtext: string;
+  informalOption: string;
+  informalSubtext: string;
   verbalOption: string;
   verbalSubtext: string;
-  replyOption: string;
-  replySubtext: string;
+  writtenTitle: string;
+  writtenSubtitle: string;
+  informalTitle: string;
+  informalSubtitle: string;
   verbalTitle: string;
   verbalSubtitle: string;
   verbalInputLabel: string;
@@ -41,11 +45,6 @@ const uploadCopy: Record<Language, {
   verbalHintsLabel: string;
   verbalHints: string[];
   verbalCta: string;
-  replyTitle: string;
-  replySubtitle: string;
-  replyInputLabel: string;
-  replyPlaceholder: string;
-  replyCta: string;
   reading: string;
   readingPdf: string;
   onlyPdf: string;
@@ -53,7 +52,6 @@ const uploadCopy: Record<Language, {
   extraTextPlaceholder: string;
   missingInput: string;
   missingVerbalInput: string;
-  missingReplyInput: string;
   privacyNoteTitle: string;
   privacyNoteBody: string;
   privacyNoteUse: string;
@@ -69,39 +67,39 @@ const uploadCopy: Record<Language, {
 }> = {
   es: {
     entryTitle: '¿Qué tienes?',
-    writtenOption: 'Tengo un presupuesto por escrito',
-    writtenSubtext: 'PDF, foto, email, captura o mensaje',
-    verbalOption: 'Solo tengo una estimación verbal',
+    writtenOption: 'Presupuesto por escrito',
+    writtenSubtext: 'PDF, documento, email o captura',
+    informalOption: 'Mensaje informal',
+    informalSubtext: 'WhatsApp o email con precio aproximado',
+    verbalOption: 'Solo estimación verbal',
     verbalSubtext: 'Llamada, conversación rápida o audio de WhatsApp',
-    replyOption: 'Tengo una respuesta del profesional',
-    replySubtext: 'Me ha contestado y quiero revisar la respuesta',
-    verbalTitle: '¿Aún no tienes presupuesto por escrito?',
+    writtenTitle: 'Pega o sube lo que te han enviado',
+    writtenSubtitle:
+      'Puedes subir un PDF o pegar un presupuesto, email, WhatsApp o texto de una captura. No tiene que estar perfecto.',
+    informalTitle: 'Pega el mensaje informal',
+    informalSubtitle:
+      'Sirve aunque sea un WhatsApp corto o un precio aproximado. RenoPilot comprobará qué falta y qué conviene preguntar.',
+    verbalTitle: 'Describe lo que te dijeron',
     verbalSubtitle:
-      'Cuéntale a RenoPilot lo que recuerdas de la llamada. Te ayudaremos a pedirle al profesional que lo confirme todo por escrito antes de decir que sí.',
-    verbalInputLabel: 'Escribe lo que recuerdas de la llamada',
+      'Escribe lo que recuerdes de la llamada. RenoPilot lo convertirá en el siguiente paso: pedir confirmación por escrito antes de aceptar.',
+    verbalInputLabel: 'Escribe lo que recuerdas',
     verbalPlaceholder:
-      'Mosquiteras para 5 ventanas. Unos 1.200 PLN. Dijo que la instalación estaba incluida, quizá en 2 semanas. No sé si incluye IVA, garantía o modelo exacto.',
-    verbalHintsLabel: 'Puedes incluir:',
-    verbalHints: ['precio', 'plazo', 'pago', 'materiales / producto', 'garantía / IVA', 'qué no está claro'],
-    verbalCta: 'Preparar mensaje para pedir presupuesto por escrito',
-    replyTitle: 'Revisar respuesta del profesional',
-    replySubtitle: 'Pega la respuesta que te han dado. RenoPilot revisará si aclara lo importante o si todavía falta algo.',
-    replyInputLabel: 'Pega la respuesta recibida',
-    replyPlaceholder: 'Copia aquí la respuesta del profesional.',
-    replyCta: 'Revisar respuesta',
+      'Mosquiteras para 4 ventanas, unos 1.200 PLN, instalación incluida, dijo que podría hacerlo la semana que viene.',
+    verbalHintsLabel: 'Puedes mencionar:',
+    verbalHints: ['trabajo', 'precio', 'qué incluye', 'materiales / modelo', 'plazo', 'garantía', 'IVA'],
+    verbalCta: 'Preparar mensaje para confirmar por escrito',
     reading: 'Leyendo…',
     readingPdf: 'Leyendo PDF…',
     onlyPdf: 'Ahora mismo solo podemos leer PDFs. Si estás en móvil, prueba a elegirlo desde Archivos / Files.',
     attachedLabel: 'Archivo adjuntado',
     extraTextPlaceholder: 'Texto adicional opcional',
-    missingInput: 'Sube un PDF o pega el presupuesto para poder revisarlo.',
-    missingVerbalInput: 'Escribe lo que recuerdas de la llamada para preparar el mensaje.',
-    missingReplyInput: 'Pega la respuesta del profesional para revisarla.',
+    missingInput: 'Pega o sube lo que tengas para poder revisarlo.',
+    missingVerbalInput: 'Escribe lo que recuerdas de la conversación para preparar el mensaje.',
     privacyNoteTitle: 'Nota de privacidad',
     privacyNoteBody:
       'Borra o tapa datos sensibles antes de compartir: nombres, dirección, teléfono, datos bancarios o firmas.',
     privacyNoteUse:
-      'Usaremos el contenido solo para generar tu revisión en RenoPilot y mejorar el prototipo. No publicaremos tus documentos ni tus datos personales.',
+      'Usaremos el contenido solo para generar tu revisión en RenoPilot y mejorar RenoPilot. No publicaremos tus documentos ni tus datos personales.',
     multiFileQuestion: '¿Estos archivos pertenecen al mismo presupuesto o son presupuestos de distintos profesionales?',
     onePackageOption: 'Un solo presupuesto',
     compareOption: 'Comparar presupuestos distintos',
@@ -119,39 +117,39 @@ const uploadCopy: Record<Language, {
   },
   en: {
     entryTitle: 'What do you have?',
-    writtenOption: 'I have a written quote',
-    writtenSubtext: 'PDF, photo, email, screenshot or message',
-    verbalOption: 'I only have a verbal estimate',
+    writtenOption: 'Written quote',
+    writtenSubtext: 'PDF, document, email or screenshot',
+    informalOption: 'Informal message',
+    informalSubtext: 'WhatsApp or email estimate',
+    verbalOption: 'Verbal estimate only',
     verbalSubtext: 'Phone call, quick chat or WhatsApp audio',
-    replyOption: 'I have a contractor reply',
-    replySubtext: 'They answered my questions and I want to check it',
-    verbalTitle: 'No written quote yet?',
+    writtenTitle: 'Paste or upload what they sent you',
+    writtenSubtitle:
+      'You can upload a PDF or paste a quote, email, WhatsApp message or screenshot text. It does not need to be perfect.',
+    informalTitle: 'Paste the informal message',
+    informalSubtitle:
+      'A short WhatsApp or rough price is enough. RenoPilot will check what is missing and what to ask next.',
+    verbalTitle: 'Describe what they told you',
     verbalSubtitle:
-      'Tell RenoPilot what you remember from the call. We will help you ask the contractor to confirm everything in writing before you say yes.',
-    verbalInputLabel: 'Write what you remember from the call',
+      'Write whatever you remember from the call. RenoPilot turns it into the right next step: asking for written confirmation before accepting.',
+    verbalInputLabel: 'Write what you remember',
     verbalPlaceholder:
-      'Mosquito screens for 5 windows. Around 1,200 PLN. He said installation included, maybe 2 weeks. Not sure about VAT, warranty or exact model.',
-    verbalHintsLabel: 'You can include:',
-    verbalHints: ['price', 'timeline', 'payment', 'materials / product', 'warranty / VAT', 'what is unclear'],
-    verbalCta: 'Prepare message to request written quote',
-    replyTitle: 'Check contractor reply',
-    replySubtitle: 'Paste the answer you received. RenoPilot will check whether it clarifies the important points or if something is still missing.',
-    replyInputLabel: 'Paste the reply received',
-    replyPlaceholder: 'Copy the contractor reply here.',
-    replyCta: 'Review reply',
+      'Mosquito screens for 4 windows, around 1,200 PLN, installation included, said he could do it next week.',
+    verbalHintsLabel: 'You can mention:',
+    verbalHints: ['work', 'price', 'what is included', 'materials / model', 'timing', 'warranty', 'VAT'],
+    verbalCta: 'Prepare message to confirm in writing',
     reading: 'Reading…',
     readingPdf: 'Reading PDF…',
     onlyPdf: 'Right now we can only read PDFs. On mobile, try choosing it from Files.',
     attachedLabel: 'File attached',
     extraTextPlaceholder: 'Optional extra text',
-    missingInput: 'Upload a PDF or paste the quote so we can review it.',
-    missingVerbalInput: 'Write what you remember from the call so we can prepare the message.',
-    missingReplyInput: 'Paste the contractor reply so we can review it.',
+    missingInput: 'Paste or upload what you have so we can check it.',
+    missingVerbalInput: 'Write what you remember from the conversation so we can prepare the message.',
     privacyNoteTitle: 'Privacy note',
     privacyNoteBody:
       'Remove or blur sensitive details before sharing: names, addresses, phone numbers, bank details or signatures.',
     privacyNoteUse:
-      'We will use the content only to generate your RenoPilot quote check and improve the prototype. We will not publish your documents or personal details.',
+      'We will use the content only to generate your RenoPilot quote check and improve RenoPilot. We will not publish your documents or personal details.',
     multiFileQuestion: 'Are these files part of one quote, or are they quotes from different contractors?',
     onePackageOption: 'One quote package',
     compareOption: 'Compare different quotes',
@@ -169,39 +167,39 @@ const uploadCopy: Record<Language, {
   },
   pl: {
     entryTitle: 'Co masz?',
-    writtenOption: 'Mam pisemną ofertę',
-    writtenSubtext: 'PDF, zdjęcie, e-mail, zrzut ekranu lub wiadomość',
-    verbalOption: 'Mam tylko ustną wycenę',
-    verbalSubtext: 'Telefon, krótka rozmowa lub wiadomość głosowa',
-    replyOption: 'Mam odpowiedź wykonawcy',
-    replySubtext: 'Odpowiedział i chcę sprawdzić odpowiedź',
-    verbalTitle: 'Nie masz jeszcze pisemnej oferty?',
+    writtenOption: 'Pisemna oferta',
+    writtenSubtext: 'PDF, dokument, e-mail albo zrzut ekranu',
+    informalOption: 'Nieformalna wiadomość',
+    informalSubtext: 'Wycena z WhatsAppa albo e-maila',
+    verbalOption: 'Tylko ustna wycena',
+    verbalSubtext: 'Telefon, krótka rozmowa albo wiadomość głosowa',
+    writtenTitle: 'Wklej albo wgraj to, co dostałeś',
+    writtenSubtitle:
+      'Możesz wgrać PDF albo wkleić ofertę, e-mail, wiadomość z WhatsAppa lub tekst ze zrzutu ekranu. Nie musi być idealnie.',
+    informalTitle: 'Wklej nieformalną wiadomość',
+    informalSubtitle:
+      'Wystarczy krótki WhatsApp albo orientacyjna cena. RenoPilot sprawdzi, czego brakuje i o co warto zapytać.',
+    verbalTitle: 'Opisz, co powiedział wykonawca',
     verbalSubtitle:
-      'Napisz w RenoPilot, co pamiętasz z rozmowy. Pomożemy Ci poprosić wykonawcę o potwierdzenie wszystkiego na piśmie, zanim zaakceptujesz ofertę.',
-    verbalInputLabel: 'Napisz, co pamiętasz z rozmowy',
+      'Napisz, co pamiętasz z rozmowy. RenoPilot zamieni to w kolejny krok: prośbę o potwierdzenie szczegółów na piśmie przed akceptacją.',
+    verbalInputLabel: 'Napisz, co pamiętasz',
     verbalPlaceholder:
-      'Moskitiery do 5 okien. Około 1 200 PLN. Powiedział, że montaż jest w cenie, może za 2 tygodnie. Nie wiem, czy cena zawiera VAT, gwarancję albo dokładny model.',
-    verbalHintsLabel: 'Możesz uwzględnić:',
-    verbalHints: ['cena', 'termin', 'płatność', 'materiały / produkt', 'gwarancja / VAT', 'co jest niejasne'],
-    verbalCta: 'Przygotuj wiadomość z prośbą o pisemną ofertę',
-    replyTitle: 'Sprawdź odpowiedź wykonawcy',
-    replySubtitle: 'Wklej otrzymaną odpowiedź. RenoPilot sprawdzi, czy wyjaśnia ważne punkty i czy czegoś nadal brakuje.',
-    replyInputLabel: 'Wklej otrzymaną odpowiedź',
-    replyPlaceholder: 'Skopiuj tutaj odpowiedź wykonawcy.',
-    replyCta: 'Sprawdź odpowiedź',
+      'Moskitiery do 4 okien, około 1 200 PLN, montaż w cenie, powiedział, że może zrobić w przyszłym tygodniu.',
+    verbalHintsLabel: 'Możesz wspomnieć:',
+    verbalHints: ['zakres prac', 'cena', 'co jest w cenie', 'materiały / model', 'termin', 'gwarancja', 'VAT'],
+    verbalCta: 'Przygotuj wiadomość z prośbą o potwierdzenie',
     reading: 'Czytanie…',
     readingPdf: 'Czytanie PDF…',
     onlyPdf: 'Na razie możemy czytać tylko PDF-y. Na telefonie spróbuj wybrać plik z aplikacji Pliki / Files.',
     attachedLabel: 'Plik dodany',
     extraTextPlaceholder: 'Opcjonalny dodatkowy tekst',
-    missingInput: 'Wgraj PDF albo wklej wycenę, aby ją sprawdzić.',
+    missingInput: 'Wklej albo wgraj to, co masz, aby to sprawdzić.',
     missingVerbalInput: 'Napisz, co pamiętasz z rozmowy, aby przygotować wiadomość.',
-    missingReplyInput: 'Wklej odpowiedź wykonawcy, aby ją sprawdzić.',
     privacyNoteTitle: 'Informacja o prywatności',
     privacyNoteBody:
       'Usuń lub zasłoń dane wrażliwe przed udostępnieniem: nazwiska, adres, telefon, dane bankowe lub podpisy.',
     privacyNoteUse:
-      'Użyjemy treści tylko do przygotowania analizy w RenoPilot i ulepszania prototypu. Nie będziemy publikować Twoich dokumentów ani danych osobowych.',
+      'Użyjemy treści tylko do przygotowania analizy w RenoPilot i ulepszania RenoPilot. Nie będziemy publikować Twoich dokumentów ani danych osobowych.',
     multiFileQuestion: 'Czy te pliki są częścią jednej wyceny, czy to wyceny od różnych wykonawców?',
     onePackageOption: 'Jeden pakiet wyceny',
     compareOption: 'Porównaj różne wyceny',
@@ -254,10 +252,10 @@ async function extractPdfText(file: File) {
 
 function buildQuoteText(documents: QuoteDocument[], pastedText: string) {
   const documentText = documents
-    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text || '[PDF adjuntado]'}`)
+    .map((document, index) => `PDF ${index + 1}: ${document.name}\n${document.text || '[PDF attached]'}`)
     .join('\n\n---\n\n');
 
-  return [documentText, pastedText.trim()].filter(Boolean).join('\n\n---\n\nPasted text:\n');
+  return [documentText, pastedText.trim()].filter(Boolean).join('\n\n---\n\nPasted or described content:\n');
 }
 
 export function StartCheckScreen({ content, error, language, note, onSubmit }: StartCheckScreenProps) {
@@ -287,24 +285,6 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
       return;
     }
 
-    if (inputMode === 'contractor_reply') {
-      const replyText = manualQuoteText.trim();
-
-      if (!replyText) {
-        setLocalError(fileCopy.missingReplyInput);
-        return;
-      }
-
-      setLocalError('');
-      onSubmit({
-        decisionContext: decisionContext || fileCopy.replyTitle,
-        quoteText: `Contractor reply:\n${replyText}`,
-        quoteDocuments: [],
-        inputMode,
-      });
-      return;
-    }
-
     const combinedQuoteText = buildQuoteText(quoteDocuments, manualQuoteText);
 
     if (!combinedQuoteText.trim()) {
@@ -318,7 +298,6 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
 
   const handleModeChange = (mode: InputMode) => {
     if (mode !== inputMode) {
-      setManualQuoteText('');
       setLocalError('');
       setEarlyAccessInterest(false);
     }
@@ -392,12 +371,13 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
   };
 
   const isWrittenMode = inputMode === 'written_quote';
+  const isInformalMode = inputMode === 'informal_message';
   const isVerbalMode = inputMode === 'verbal_estimate';
-  const isReplyMode = inputMode === 'contractor_reply';
 
   return (
     <form
       className="screen-content form-screen start-check-screen"
+      data-input-mode={inputMode}
       data-multi-file-intent={hasMultipleFiles ? multiFileIntent : 'basic_check'}
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -418,20 +398,20 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
             <span>{fileCopy.writtenSubtext}</span>
           </button>
           <button
+            className={isInformalMode ? 'input-mode-option active' : 'input-mode-option'}
+            onClick={() => handleModeChange('informal_message')}
+            type="button"
+          >
+            <strong>{fileCopy.informalOption}</strong>
+            <span>{fileCopy.informalSubtext}</span>
+          </button>
+          <button
             className={isVerbalMode ? 'input-mode-option active' : 'input-mode-option'}
             onClick={() => handleModeChange('verbal_estimate')}
             type="button"
           >
             <strong>{fileCopy.verbalOption}</strong>
             <span>{fileCopy.verbalSubtext}</span>
-          </button>
-          <button
-            className={isReplyMode ? 'input-mode-option active' : 'input-mode-option'}
-            onClick={() => handleModeChange('contractor_reply')}
-            type="button"
-          >
-            <strong>{fileCopy.replyOption}</strong>
-            <span>{fileCopy.replySubtext}</span>
           </button>
         </div>
       </section>
@@ -445,43 +425,29 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
         />
       </label>
       <section className="quote-input-card">
-        {isWrittenMode && (
-          <>
-            <div className="quote-card-header">
-              <h2>{content.quoteInputLabel}</h2>
-              <label className={isReadingFile ? 'upload-button disabled' : 'upload-button'} htmlFor="quote-file-upload">
-                {isReadingFile ? fileCopy.reading : content.uploadCta}
-              </label>
-              <input
-                accept="application/pdf,.pdf"
-                className="file-input-hidden"
-                id="quote-file-upload"
-                multiple
-                onChange={handleFileChange}
-                type="file"
-              />
-            </div>
-            <p>{content.quoteInputHint}</p>
-          </>
-        )}
-        {isVerbalMode && (
-          <div className="verbal-estimate-intro">
-            <h2>{fileCopy.verbalTitle}</h2>
-            <p>{fileCopy.verbalSubtitle}</p>
-          </div>
-        )}
-        {isReplyMode && (
-          <div className="verbal-estimate-intro">
-            <h2>{fileCopy.replyTitle}</h2>
-            <p>{fileCopy.replySubtitle}</p>
-          </div>
-        )}
+        <div className="quote-card-header">
+          <h2>{isVerbalMode ? fileCopy.verbalTitle : isInformalMode ? fileCopy.informalTitle : fileCopy.writtenTitle}</h2>
+          {isWrittenMode && (
+            <label className={isReadingFile ? 'upload-button disabled' : 'upload-button'} htmlFor="quote-file-upload">
+              {isReadingFile ? fileCopy.reading : content.uploadCta}
+            </label>
+          )}
+          <input
+            accept="application/pdf,.pdf"
+            className="file-input-hidden"
+            id="quote-file-upload"
+            multiple
+            onChange={handleFileChange}
+            type="file"
+          />
+        </div>
+        <p>{isVerbalMode ? fileCopy.verbalSubtitle : isInformalMode ? fileCopy.informalSubtitle : fileCopy.writtenSubtitle}</p>
         <div className="privacy-note-card">
           <span className="privacy-note-title">{fileCopy.privacyNoteTitle}</span>
           <span className="privacy-note-text">{fileCopy.privacyNoteBody}</span>
           <span className="privacy-note-text">{fileCopy.privacyNoteUse}</span>
         </div>
-        {isWrittenMode && hasUploadedFiles && (
+        {hasUploadedFiles && (
           <div className="attached-file-list" aria-live="polite">
             {quoteDocuments.map((document, index) => (
               <div className="attached-file-pill" key={`${document.name}-${index}`}>
@@ -539,31 +505,27 @@ export function StartCheckScreen({ content, error, language, note, onSubmit }: S
           </div>
         )}
         <label className="field-group compact-field">
-          {(isVerbalMode || isReplyMode) && (
-            <span>{isVerbalMode ? fileCopy.verbalInputLabel : fileCopy.replyInputLabel}</span>
-          )}
+          {isVerbalMode && <span>{fileCopy.verbalInputLabel}</span>}
           <textarea
             onChange={(event) => {
               setManualQuoteText(event.target.value);
-              if (hasUploadedFiles || isVerbalMode || isReplyMode) setLocalError('');
+              setLocalError('');
             }}
             placeholder={
               isVerbalMode
                 ? fileCopy.verbalPlaceholder
-                : isReplyMode
-                  ? fileCopy.replyPlaceholder
-                  : hasUploadedFiles
-                    ? fileCopy.extraTextPlaceholder
-                    : content.quotePlaceholder
+                : hasUploadedFiles
+                  ? fileCopy.extraTextPlaceholder
+                  : content.quotePlaceholder
             }
-            rows={isVerbalMode ? 5 : 3}
+            rows={isVerbalMode ? 5 : 4}
             value={manualQuoteText}
           />
         </label>
       </section>
       {(localError || error) && <p className="inline-error">{localError || error}</p>}
       <button className="primary-button" disabled={isReadingFile} type="submit">
-        {isReadingFile ? fileCopy.readingPdf : isVerbalMode ? fileCopy.verbalCta : isReplyMode ? fileCopy.replyCta : content.cta}
+        {isReadingFile ? fileCopy.readingPdf : isVerbalMode ? fileCopy.verbalCta : content.cta}
       </button>
     </form>
   );
