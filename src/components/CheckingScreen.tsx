@@ -15,7 +15,21 @@ export function CheckingScreen({ content, error, isReady, onBack, onNext }: Chec
   const animationComplete = progressIndex >= content.items.length;
   const canContinue = animationComplete && isReady;
   const slowMessage = content.slowMessage || 'This is taking longer than usual.';
-  const buttonLabel = error ? content.errorCta || 'Try again' : content.cta;
+  const buttonLabel = error ? content.errorCta || 'Volver' : content.cta;
+
+  const handleButtonClick = () => {
+    if (error) {
+      if (onBack) {
+        onBack();
+        return;
+      }
+
+      window.location.reload();
+      return;
+    }
+
+    onNext();
+  };
 
   useEffect(() => {
     setProgressIndex(0);
@@ -61,7 +75,7 @@ export function CheckingScreen({ content, error, isReady, onBack, onNext }: Chec
       </ul>
       {showSlowMessage && !error && !isReady && <p className="inline-warning">{slowMessage}</p>}
       {error && <p className="inline-warning">{error}</p>}
-      <button className="primary-button" disabled={!error && !canContinue} onClick={error ? onBack : onNext}>
+      <button className="primary-button" disabled={!error && !canContinue} onClick={handleButtonClick}>
         {buttonLabel}
       </button>
     </div>
