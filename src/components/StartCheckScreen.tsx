@@ -67,11 +67,12 @@ const uploadCopy: Record<Language, {
     memoryPill: 'Lo que recuerdo',
     writtenHelper: 'Sube el archivo o pega el texto del presupuesto.',
     messageHelper: 'Pega el WhatsApp o email del profesional.',
-    memoryHelper: 'Escribe lo que recuerdes. Te preparamos un mensaje para pedir confirmación.',
+    memoryHelper:
+      'Escribe lo que recuerdes de la llamada o lo que el profesional te prometió por teléfono. Te preparamos un mensaje para pedir confirmación por escrito.',
     placeholder: 'Ej: mosquiteras para 4 ventanas, 1200 PLN, instalación incluida, próxima semana.',
     uploadCta: '+ Subir PDF, foto o captura',
     submitCta: 'Revisar esto',
-    expectation: 'Te decimos qué falta, qué es vago y qué puedes preguntarle.',
+    expectation: 'Te decimos qué falta, qué no está claro y qué puedes preguntarle.',
     privacyShort: '🔒 Puedes tapar datos sensibles si quieres.',
     privacyMoreLabel: 'Más info',
     privacyMore:
@@ -106,11 +107,11 @@ const uploadCopy: Record<Language, {
     memoryPill: 'What I remember',
     writtenHelper: 'Upload the file or paste the quote text.',
     messageHelper: 'Paste the contractor WhatsApp or email.',
-    memoryHelper: 'Write what you remember. We prepare a message to request confirmation.',
+    memoryHelper: 'Write what you remember from the call or what the contractor promised by phone. We prepare a message to request written confirmation.',
     placeholder: 'Example: mosquito screens for 4 windows, 1200 PLN, installation included, next week.',
     uploadCta: '+ Upload PDF, photo or screenshot',
     submitCta: 'Review this',
-    expectation: 'We tell you what is missing, what is vague, and what you can ask.',
+    expectation: 'We tell you what is missing, what is unclear, and what you can ask.',
     privacyShort: '🔒 You can hide sensitive details if you want.',
     privacyMoreLabel: 'More info',
     privacyMore:
@@ -145,7 +146,7 @@ const uploadCopy: Record<Language, {
     memoryPill: 'Co pamiętam',
     writtenHelper: 'Wgraj plik albo wklej tekst oferty.',
     messageHelper: 'Wklej WhatsAppa albo e-mail od wykonawcy.',
-    memoryHelper: 'Napisz, co pamiętasz. Przygotujemy wiadomość z prośbą o potwierdzenie.',
+    memoryHelper: 'Napisz, co pamiętasz z rozmowy albo co wykonawca obiecał przez telefon. Przygotujemy wiadomość z prośbą o potwierdzenie na piśmie.',
     placeholder: 'Np. moskitiery do 4 okien, 1200 PLN, montaż w cenie, w przyszłym tygodniu.',
     uploadCta: '+ Wgraj PDF, zdjęcie lub zrzut ekranu',
     submitCta: 'Sprawdź to',
@@ -426,9 +427,11 @@ export function StartCheckScreen({ content, error, language, onSubmit }: StartCh
           rows={7}
           value={manualQuoteText}
         />
-        <label className={isReadingFile ? 'inline-upload-action disabled' : 'inline-upload-action'} htmlFor="quote-file-upload">
-          {isReadingFile ? fileCopy.reading : fileCopy.uploadCta}
-        </label>
+        {!isVerbalMode && (
+          <label className={isReadingFile ? 'inline-upload-action disabled' : 'inline-upload-action'} htmlFor="quote-file-upload">
+            {isReadingFile ? fileCopy.reading : fileCopy.uploadCta}
+          </label>
+        )}
         <input
           accept="application/pdf,.pdf,image/*,.png,.jpg,.jpeg,.webp,.heic,.heif"
           className="file-input-hidden"
