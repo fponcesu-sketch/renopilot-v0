@@ -116,6 +116,14 @@ const toneCopy: Record<Language, {
   },
 };
 
+function inferLanguageFromContent(content: ContractorQuestionsContent): Language {
+  const sample = `${content.title} ${content.copyCta} ${content.copiedLabel} ${content.cta}`.toLowerCase();
+
+  if (sample.includes('kopiuj') || sample.includes('skopiowana') || sample.includes('wykonawcy')) return 'pl';
+  if (sample.includes('copy') || sample.includes('copied') || sample.includes('contractor')) return 'en';
+  return 'es';
+}
+
 function extractQuestions(message: string, fallbackQuestions: string[]) {
   const lines = message
     .split('\n')
@@ -130,10 +138,11 @@ function extractQuestions(message: string, fallbackQuestions: string[]) {
   return extracted.length ? extracted.slice(0, 6) : fallbackQuestions;
 }
 
-export function ContractorQuestionsScreen({ content, language = 'es', onNext }: ContractorQuestionsScreenProps) {
+export function ContractorQuestionsScreen({ content, language, onNext }: ContractorQuestionsScreenProps) {
   const [tone, setTone] = useState<MessageTone>('casual');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const copy = toneCopy[language];
+  const resolvedLanguage = language ?? inferLanguageFromContent(content);
+  const copy = toneCopy[resolvedLanguage];
   const messages = content.messagesByVendor?.length
     ? content.messagesByVendor
     : [{ vendorName: content.title, messageToSend: content.message }];
