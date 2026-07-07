@@ -5,6 +5,7 @@ import type {
   UpdatedRecommendationAnalysis,
   VendorReplyApiResponse,
 } from '../types/analysis';
+import { enforceShortEstimateGuard } from './shortEstimateGuard';
 import { buildTextBasedQuoteReview } from './textBasedQuoteReview';
 
 const MAX_QUOTE_CHARS = 18_000;
@@ -81,7 +82,7 @@ export async function analyzeQuote(input: {
     const data = await postJson<QuoteAnalysisApiResponse>('/api/analyze-quote', safeInput, ANALYZE_QUOTE_TIMEOUT_MS);
 
     return {
-      analysis: data.analysis,
+      analysis: enforceShortEstimateGuard(data.analysis, input.language, safeInput.quoteText),
       source: data.source,
       error: data.error,
     };
