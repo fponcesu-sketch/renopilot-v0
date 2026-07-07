@@ -9,13 +9,15 @@ const essentials = {
   total: ['total', 'łącznie', 'razem', 'precio final', 'final price', 'suma'],
 };
 
+const currencyAmountPattern = /(?:\b(?:pln|zł|zl|eur|gbp)\s?\d+[\d\s.,]*\b|\b\d+[\d\s.,]*\s?(?:pln|zł|zl|eur|€|gbp|£)\b|€\s?\d+[\d\s.,]*\b|£\s?\d+[\d\s.,]*\b)/gi;
+
 function includesAny(text: string, words: string[]) {
   const value = text.toLowerCase();
   return words.some((word) => value.includes(word));
 }
 
 function priceMatches(text: string) {
-  return text.match(/\b(?:pln|zł|zl|eur|€|gbp|£)?\s?\d+[\d\s.,]*\s?(?:pln|zł|zl|eur|€|gbp|£)\b/gi) || [];
+  return text.match(currencyAmountPattern) || [];
 }
 
 export function isShortInformalEstimate(text: string) {
