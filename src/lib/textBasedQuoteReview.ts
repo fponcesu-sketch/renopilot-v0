@@ -1,4 +1,5 @@
 import type { QuoteAnalysis } from '../types/analysis';
+import { enforceShortEstimateGuard } from './shortEstimateGuard';
 
 const labels = {
   es: {
@@ -91,7 +92,7 @@ export function buildTextBasedQuoteReview(language: string, text: string): Quote
     consequence_type,
   })) as QuoteAnalysis['clarificationItems'];
 
-  return {
+  const analysis: QuoteAnalysis = {
     verdict: { level: clarificationItems.length ? 'yellow' : 'green', title: copy.title, summary: copy.summary },
     mode: 'single_quote',
     recommendedVendor: '',
@@ -124,4 +125,6 @@ export function buildTextBasedQuoteReview(language: string, text: string): Quote
     confidence: 'low',
     assumptions: ['Basic review based only on the actual extracted or pasted text.'],
   };
+
+  return enforceShortEstimateGuard(analysis, language, cleanText);
 }
