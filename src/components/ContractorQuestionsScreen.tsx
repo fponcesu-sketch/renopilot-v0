@@ -133,9 +133,17 @@ function extractQuestions(message: string, fallbackQuestions: string[]) {
   const extracted = lines
     .map((line) => line.replace(/^[-•]\s*/, '').replace(/^\d+[.)]\s*/, '').trim())
     .filter((line) => line.length > 8)
-    .filter((line) => !/^(hola|hi|dzień dobry|gracias|thanks|thank you|dziękuję)/i.test(line));
+    .filter((line) => !/^(hola|hi|dzień dobry|gracias|thanks|thank you|dziękuję|dzięki)/i.test(line));
 
   return extracted.length ? extracted.slice(0, 6) : fallbackQuestions;
+}
+
+function isAlreadyNaturalCasualMessage(message: string) {
+  const clean = message.trim();
+  const hasBulletList = /\n\s*[-•]/.test(clean) || /\n\s*\d+[.)]/.test(clean);
+  const startsNaturally = /^(gracias|thanks|dzięki)\b/i.test(clean);
+
+  return startsNaturally && !hasBulletList && clean.length < 420;
 }
 
 export function ContractorQuestionsScreen({ content, language, onNext }: ContractorQuestionsScreenProps) {
@@ -148,6 +156,10 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
     : [{ vendorName: content.title, messageToSend: content.message }];
 
   const tonedMessages = useMemo(() => messages.map((message) => {
+    if (tone === 'casual' && isAlreadyNaturalCasualMessage(message.messageToSend)) {
+      return message;
+    }
+
     const questions = extractQuestions(message.messageToSend, copy.fallbackQuestions);
 
     return {
