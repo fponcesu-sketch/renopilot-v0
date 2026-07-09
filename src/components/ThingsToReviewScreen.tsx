@@ -46,6 +46,13 @@ function getClarificationTitle(label: string) {
   return 'A confirmar antes de aceptar';
 }
 
+function getInlineCue(label: string) {
+  const lower = label.toLowerCase();
+  if (lower.includes('clarification')) return '↓ Keep going to see what to ask';
+  if (lower.includes('wyja')) return '↓ Zjedź niżej, aby zobaczyć pytania';
+  return '↓ Baja para ver qué falta y qué preguntar';
+}
+
 export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenProps) {
   const hasClarificationItems = Boolean(content.clarificationItems?.length);
   const confirmedItems = content.categories.confirmed.slice(0, 3);
@@ -82,6 +89,7 @@ export function ThingsToReviewScreen({ content, onNext }: ThingsToReviewScreenPr
               </p>
             </section>
           )}
+          <p className="inline-scroll-cue">{getInlineCue(content.categoryLabels.needsClarification)}</p>
           <div className="clarification-section-heading">
             <h2>{getClarificationTitle(content.categoryLabels.needsClarification)}</h2>
           </div>
