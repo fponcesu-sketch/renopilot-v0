@@ -152,11 +152,11 @@ export const quoteCheckContent: Record<Language, {
       cta: 'Revisar respuesta del profesional',
     },
     vendorReply: {
-      title: 'Revisar respuesta del profesional',
-      label: 'Pega aquí la respuesta',
+      title: 'Pega la respuesta del profesional',
+      label: 'Respuesta del profesional',
       placeholder:
-        'Copia aquí la respuesta del profesional. RenoPilot comprobará si los puntos pendientes ya están claros.',
-      cta: 'Revisar respuesta del profesional',
+        'Ej: Sí, el precio incluye IVA, instalación y garantía de 2 años. Podemos hacerlo el martes.',
+      cta: 'Revisar respuesta',
     },
     updatedRecommendation: {
       status: '🟡 Todavía faltan puntos por cerrar',
@@ -241,10 +241,10 @@ export const quoteCheckContent: Record<Language, {
       cta: 'Check contractor reply',
     },
     vendorReply: {
-      title: 'Check contractor reply',
-      label: 'Paste the reply here',
-      placeholder: 'Paste the contractor reply here. RenoPilot will check if the missing points are now clear.',
-      cta: 'Check contractor reply',
+      title: 'Paste the contractor reply',
+      label: 'Contractor reply',
+      placeholder: 'Example: Yes, the price includes VAT, installation and a 2-year warranty. We can do it on Tuesday.',
+      cta: 'Review reply',
     },
     updatedRecommendation: {
       status: '🟡 There are still points to close',
@@ -329,10 +329,10 @@ export const quoteCheckContent: Record<Language, {
       cta: 'Sprawdź odpowiedź wykonawcy',
     },
     vendorReply: {
-      title: 'Sprawdź odpowiedź wykonawcy',
-      label: 'Wklej tutaj odpowiedź',
-      placeholder: 'Wklej tutaj odpowiedź wykonawcy. RenoPilot sprawdzi, czy brakujące informacje są już jasne.',
-      cta: 'Sprawdź odpowiedź wykonawcy',
+      title: 'Wklej odpowiedź wykonawcy',
+      label: 'Odpowiedź wykonawcy',
+      placeholder: 'Np. Tak, cena zawiera VAT, montaż i 2 lata gwarancji. Możemy to zrobić we wtorek.',
+      cta: 'Sprawdź odpowiedź',
     },
     updatedRecommendation: {
       status: '🟡 Nadal są punkty do zamknięcia',
