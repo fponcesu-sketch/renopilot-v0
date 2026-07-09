@@ -1,15 +1,12 @@
 html,
 body,
 #root {
-  max-width: 100%;
   overflow-x: hidden;
 }
 
 .app-shell,
-.phone-frame,
 .screen-card,
 .screen-content {
-  max-width: 100%;
   overflow-x: hidden;
 }
 
@@ -49,6 +46,7 @@ pre {
 }
 
 @media (max-width: 600px) {
+  .phone-frame,
   .screen-card,
   .screen-content {
     width: 100%;
