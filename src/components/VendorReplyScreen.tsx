@@ -22,21 +22,21 @@ const replyCopy: Record<Language, {
     defaultVendor: 'Profesional',
     missing: 'Pega la respuesta del profesional para poder revisarla.',
     loading: 'Revisando respuesta…',
-    helperSingle: 'Cuando el profesional responda, pega aquí su respuesta y RenoPilot comprobará si los puntos pendientes ya están claros.',
+    helperSingle: 'Cuando el profesional responda, pega aquí su mensaje y RenoPilot comprobará si ya está claro o si falta algo.',
     helperMultiple: 'Pega cada respuesta debajo de su profesional. Puedes dejar vacío si aún no ha respondido.',
   },
   en: {
     defaultVendor: 'Contractor',
     missing: 'Paste the contractor reply so we can check it.',
     loading: 'Checking reply…',
-    helperSingle: 'After the contractor replies, paste their answer here and RenoPilot will check if the missing points are now clear.',
+    helperSingle: 'When the contractor replies, paste their message here and RenoPilot will check whether it is now clear or if anything is still missing.',
     helperMultiple: 'Paste each reply under the right contractor. You can leave it empty if they have not replied yet.',
   },
   pl: {
     defaultVendor: 'Wykonawca',
     missing: 'Wklej odpowiedź wykonawcy, aby ją sprawdzić.',
     loading: 'Sprawdzanie odpowiedzi…',
-    helperSingle: 'Gdy wykonawca odpowie, wklej tutaj jego odpowiedź. RenoPilot sprawdzi, czy brakujące informacje są już jasne.',
+    helperSingle: 'Gdy wykonawca odpowie, wklej tutaj jego wiadomość. RenoPilot sprawdzi, czy wszystko jest już jasne albo czy czegoś nadal brakuje.',
     helperMultiple: 'Wklej każdą odpowiedź pod właściwym wykonawcą. Możesz zostawić puste, jeśli ktoś jeszcze nie odpowiedział.',
   },
 };
@@ -74,11 +74,12 @@ export function VendorReplyScreen({
 
         const labelledReplies = targets
           .map((target, index) => {
-            const reply = vendorReplies[target.vendorName]?.trim();
+            const key = target.vendorName || `${copy.defaultVendor} ${index + 1}`;
+            const reply = vendorReplies[key]?.trim();
 
             if (!reply) return null;
 
-            return `${target.vendorName || `${copy.defaultVendor} ${index + 1}`}:\n${reply}`;
+            return `${key}:\n${reply}`;
           })
           .filter(Boolean);
 
