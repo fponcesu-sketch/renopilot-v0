@@ -12,9 +12,10 @@ type CheckingScreenProps = {
 export function CheckingScreen({ content, error, isReady, onBack, onNext }: CheckingScreenProps) {
   const [progressIndex, setProgressIndex] = useState(0);
   const [showSlowMessage, setShowSlowMessage] = useState(false);
-  const animationComplete = progressIndex >= content.items.length;
-  const canContinue = animationComplete && isReady;
-  const slowMessage = content.slowMessage || 'This is taking longer than usual.';
+  const lastStepIndex = Math.max(content.items.length - 1, 0);
+  const activeStepIndex = isReady ? content.items.length : Math.min(progressIndex, lastStepIndex);
+  const canContinue = isReady;
+  const slowMessage = content.slowMessage || 'Still checking. This can take a few more seconds.';
   const buttonLabel = error ? content.errorCta || 'Volver' : content.cta;
 
   const handleButtonClick = () => {
@@ -34,28 +35,24 @@ export function CheckingScreen({ content, error, isReady, onBack, onNext }: Chec
   useEffect(() => {
     setProgressIndex(0);
     setShowSlowMessage(false);
+  }, [content.items.length]);
+
+  useEffect(() => {
+    if (isReady || error) return undefined;
 
     const interval = window.setInterval(() => {
-      setProgressIndex((currentIndex) => {
-        if (currentIndex >= content.items.length) {
-          window.clearInterval(interval);
-          return currentIndex;
-        }
+      setProgressIndex((currentIndex) => Math.min(currentIndex + 1, lastStepIndex));
+    }, 1000);
 
-        return currentIndex + 1;
-      });
-    }, 850);
     const slowTimer = window.setTimeout(() => {
-      if (!isReady) {
-        setShowSlowMessage(true);
-      }
-    }, 9000);
+      setShowSlowMessage(true);
+    }, 8000);
 
     return () => {
       window.clearInterval(interval);
       window.clearTimeout(slowTimer);
     };
-  }, [content.items.length, isReady]);
+  }, [error, isReady, lastStepIndex]);
 
   return (
     <div className="screen-content checking-screen">
@@ -63,7 +60,7 @@ export function CheckingScreen({ content, error, isReady, onBack, onNext }: Chec
       <h1>{content.title}</h1>
       <ul className="check-list animated-check-list">
         {content.items.map((item, index) => {
-          const itemState = index < progressIndex ? 'done' : index === progressIndex ? 'active' : 'pending';
+          const itemState = index < activeStepIndex ? 'done' : index === activeStepIndex ? 'active' : 'pending';
 
           return (
             <li className={itemState} key={item}>
