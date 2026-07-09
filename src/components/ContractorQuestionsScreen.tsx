@@ -19,6 +19,32 @@ type ContractorQuestionsScreenProps = {
   onNext: () => void;
 };
 
+const cueStyle = {
+  position: 'fixed' as const,
+  left: '50%',
+  bottom: 14,
+  transform: 'translateX(-50%)',
+  zIndex: 30,
+  background: 'rgba(47, 95, 88, 0.94)',
+  color: '#ffffff',
+  borderRadius: 999,
+  boxShadow: '0 10px 24px rgba(47, 95, 88, 0.24)',
+  fontSize: '0.82rem',
+  fontWeight: 900,
+  maxWidth: 'calc(100vw - 32px)',
+  padding: '10px 14px',
+  pointerEvents: 'none' as const,
+  textAlign: 'center' as const,
+  whiteSpace: 'nowrap' as const,
+};
+
+const copyButtonStyle = {
+  position: 'sticky' as const,
+  bottom: 8,
+  zIndex: 5,
+  boxShadow: '0 12px 24px rgba(47, 95, 88, 0.16)',
+};
+
 const toneCopy: Record<Language, {
   label: string;
   tones: Record<MessageTone, string>;
@@ -225,6 +251,7 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
             <button
               className={`secondary-button copy-message-button${copiedIndex === index ? ' success' : ''}`}
               onClick={() => copyMessage(message.messageToSend, index)}
+              style={copyButtonStyle}
               type="button"
             >
               {copiedIndex === index ? copy.copiedLabel : copy.copyCta}
@@ -239,7 +266,7 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
       <button className="primary-button review-reply-button" onClick={onNext} type="button">
         {copy.replyCta}
       </button>
-      {showScrollCue && <div className="mobile-scroll-cue" aria-hidden="true">{copy.scrollCue}</div>}
+      {showScrollCue && <div aria-hidden="true" className="mobile-scroll-cue" style={cueStyle}>{copy.scrollCue}</div>}
     </div>
   );
 }
