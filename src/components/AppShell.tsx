@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useLayoutEffect, type ReactNode } from 'react';
 import { languageOptions, type Language, type QuoteCheckContent } from '../data/quoteCheckContent';
 
 type AppShellProps = {
@@ -30,6 +30,25 @@ export function AppShell({
     if (index === currentPhase) return 'active';
     return 'pending';
   };
+
+  useLayoutEffect(() => {
+    const resetScroll = () => {
+      window.scrollTo({ top: 0, left: 0 });
+      document.documentElement.scrollTop = 0;
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollTop = 0;
+      document.body.scrollLeft = 0;
+      document.querySelector('.app-shell')?.scrollTo({ top: 0, left: 0 });
+      document.querySelector('.phone-frame')?.scrollTo({ top: 0, left: 0 });
+      document.querySelector('.screen-card')?.scrollTo({ top: 0, left: 0 });
+    };
+
+    resetScroll();
+    window.requestAnimationFrame(resetScroll);
+    window.setTimeout(resetScroll, 0);
+    window.setTimeout(resetScroll, 80);
+    window.setTimeout(resetScroll, 250);
+  }, [children]);
 
   return (
     <main className="app-shell">
