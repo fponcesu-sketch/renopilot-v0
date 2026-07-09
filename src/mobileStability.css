@@ -1,0 +1,112 @@
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.app-shell,
+.phone-frame,
+.screen-card,
+.screen-content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.message-box,
+pre,
+h1,
+h2,
+p,
+button {
+  max-width: 100%;
+}
+
+.message-box,
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.inline-scroll-cue {
+  align-self: stretch;
+  background: #eef6f2;
+  border: 1px solid #cfe3da;
+  border-radius: 999px;
+  color: #2f5f58;
+  font-size: 0.86rem;
+  font-weight: 900;
+  line-height: 1.25;
+  margin: 0;
+  padding: 10px 13px;
+  text-align: center;
+}
+
+.vendor-messages-screen {
+  min-width: 0;
+}
+
+.vendor-message-card,
+.tone-selector-card,
+.reply-loop-card,
+.price-sanity-card,
+.confirmed-secondary-card,
+.clarification-item-card {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.copy-message-button {
+  background: #2f5f58;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(47, 95, 88, 0.18);
+}
+
+.copy-message-button.success {
+  background: #e3f0eb;
+  color: #245149;
+}
+
+.reply-loop-card {
+  background: #eef6f2;
+  border: 1px solid #cfe3da;
+  border-radius: 18px;
+  color: #2f3c36;
+  padding: 14px;
+}
+
+.reply-loop-card h2 {
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+}
+
+.reply-loop-card p {
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .screen-card {
+    width: 100%;
+  }
+
+  .screen-content {
+    width: 100%;
+  }
+
+  .vendor-messages-screen h1,
+  .clarify-screen h1 {
+    font-size: clamp(1.8rem, 11vw, 2.35rem);
+    line-height: 0.98;
+    overflow-wrap: anywhere;
+  }
+
+  .tone-options {
+    max-width: 100%;
+  }
+
+  .copy-message-button {
+    min-height: 54px;
+  }
+}
