@@ -8,6 +8,7 @@ import './uiOverrides.css';
 import './verbalEstimate.css';
 import './joannaFeedback.css';
 import './finalInputSimplification.css';
+import './mobileStability.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
