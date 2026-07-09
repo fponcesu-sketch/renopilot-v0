@@ -23,12 +23,8 @@ const toneCopy: Record<Language, {
   label: string;
   tones: Record<MessageTone, string>;
   loopTitle: string;
-  loopBody: string;
+  loopSteps: string[];
   fallbackQuestions: string[];
-  copyCta: string;
-  copiedLabel: string;
-  replyCta: string;
-  inlineCue: string;
   templates: Record<MessageTone, (questions: string[]) => string>;
 }> = {
   es: {
@@ -39,18 +35,20 @@ const toneCopy: Record<Language, {
       short: 'Corto y directo',
       formal: 'Más formal',
     },
-    loopTitle: 'Cuando responda el profesional',
-    loopBody: 'Pega aquí su respuesta y RenoPilot comprobará si ya está claro.',
+    loopTitle: 'Después, pega aquí la respuesta del profesional',
+    loopSteps: [
+      'RenoPilot prepara las preguntas.',
+      'Tú se las envías al profesional.',
+      'El profesional responde.',
+      'Pegas aquí la respuesta.',
+      'RenoPilot te dice si todavía queda algo poco claro.',
+    ],
     fallbackQuestions: [
       'precio final con IVA',
       'qué incluye exactamente',
       'cuándo podría hacerse',
       'qué garantía tendría',
     ],
-    copyCta: 'Copiar mensaje',
-    copiedLabel: 'Copiado ✓',
-    replyCta: 'Revisar respuesta',
-    inlineCue: '↓ Copia el mensaje y vuelve con la respuesta',
     templates: {
       casual: (questions) => `Gracias. Antes de confirmar, ¿me puedes aclarar esto?\n\n${questions.map((question) => `- ${question}`).join('\n')}`,
       email: (questions) => `Hola, gracias por el presupuesto. Antes de confirmar, ¿podrías aclararme estos puntos?\n\n${questions.map((question) => `- ${question}`).join('\n')}\n\nGracias.`,
@@ -66,18 +64,20 @@ const toneCopy: Record<Language, {
       short: 'Short and direct',
       formal: 'More formal',
     },
-    loopTitle: 'When the contractor replies',
-    loopBody: 'Paste their answer here and RenoPilot will check if it is now clear.',
+    loopTitle: 'After the contractor replies, paste their answer here',
+    loopSteps: [
+      'RenoPilot prepares questions.',
+      'You send them to the contractor.',
+      'The contractor replies.',
+      'You paste the reply back.',
+      'RenoPilot tells you if anything is still unclear.',
+    ],
     fallbackQuestions: [
       'final price with VAT',
       'what exactly is included',
       'when it could be done',
       'what warranty applies',
     ],
-    copyCta: 'Copy message',
-    copiedLabel: 'Copied ✓',
-    replyCta: 'Review reply',
-    inlineCue: '↓ Copy the message and come back with the reply',
     templates: {
       casual: (questions) => `Thanks. Before I confirm, could you clarify this?\n\n${questions.map((question) => `- ${question}`).join('\n')}`,
       email: (questions) => `Hi, thanks for the quote. Before confirming, could you please clarify these points?\n\n${questions.map((question) => `- ${question}`).join('\n')}\n\nThank you.`,
@@ -93,18 +93,20 @@ const toneCopy: Record<Language, {
       short: 'Krótko i konkretnie',
       formal: 'Bardziej formalnie',
     },
-    loopTitle: 'Gdy wykonawca odpowie',
-    loopBody: 'Wklej tutaj jego odpowiedź, a RenoPilot sprawdzi, czy wszystko jest już jasne.',
+    loopTitle: 'Gdy wykonawca odpowie, wklej tutaj jego odpowiedź',
+    loopSteps: [
+      'RenoPilot przygotowuje pytania.',
+      'Wysyłasz je wykonawcy.',
+      'Wykonawca odpowiada.',
+      'Wklejasz tutaj odpowiedź.',
+      'RenoPilot mówi, czy coś nadal jest niejasne.',
+    ],
     fallbackQuestions: [
       'końcowa cena z VAT',
       'co dokładnie jest w cenie',
       'kiedy można to zrobić',
       'jaka jest gwarancja',
     ],
-    copyCta: 'Kopiuj wiadomość',
-    copiedLabel: 'Skopiowano ✓',
-    replyCta: 'Sprawdź odpowiedź',
-    inlineCue: '↓ Skopiuj wiadomość i wróć z odpowiedzią',
     templates: {
       casual: (questions) => `Dzięki. Zanim potwierdzę, możesz mi proszę doprecyzować?\n\n${questions.map((question) => `- ${question}`).join('\n')}`,
       email: (questions) => `Dzień dobry, dziękuję za ofertę. Przed potwierdzeniem proszę o doprecyzowanie kilku punktów:\n\n${questions.map((question) => `- ${question}`).join('\n')}\n\nDziękuję.`,
@@ -198,22 +200,25 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
             {tonedMessages.length > 1 && <h2>{message.vendorName}</h2>}
             <pre className="message-box">{message.messageToSend}</pre>
             <button
-              className={`secondary-button copy-message-button${copiedIndex === index ? ' success' : ''}`}
+              className={`secondary-button${copiedIndex === index ? ' success' : ''}`}
               onClick={() => copyMessage(message.messageToSend, index)}
               type="button"
             >
-              {copiedIndex === index ? copy.copiedLabel : copy.copyCta}
+              {copiedIndex === index ? content.copiedLabel : content.copyCta}
             </button>
           </section>
         ))}
       </div>
-      <p className="inline-scroll-cue">{copy.inlineCue}</p>
       <section className="reply-loop-card">
         <h2>{copy.loopTitle}</h2>
-        <p>{copy.loopBody}</p>
+        <ol>
+          {copy.loopSteps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
       </section>
-      <button className="primary-button review-reply-button" onClick={onNext} type="button">
-        {copy.replyCta}
+      <button className="primary-button" onClick={onNext}>
+        {content.cta}
       </button>
     </div>
   );
