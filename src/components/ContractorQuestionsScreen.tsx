@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Language } from '../data/quoteCheckContent';
 import type { VendorMessage } from '../types/analysis';
 
@@ -19,32 +19,6 @@ type ContractorQuestionsScreenProps = {
   onNext: () => void;
 };
 
-const cueStyle = {
-  position: 'fixed' as const,
-  left: '50%',
-  bottom: 14,
-  transform: 'translateX(-50%)',
-  zIndex: 30,
-  background: 'rgba(47, 95, 88, 0.94)',
-  color: '#ffffff',
-  borderRadius: 999,
-  boxShadow: '0 10px 24px rgba(47, 95, 88, 0.24)',
-  fontSize: '0.82rem',
-  fontWeight: 900,
-  maxWidth: 'calc(100vw - 32px)',
-  padding: '10px 14px',
-  pointerEvents: 'none' as const,
-  textAlign: 'center' as const,
-  whiteSpace: 'nowrap' as const,
-};
-
-const copyButtonStyle = {
-  position: 'sticky' as const,
-  bottom: 8,
-  zIndex: 5,
-  boxShadow: '0 12px 24px rgba(47, 95, 88, 0.16)',
-};
-
 const toneCopy: Record<Language, {
   label: string;
   tones: Record<MessageTone, string>;
@@ -54,7 +28,7 @@ const toneCopy: Record<Language, {
   copyCta: string;
   copiedLabel: string;
   replyCta: string;
-  scrollCue: string;
+  inlineCue: string;
   templates: Record<MessageTone, (questions: string[]) => string>;
 }> = {
   es: {
@@ -76,7 +50,7 @@ const toneCopy: Record<Language, {
     copyCta: 'Copiar mensaje',
     copiedLabel: 'Copiado ✓',
     replyCta: 'Revisar respuesta',
-    scrollCue: '↓ Copia el mensaje y vuelve con la respuesta',
+    inlineCue: '↓ Copia el mensaje y vuelve con la respuesta',
     templates: {
       casual: (questions) => `Gracias. Antes de confirmar, ¿me puedes aclarar esto?\n\n${questions.map((question) => `- ${question}`).join('\n')}`,
       email: (questions) => `Hola, gracias por el presupuesto. Antes de confirmar, ¿podrías aclararme estos puntos?\n\n${questions.map((question) => `- ${question}`).join('\n')}\n\nGracias.`,
@@ -103,7 +77,7 @@ const toneCopy: Record<Language, {
     copyCta: 'Copy message',
     copiedLabel: 'Copied ✓',
     replyCta: 'Review reply',
-    scrollCue: '↓ Copy the message and come back with the reply',
+    inlineCue: '↓ Copy the message and come back with the reply',
     templates: {
       casual: (questions) => `Thanks. Before I confirm, could you clarify this?\n\n${questions.map((question) => `- ${question}`).join('\n')}`,
       email: (questions) => `Hi, thanks for the quote. Before confirming, could you please clarify these points?\n\n${questions.map((question) => `- ${question}`).join('\n')}\n\nThank you.`,
@@ -130,7 +104,7 @@ const toneCopy: Record<Language, {
     copyCta: 'Kopiuj wiadomość',
     copiedLabel: 'Skopiowano ✓',
     replyCta: 'Sprawdź odpowiedź',
-    scrollCue: '↓ Skopiuj wiadomość i wróć z odpowiedzią',
+    inlineCue: '↓ Skopiuj wiadomość i wróć z odpowiedzią',
     templates: {
       casual: (questions) => `Dzięki. Zanim potwierdzę, możesz mi proszę doprecyzować?\n\n${questions.map((question) => `- ${question}`).join('\n')}`,
       email: (questions) => `Dzień dobry, dziękuję za ofertę. Przed potwierdzeniem proszę o doprecyzowanie kilku punktów:\n\n${questions.map((question) => `- ${question}`).join('\n')}\n\nDziękuję.`,
@@ -170,18 +144,9 @@ function isAlreadyNaturalCasualMessage(message: string) {
   return startsNaturally && !hasBulletList && clean.length < 420;
 }
 
-function isNearBottom() {
-  const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
-  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-  const documentHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-
-  return documentHeight - (scrollTop + viewportHeight) < 180;
-}
-
 export function ContractorQuestionsScreen({ content, language, onNext }: ContractorQuestionsScreenProps) {
   const [tone, setTone] = useState<MessageTone>('casual');
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [showScrollCue, setShowScrollCue] = useState(false);
   const resolvedLanguage = language ?? inferLanguageFromContent(content);
   const copy = toneCopy[resolvedLanguage];
   const messages = content.messagesByVendor?.length
@@ -200,22 +165,6 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
       messageToSend: copy.templates[tone](questions),
     };
   }), [copy, messages, tone]);
-
-  useEffect(() => {
-    const refreshCue = () => {
-      setShowScrollCue(!isNearBottom());
-    };
-
-    refreshCue();
-    window.setTimeout(refreshCue, 250);
-    window.addEventListener('scroll', refreshCue, { passive: true });
-    window.addEventListener('resize', refreshCue);
-
-    return () => {
-      window.removeEventListener('scroll', refreshCue);
-      window.removeEventListener('resize', refreshCue);
-    };
-  }, [tone, tonedMessages.length]);
 
   const copyMessage = async (message: string, index: number) => {
     await navigator.clipboard.writeText(message);
@@ -251,7 +200,6 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
             <button
               className={`secondary-button copy-message-button${copiedIndex === index ? ' success' : ''}`}
               onClick={() => copyMessage(message.messageToSend, index)}
-              style={copyButtonStyle}
               type="button"
             >
               {copiedIndex === index ? copy.copiedLabel : copy.copyCta}
@@ -259,6 +207,7 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
           </section>
         ))}
       </div>
+      <p className="inline-scroll-cue">{copy.inlineCue}</p>
       <section className="reply-loop-card">
         <h2>{copy.loopTitle}</h2>
         <p>{copy.loopBody}</p>
@@ -266,7 +215,6 @@ export function ContractorQuestionsScreen({ content, language, onNext }: Contrac
       <button className="primary-button review-reply-button" onClick={onNext} type="button">
         {copy.replyCta}
       </button>
-      {showScrollCue && <div aria-hidden="true" className="mobile-scroll-cue" style={cueStyle}>{copy.scrollCue}</div>}
     </div>
   );
 }
