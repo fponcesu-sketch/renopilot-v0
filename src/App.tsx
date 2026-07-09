@@ -51,15 +51,15 @@ const screenPhase: Record<Screen, number | null> = {
 const checkingCopy: Record<Language, { items: string[]; slowMessage: string }> = {
   es: {
     items: ['Leyendo lo que has pegado', 'Detectando puntos poco claros', 'Revisando posibles costes extra', 'Preparando preguntas'],
-    slowMessage: 'Está tardando más de lo normal. Estamos terminando la revisión.',
+    slowMessage: 'Seguimos revisando. Puede tardar unos segundos más.',
   },
   en: {
     items: ['Reading what you shared', 'Spotting unclear points', 'Checking possible extra costs', 'Preparing questions'],
-    slowMessage: 'This is taking longer than usual. We are finishing the review.',
+    slowMessage: 'Still checking. This can take a few more seconds.',
   },
   pl: {
     items: ['Czytanie tego, co wkleiłeś', 'Wykrywanie niejasnych punktów', 'Sprawdzanie możliwych dodatkowych kosztów', 'Przygotowywanie pytań'],
-    slowMessage: 'To trwa dłużej niż zwykle. Kończymy analizę.',
+    slowMessage: 'Nadal sprawdzamy. To może potrwać jeszcze kilka sekund.',
   },
 };
 
@@ -265,9 +265,9 @@ export default function App() {
   const clarificationItems = activeAnalysis.clarificationItems?.length
     ? normalizeClarificationItems(activeAnalysis.clarificationItems)
     : fallbackClarificationItems([
-        ...activeAnalysis.infoCategories.needsClarification,
-        ...activeAnalysis.infoCategories.risks,
-      ]);
+      ...activeAnalysis.infoCategories.needsClarification,
+      ...activeAnalysis.infoCategories.risks,
+    ]);
   const rawComparisonSummary = activeAnalysis.comparison ?? {
     recommendedQuote: activeAnalysis.recommendedVendor || activeAnalysis.verdict.title,
     oneLineReason: activeAnalysis.verdict.summary,
@@ -310,11 +310,11 @@ export default function App() {
     clarificationItems,
     priceSanity: activeAnalysis.priceSanity
       ? {
-          ...activeAnalysis.priceSanity,
-          title: normalizeProductName(activeAnalysis.priceSanity.title),
-          summary: normalizeProductName(activeAnalysis.priceSanity.summary),
-          next_step: normalizeProductName(activeAnalysis.priceSanity.next_step),
-        }
+        ...activeAnalysis.priceSanity,
+        title: normalizeProductName(activeAnalysis.priceSanity.title),
+        summary: normalizeProductName(activeAnalysis.priceSanity.summary),
+        next_step: normalizeProductName(activeAnalysis.priceSanity.next_step),
+      }
       : undefined,
     priceSanityTitle: copy.priceSanityTitle,
     priceNextStepLabel: copy.priceNextStepLabel,
@@ -468,18 +468,8 @@ export default function App() {
       shell={content.shell}
       showLanguageSwitcher={showLanguageSwitcher}
     >
-      {screen === 'landing' && (
-        <LandingScreen content={content.landing} onNext={() => setScreen('start')} />
-      )}
-      {screen === 'start' && (
-        <StartCheckScreen
-          content={content.startCheck}
-          error={startError}
-          language={language}
-          note={copy.prototypeNote}
-          onSubmit={handleStartCheck}
-        />
-      )}
+      {screen === 'landing' && <LandingScreen content={content.landing} onStart={() => setScreen('start')} />}
+      {screen === 'start' && <StartCheckScreen content={content.startCheck} error={startError} language={language} note={copy.startCheckNote} onSubmit={handleStartCheck} />}
       {screen === 'checking' && (
         <CheckingScreen
           content={checkingContent}
@@ -488,34 +478,11 @@ export default function App() {
           onNext={() => setScreen('result')}
         />
       )}
-      {screen === 'result' && (
-        isComparison ? (
-          <ComparisonResultScreen content={comparisonResultContent} onNext={() => setScreen('review')} />
-        ) : (
-          <ResultScreen content={resultContent} onNext={() => setScreen('review')} />
-        )
-      )}
-      {screen === 'review' && (
-        isComparison ? (
-          <ComparisonDetailsScreen content={comparisonDetailsContent} onNext={() => setScreen('questions')} />
-        ) : (
-          <ThingsToReviewScreen content={reviewContent} onNext={() => setScreen('questions')} />
-        )
-      )}
-      {screen === 'questions' && (
-        <ContractorQuestionsScreen content={questionsContent} language={language} onNext={() => setScreen('reply')} />
-      )}
-      {screen === 'reply' && (
-        <VendorReplyScreen
-          content={content.vendorReply}
-          error={vendorReplyError || (analysisSource === 'mock' ? copy.vendorFallback : '')}
-          isLoading={isAnalyzingVendorReply}
-          language={language}
-          replyTargets={activeAnalysis.vendorQuestions.messagesByVendor}
-          onSubmit={handleVendorReply}
-        />
-      )}
-      {screen === 'updated' && <UpdatedRecommendationScreen content={updatedContent} />}
+      {screen === 'result' && (isComparison ? <ComparisonResultScreen content={comparisonResultContent} onNext={() => setScreen('review')} /> : <ResultScreen content={resultContent} onNext={() => setScreen('review')} />)}
+      {screen === 'review' && (isComparison ? <ComparisonDetailsScreen content={comparisonDetailsContent} onNext={() => setScreen('questions')} /> : <ThingsToReviewScreen content={reviewContent} onNext={() => setScreen('questions')} />)}
+      {screen === 'questions' && <ContractorQuestionsScreen content={questionsContent} language={language} onNext={() => setScreen('reply')} />}
+      {screen === 'reply' && <VendorReplyScreen content={content.reply} error={vendorReplyError} isLoading={isAnalyzingVendorReply} onSubmit={handleVendorReply} />}
+      {screen === 'updated' && <UpdatedRecommendationScreen content={updatedContent} onRestart={() => setScreen('start')} />}
     </AppShell>
   );
 }
