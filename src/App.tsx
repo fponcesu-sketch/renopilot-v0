@@ -1,8 +1,6 @@
 import { useLayoutEffect, useMemo, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { CheckingScreen } from './components/CheckingScreen';
-import { ComparisonDetailsScreen } from './components/ComparisonDetailsScreen';
-import { ComparisonResultScreen } from './components/ComparisonResultScreen';
 import { ContractorQuestionsScreen } from './components/ContractorQuestionsScreen';
 import { LandingScreen } from './components/LandingScreen';
 import { ResultScreen } from './components/ResultScreen';
@@ -16,26 +14,9 @@ import { defaultLanguage, quoteCheckContent, type Language } from './data/quoteC
 import { localizedCopy } from './data/localizedCopy';
 import type { AnalysisSource, ClarificationItem, QuoteAnalysis, QuoteDocument, UpdatedRecommendationAnalysis } from './types/analysis';
 
-type Screen =
-  | 'landing'
-  | 'start'
-  | 'checking'
-  | 'result'
-  | 'review'
-  | 'questions'
-  | 'reply'
-  | 'updated';
+type Screen = 'landing' | 'start' | 'checking' | 'result' | 'review' | 'questions' | 'reply' | 'updated';
 
-const screenOrder: Screen[] = [
-  'landing',
-  'start',
-  'checking',
-  'result',
-  'review',
-  'questions',
-  'reply',
-  'updated',
-];
+const screenOrder: Screen[] = ['landing', 'start', 'checking', 'result', 'review', 'questions', 'reply', 'updated'];
 
 const screenPhase: Record<Screen, number | null> = {
   landing: null,
@@ -63,36 +44,19 @@ const checkingCopy: Record<Language, { items: string[]; slowMessage: string }> =
   },
 };
 
-function normalizeProductName(value: string) {
+function normalizeProductName(value = '') {
   return value.replace(/\bRENOPILOT\b|\bRenopilot\b|\brenoPilot\b|\brenopilot\b|\bReno Pilot\b/g, 'RenoPilot');
 }
 
-function withConditionalSuffix(value: string, suffix: string) {
-  const normalizedValue = normalizeProductName(value).trim();
-  const lowerValue = normalizedValue.toLowerCase();
-  const lowerSuffix = suffix.toLowerCase();
-
-  if (lowerValue.includes('clarify') || lowerValue.includes('confirm') || lowerValue.includes('aclar') || lowerValue.includes('potwier')) {
-    return normalizedValue;
-  }
-
-  if (lowerValue.includes(lowerSuffix)) {
-    return normalizedValue;
-  }
-
-  return `${normalizedValue} ${suffix}`;
-}
-
-function normalizeTextList(items: string[]) {
+function normalizeTextList(items: string[] = []) {
   return items.map((item) => normalizeProductName(item));
 }
 
-function normalizeClarificationItems(items: ClarificationItem[]) {
+function normalizeClarificationItems(items: ClarificationItem[] = []) {
   return items.map((item) => ({
     ...item,
     title: normalizeProductName(item.title),
     consequence: normalizeProductName(item.consequence),
-    consequence_type: item.consequence_type,
     question_to_ask: normalizeProductName(item.question_to_ask),
   }));
 }
@@ -106,124 +70,6 @@ function fallbackClarificationItems(items: string[]): ClarificationItem[] {
   }));
 }
 
-function buildVerbalEstimateAnalysis(language: Language): QuoteAnalysis {
-  const content = {
-    es: {
-      title: 'No está listo para aceptar todavía',
-      summary:
-        'Los puntos clave no están por escrito. Una estimación verbal puede generar malentendidos sobre precio, alcance, IVA, plazos o garantía.',
-      confirmed: ['Hay una estimación verbal inicial.', 'El siguiente paso es pedir confirmación por escrito.'],
-      section: 'Qué pedir por escrito',
-      items: [
-        ['Precio final con IVA', 'Sin precio final por escrito, el coste puede cambiar o generar discusión después.', '¿Me puedes confirmar el precio final con IVA?', 'cost'],
-        ['Qué incluye exactamente', 'Si el alcance no está claro, puede haber malentendidos sobre qué está incluido.', '¿Qué incluye exactamente la oferta?', 'scope'],
-        ['Plazo', 'Sin plazo por escrito, será difícil planificar o reclamar retrasos.', '¿Cuándo podrías hacerlo?', 'time'],
-        ['Garantía', 'Sin garantía clara, no sabes qué pasa si algo falla después.', '¿Qué garantía tendría?', 'dispute'],
-      ] as Array<[string, string, string, ClarificationItem['consequence_type']]>,
-      priceTitle: 'No todavía',
-      priceSummary: 'No se puede juzgar bien el precio solo con una estimación verbal.',
-      priceNext: 'Pide al profesional que confirme los básicos por escrito antes de aceptar o pagar.',
-      questionsTitle: 'Mensaje para confirmar por escrito',
-      message: 'Gracias. Antes de confirmar, ¿me puedes pasar el precio final con IVA, qué incluye exactamente, cuándo podrías hacerlo y qué garantía tendría?',
-      risk: 'Una estimación verbal no se puede comprobar del todo. Pide confirmación por escrito antes de aceptar.',
-      assumption: 'El usuario solo tiene una estimación verbal o notas de memoria.',
-    },
-    en: {
-      title: 'Not ready to accept yet',
-      summary:
-        'Key details are not written down. A verbal estimate can easily lead to misunderstandings about price, scope, VAT, timing or warranty.',
-      confirmed: ['There is an initial verbal estimate.', 'The next step is to ask for written confirmation.'],
-      section: 'What to confirm in writing',
-      items: [
-        ['Final price with VAT', 'Without a final written price, the cost may change or create a dispute later.', 'Could you confirm the final price with VAT?', 'cost'],
-        ['What exactly is included', 'If the scope is not clear, there may be misunderstandings about what is included.', 'What exactly is included?', 'scope'],
-        ['Timing', 'Without a written timeline, it is harder to plan or challenge delays.', 'When could you do it?', 'time'],
-        ['Warranty', 'Without clear warranty terms, you do not know what happens if something fails later.', 'What warranty applies?', 'dispute'],
-      ] as Array<[string, string, string, ClarificationItem['consequence_type']]>,
-      priceTitle: 'No, not yet',
-      priceSummary: 'A verbal estimate is not enough to judge the price properly.',
-      priceNext: 'Ask the contractor to confirm the basics in writing before accepting or paying.',
-      questionsTitle: 'Message to confirm in writing',
-      message: 'Thanks. Before I confirm, could you send me the final price with VAT, what exactly is included, when you could do it, and what warranty applies?',
-      risk: 'A verbal estimate cannot be fully checked. Request written confirmation before accepting.',
-      assumption: 'The user only has a verbal estimate or notes from memory.',
-    },
-    pl: {
-      title: 'To nie jest jeszcze gotowe do akceptacji',
-      summary:
-        'Najważniejsze informacje nie są zapisane. Ustna wycena łatwo prowadzi do nieporozumień o cenie, zakresie, VAT, terminie albo gwarancji.',
-      confirmed: ['Istnieje wstępna ustna wycena.', 'Następny krok to prośba o potwierdzenie na piśmie.'],
-      section: 'Co potwierdzić na piśmie',
-      items: [
-        ['Cena końcowa z VAT', 'Bez ceny końcowej na piśmie koszt może się zmienić albo spowodować późniejszy spór.', 'Możesz potwierdzić końcową cenę z VAT?', 'cost'],
-        ['Co dokładnie jest w cenie', 'Jeśli zakres nie jest jasny, może dojść do nieporozumień, co jest uwzględnione.', 'Co dokładnie jest w cenie?', 'scope'],
-        ['Termin', 'Bez terminu na piśmie trudniej planować i reagować na opóźnienia.', 'Kiedy możesz to zrobić?', 'time'],
-        ['Gwarancja', 'Bez jasnej gwarancji nie wiadomo, co się stanie, jeśli coś później nie zadziała.', 'Jaka jest gwarancja?', 'dispute'],
-      ] as Array<[string, string, string, ClarificationItem['consequence_type']]>,
-      priceTitle: 'Nie, jeszcze nie',
-      priceSummary: 'Ustna wycena nie wystarcza, aby dobrze ocenić cenę.',
-      priceNext: 'Poproś wykonawcę o potwierdzenie podstawowych informacji na piśmie przed akceptacją lub płatnością.',
-      questionsTitle: 'Wiadomość z prośbą o potwierdzenie',
-      message: 'Dzięki. Zanim potwierdzę, możesz mi proszę wysłać końcową cenę z VAT, co dokładnie jest w cenie, kiedy możesz to zrobić i jaka jest gwarancja?',
-      risk: 'Ustnej wyceny nie da się w pełni sprawdzić. Poproś o potwierdzenie na piśmie przed akceptacją.',
-      assumption: 'Użytkownik ma tylko ustną wycenę albo notatki z pamięci.',
-    },
-  }[language];
-
-  const clarificationItems = content.items.map(([title, consequence, question_to_ask, consequence_type]) => ({
-    title,
-    consequence,
-    consequence_type,
-    question_to_ask,
-  }));
-
-  return {
-    verdict: {
-      level: 'red',
-      title: content.title,
-      summary: content.summary,
-    },
-    mode: 'single_quote',
-    recommendedVendor: '',
-    comparison: {
-      recommendedQuote: '',
-      oneLineReason: content.summary,
-      whyThisOne: content.confirmed,
-      stillUnclear: clarificationItems.map((item) => item.title),
-      beCareful: [content.risk],
-    },
-    clarificationItems,
-    priceSanity: {
-      status: 'no',
-      title: content.priceTitle,
-      summary: content.priceSummary,
-      next_step: content.priceNext,
-    },
-    infoCategories: {
-      confirmed: content.confirmed,
-      needsClarification: [content.section],
-      risks: [content.risk],
-    },
-    vendorQuestions: {
-      title: content.questionsTitle,
-      messageToSend: content.message,
-      messagesByVendor: [
-        {
-          vendorName: content.questionsTitle,
-          messageToSend: content.message,
-        },
-      ],
-      questions: clarificationItems.map((item) => item.question_to_ask),
-    },
-    nextAction: {
-      title: content.questionsTitle,
-      summary: content.priceNext,
-    },
-    confidence: 'high',
-    assumptions: [content.assumption],
-  };
-}
-
 function buildInputContext(inputMode: InputMode, decisionContext: string) {
   const modeContext = {
     written_quote: 'Input type: written contractor quote or uploaded document. Run the normal quote completeness check.',
@@ -232,6 +78,73 @@ function buildInputContext(inputMode: InputMode, decisionContext: string) {
   }[inputMode];
 
   return [modeContext, decisionContext.trim()].filter(Boolean).join('\n');
+}
+
+function buildVerbalEstimateAnalysis(language: Language): QuoteAnalysis {
+  const copy = {
+    es: {
+      title: 'No está listo para aceptar todavía',
+      summary: 'Una estimación verbal o de memoria necesita confirmación por escrito antes de aceptar.',
+      confirmed: ['Hay una estimación inicial.', 'El siguiente paso es pedir confirmación por escrito.'],
+      questionsTitle: 'Mensaje para confirmar por escrito',
+      message: 'Gracias. Antes de confirmar, ¿me puedes pasar el precio final con IVA, qué incluye exactamente, cuándo podrías hacerlo y qué garantía tendría?',
+    },
+    en: {
+      title: 'Not ready to accept yet',
+      summary: 'A verbal or memory-based estimate needs written confirmation before accepting.',
+      confirmed: ['There is an initial estimate.', 'The next step is to ask for written confirmation.'],
+      questionsTitle: 'Message to confirm in writing',
+      message: 'Thanks. Before I confirm, could you send me the final price with VAT, what exactly is included, when you could do it, and what warranty applies?',
+    },
+    pl: {
+      title: 'To nie jest jeszcze gotowe do akceptacji',
+      summary: 'Ustna wycena albo notatka z pamięci wymaga potwierdzenia na piśmie przed akceptacją.',
+      confirmed: ['Istnieje wstępna wycena.', 'Następny krok to prośba o potwierdzenie na piśmie.'],
+      questionsTitle: 'Wiadomość z prośbą o potwierdzenie',
+      message: 'Dzięki. Zanim potwierdzę, możesz mi proszę wysłać końcową cenę z VAT, co dokładnie jest w cenie, kiedy możesz to zrobić i jaka jest gwarancja?',
+    },
+  }[language];
+
+  const clarificationItems: ClarificationItem[] = [
+    { title: 'Precio final con IVA', consequence: 'Sin precio final por escrito, el coste puede cambiar.', consequence_type: 'cost', question_to_ask: '¿Me puedes confirmar el precio final con IVA?' },
+    { title: 'Qué incluye exactamente', consequence: 'Si el alcance no está claro, pueden aparecer extras.', consequence_type: 'scope', question_to_ask: '¿Qué incluye exactamente la oferta?' },
+    { title: 'Plazo', consequence: 'Sin plazo por escrito, es difícil planificar.', consequence_type: 'time', question_to_ask: '¿Cuándo podrías hacerlo?' },
+    { title: 'Garantía', consequence: 'Sin garantía clara, no sabes qué pasa si algo falla.', consequence_type: 'dispute', question_to_ask: '¿Qué garantía tendría?' },
+  ];
+
+  return {
+    verdict: { level: 'red', title: copy.title, summary: copy.summary },
+    mode: 'single_quote',
+    recommendedVendor: '',
+    comparison: {
+      recommendedQuote: '',
+      oneLineReason: copy.summary,
+      whyThisOne: copy.confirmed,
+      stillUnclear: clarificationItems.map((item) => item.title),
+      beCareful: [copy.summary],
+    },
+    clarificationItems,
+    priceSanity: {
+      status: 'no',
+      title: 'No todavía',
+      summary: copy.summary,
+      next_step: copy.message,
+    },
+    infoCategories: {
+      confirmed: copy.confirmed,
+      needsClarification: clarificationItems.map((item) => item.title),
+      risks: [copy.summary],
+    },
+    vendorQuestions: {
+      title: copy.questionsTitle,
+      messageToSend: copy.message,
+      messagesByVendor: [{ vendorName: copy.questionsTitle, messageToSend: copy.message }],
+      questions: clarificationItems.map((item) => item.question_to_ask),
+    },
+    nextAction: { title: copy.questionsTitle, summary: copy.message },
+    confidence: 'high',
+    assumptions: ['The user only has a verbal estimate or notes from memory.'],
+  };
 }
 
 export default function App() {
@@ -252,50 +165,19 @@ export default function App() {
   const copy = localizedCopy[language];
   const currentPhase = screenPhase[screen];
   const showLanguageSwitcher = screen === 'landing' || (screen === 'start' && !analysis && !isAnalyzing);
-  const checkingContent = {
-    ...content.checking,
-    items: checkingCopy[language].items,
-    slowMessage: checkingCopy[language].slowMessage,
-  };
+  const checkingContent = { ...content.checking, items: checkingCopy[language].items, slowMessage: checkingCopy[language].slowMessage };
 
   const fallbackQuoteAnalysis = useMemo(() => buildFallbackQuoteAnalysis(content), [content]);
   const activeAnalysis = analysis ?? fallbackQuoteAnalysis;
   const activeUpdatedAnalysis = updatedAnalysis ?? buildFallbackUpdatedRecommendation(content);
-  const isComparison = activeAnalysis.mode === 'quote_comparison';
   const clarificationItems = activeAnalysis.clarificationItems?.length
     ? normalizeClarificationItems(activeAnalysis.clarificationItems)
-    : fallbackClarificationItems([
-      ...activeAnalysis.infoCategories.needsClarification,
-      ...activeAnalysis.infoCategories.risks,
-    ]);
-  const rawComparisonSummary = activeAnalysis.comparison ?? {
-    recommendedQuote: activeAnalysis.recommendedVendor || activeAnalysis.verdict.title,
-    oneLineReason: activeAnalysis.verdict.summary,
-    whyThisOne: activeAnalysis.infoCategories.confirmed,
-    stillUnclear: activeAnalysis.infoCategories.needsClarification,
-    beCareful: activeAnalysis.infoCategories.risks,
-  };
-  const comparisonSummary = {
-    ...rawComparisonSummary,
-    recommendedQuote: normalizeProductName(rawComparisonSummary.recommendedQuote),
-    oneLineReason: withConditionalSuffix(rawComparisonSummary.oneLineReason, copy.comparison.conditionalSuffix),
-    whyThisOne: normalizeTextList(rawComparisonSummary.whyThisOne),
-    stillUnclear: normalizeTextList(rawComparisonSummary.stillUnclear),
-    beCareful: normalizeTextList(rawComparisonSummary.beCareful),
-  };
+    : fallbackClarificationItems([...activeAnalysis.infoCategories.needsClarification, ...activeAnalysis.infoCategories.risks]);
 
   const resultContent = {
     title: normalizeProductName(content.result.title),
     status: `${levelIcon(activeAnalysis.verdict.level)} ${normalizeProductName(activeAnalysis.verdict.title)}`,
     explanation: normalizeProductName(activeAnalysis.verdict.summary),
-    cta: copy.resultCta,
-    disclaimer: copy.disclaimerNote,
-  };
-
-  const comparisonResultContent = {
-    title: copy.comparison.title,
-    recommendationLabel: copy.comparison.recommendationLabel,
-    summary: comparisonSummary,
     cta: copy.resultCta,
     disclaimer: copy.disclaimerNote,
   };
@@ -310,11 +192,11 @@ export default function App() {
     clarificationItems,
     priceSanity: activeAnalysis.priceSanity
       ? {
-        ...activeAnalysis.priceSanity,
-        title: normalizeProductName(activeAnalysis.priceSanity.title),
-        summary: normalizeProductName(activeAnalysis.priceSanity.summary),
-        next_step: normalizeProductName(activeAnalysis.priceSanity.next_step),
-      }
+          ...activeAnalysis.priceSanity,
+          title: normalizeProductName(activeAnalysis.priceSanity.title),
+          summary: normalizeProductName(activeAnalysis.priceSanity.summary),
+          next_step: normalizeProductName(activeAnalysis.priceSanity.next_step),
+        }
       : undefined,
     priceSanityTitle: copy.priceSanityTitle,
     priceNextStepLabel: copy.priceNextStepLabel,
@@ -325,25 +207,15 @@ export default function App() {
     cta: copy.reviewCta,
   };
 
-  const comparisonDetailsContent = {
-    title: copy.comparison.detailsTitle,
-    labels: {
-      whyThisOne: copy.comparison.whyThisOne,
-      stillUnclear: copy.comparison.stillUnclear,
-      beCareful: copy.comparison.beCareful,
-    },
-    summary: comparisonSummary,
-    clarificationItems,
-    consequenceLabel: copy.consequenceLabel,
-    questionLabel: copy.questionLabel,
-    cta: copy.reviewCta,
-  };
+  const messagesByVendor = activeAnalysis.vendorQuestions.messagesByVendor?.length
+    ? activeAnalysis.vendorQuestions.messagesByVendor
+    : [{ vendorName: activeAnalysis.vendorQuestions.title || content.questions.title, messageToSend: activeAnalysis.vendorQuestions.messageToSend }];
 
   const questionsContent = {
     ...content.questions,
     title: normalizeProductName(activeAnalysis.vendorQuestions.title || content.questions.title),
     message: normalizeProductName(activeAnalysis.vendorQuestions.messageToSend),
-    messagesByVendor: activeAnalysis.vendorQuestions.messagesByVendor.map((message) => ({
+    messagesByVendor: messagesByVendor.map((message) => ({
       vendorName: normalizeProductName(message.vendorName),
       messageToSend: normalizeProductName(message.messageToSend),
     })),
@@ -361,33 +233,28 @@ export default function App() {
 
   useLayoutEffect(() => {
     const resetScroll = () => {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0 });
       document.documentElement.scrollTop = 0;
+      document.documentElement.scrollLeft = 0;
       document.body.scrollTop = 0;
-      document.querySelector('.app-shell')?.scrollTo({ top: 0 });
-      document.querySelector('.phone-frame')?.scrollTo({ top: 0 });
-      document.querySelector('.screen-card')?.scrollTo({ top: 0 });
+      document.body.scrollLeft = 0;
+      document.querySelector('.app-shell')?.scrollTo({ top: 0, left: 0 });
+      document.querySelector('.phone-frame')?.scrollTo({ top: 0, left: 0 });
+      document.querySelector('.screen-card')?.scrollTo({ top: 0, left: 0 });
     };
 
     resetScroll();
     window.requestAnimationFrame(resetScroll);
     window.setTimeout(resetScroll, 0);
+    window.setTimeout(resetScroll, 120);
   }, [screen]);
 
   const goBack = () => {
     const currentIndex = screenOrder.indexOf(screen);
-
-    if (currentIndex > 0) {
-      setScreen(screenOrder[currentIndex - 1]);
-    }
+    if (currentIndex > 0) setScreen(screenOrder[currentIndex - 1]);
   };
 
-  const handleStartCheck = async (input: {
-    decisionContext: string;
-    quoteText: string;
-    quoteDocuments: QuoteDocument[];
-    inputMode: InputMode;
-  }) => {
+  const handleStartCheck = async (input: { decisionContext: string; quoteText: string; quoteDocuments: QuoteDocument[]; inputMode: InputMode }) => {
     const inputContext = buildInputContext(input.inputMode, input.decisionContext);
 
     setDecisionContext(inputContext);
@@ -407,4 +274,69 @@ export default function App() {
 
     setIsAnalyzing(true);
     setScreen('checking');
-    ... (truncated)
+
+    try {
+      const response = await analyzeQuote({ decisionContext: inputContext, quoteText: input.quoteText, quoteDocuments: input.quoteDocuments, language });
+      if (response.source !== 'llm') throw new Error('Quote analysis did not complete');
+      setAnalysis(response.analysis);
+      setAnalysisSource(response.source);
+      setAnalysisWarning('');
+    } catch {
+      setAnalysis(null);
+      setAnalysisSource('mock');
+      setAnalysisWarning(copy.analysisError);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleVendorReply = async (vendorReply: string) => {
+    setVendorReplyError('');
+    setIsAnalyzingVendorReply(true);
+
+    try {
+      const response = await analyzeVendorReply({ decisionContext, quoteText, originalAnalysis: activeAnalysis, vendorReply, language });
+      setUpdatedAnalysis(response.analysis);
+      setAnalysisSource(response.source);
+      setVendorReplyError(response.error || '');
+      setScreen('updated');
+    } catch {
+      setUpdatedAnalysis(buildFallbackUpdatedRecommendation(content));
+      setAnalysisSource('mock');
+      setVendorReplyError(copy.vendorError);
+      setScreen('updated');
+    } finally {
+      setIsAnalyzingVendorReply(false);
+    }
+  };
+
+  return (
+    <AppShell
+      brand={content.brand}
+      currentPhase={currentPhase}
+      language={language}
+      onBack={screen === 'landing' ? undefined : goBack}
+      onLanguageChange={setLanguage}
+      shell={content.shell}
+      showLanguageSwitcher={showLanguageSwitcher}
+    >
+      {screen === 'landing' && <LandingScreen content={content.landing} onStart={() => setScreen('start')} />}
+      {screen === 'start' && <StartCheckScreen content={content.startCheck} error={startError} language={language} note={copy.startCheckNote} onSubmit={handleStartCheck} />}
+      {screen === 'checking' && <CheckingScreen content={checkingContent} error={analysisWarning} isReady={!isAnalyzing && Boolean(analysis)} onBack={goBack} onNext={() => setScreen('result')} />}
+      {screen === 'result' && <ResultScreen content={resultContent} onNext={() => setScreen('review')} />}
+      {screen === 'review' && <ThingsToReviewScreen content={reviewContent} onNext={() => setScreen('questions')} />}
+      {screen === 'questions' && <ContractorQuestionsScreen content={questionsContent} language={language} onNext={() => setScreen('reply')} />}
+      {screen === 'reply' && (
+        <VendorReplyScreen
+          content={content.vendorReply}
+          error={vendorReplyError}
+          isLoading={isAnalyzingVendorReply}
+          language={language}
+          replyTargets={questionsContent.messagesByVendor}
+          onSubmit={handleVendorReply}
+        />
+      )}
+      {screen === 'updated' && <UpdatedRecommendationScreen content={updatedContent} />}
+    </AppShell>
+  );
+}
